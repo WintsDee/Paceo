@@ -30,6 +30,8 @@ export const CalculatorScreen = ({ isMetric, onToggleUnits, onSaveGoal, speedVal
       
       <RaceGoalCalculator 
         isMetric={isMetric} 
+        speedValue={speedValue}
+        onSpeedChange={onSpeedChange}
         onSaveGoal={onSaveGoal} 
       />
     </div>

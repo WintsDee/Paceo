@@ -76,14 +76,14 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
             Allure ({isMetric ? 'min/km' : 'min/mi'})
           </Label>
           <div className="glass-card rounded-lg p-4 flex items-center justify-between">
-            <Button onClick={() => stepPace(+1)} variant="outline" className="btn-glass h-10 w-10 rounded-full p-0">
-              <Plus className="h-5 w-5" />
+            <Button onClick={() => stepPace(-1)} variant="outline" className="btn-glass h-10 w-10 rounded-full p-0">
+              <Minus className="h-5 w-5" />
             </Button>
             <div className="text-3xl font-semibold mono-numbers select-none">
               {paceString}
             </div>
-            <Button onClick={() => stepPace(-1)} variant="outline" className="btn-glass h-10 w-10 rounded-full p-0">
-              <Minus className="h-5 w-5" />
+            <Button onClick={() => stepPace(+1)} variant="outline" className="btn-glass h-10 w-10 rounded-full p-0">
+              <Plus className="h-5 w-5" />
             </Button>
           </div>
         </div>
@@ -109,7 +109,7 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
 
       {/* Slider for speed */}
       <div className="mt-6 space-y-3">
-        <Label className="text-sm font-medium text-muted-foreground">Ajuster finement</Label>
+        <Label className="text-sm font-medium text-muted-foreground">Ajuster finement la vitesse</Label>
         <Slider
           min={speedMin}
           max={speedMax}
