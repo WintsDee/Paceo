@@ -1,67 +1,54 @@
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
+import { Minus, Plus } from "lucide-react";
 
-interface PaceSpeedConverterProps {
+export interface PaceSpeedConverterProps {
   isMetric: boolean;
   onToggleUnits: () => void;
+  speedValue: number; // current speed in selected units (km/h or mph)
+  onSpeedChange: (speed: number) => void;
 }
 
-export const PaceSpeedConverter = ({ isMetric, onToggleUnits }: PaceSpeedConverterProps) => {
-  const [pace, setPace] = useState("4:30");
-  const [speed, setSpeed] = useState("13.33");
+function clamp(n: number, min: number, max: number) {
+  return Math.min(Math.max(n, min), max);
+}
 
-  // Convert pace (mm:ss) to speed
-  const paceToSpeed = (paceString: string): number => {
-    const [minutes, seconds] = paceString.split(":").map(Number);
-    const totalMinutes = minutes + (seconds || 0) / 60;
-    if (totalMinutes === 0) return 0;
-    
-    const speedKmh = 60 / totalMinutes;
-    return isMetric ? speedKmh : speedKmh * 0.621371; // Convert to mph if needed
+function formatPaceFromSpeed(speed: number) {
+  if (!speed || speed <= 0) return "0:00";
+  const totalMinutes = 60 / speed;
+  const minutes = Math.floor(totalMinutes);
+  const seconds = Math.round((totalMinutes - minutes) * 60);
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
+function paceSecondsFromSpeed(speed: number) {
+  if (!speed || speed <= 0) return 0;
+  return Math.round((60 / speed) * 60); // minutes to seconds
+}
+
+export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpeedChange }: PaceSpeedConverterProps) => {
+  const paceString = useMemo(() => formatPaceFromSpeed(speedValue), [speedValue]);
+  const paceSeconds = useMemo(() => paceSecondsFromSpeed(speedValue), [speedValue]);
+
+  const speedMin = isMetric ? 6 : 4; // realistic ranges
+  const speedMax = isMetric ? 24 : 15;
+  const paceSecMin = 150; // 2:30
+  const paceSecMax = 900; // 15:00
+
+  const stepPace = (deltaSec: number) => {
+    const newPaceSec = clamp(paceSeconds + deltaSec, paceSecMin, paceSecMax);
+    const newSpeed = 3600 / newPaceSec; // 60 minutes/hour * 60 sec/min / sec per unit
+    onSpeedChange(parseFloat(newSpeed.toFixed(2)));
   };
 
-  // Convert speed to pace (mm:ss)
-  const speedToPace = (speedValue: number): string => {
-    if (speedValue === 0) return "0:00";
-    
-    const speedKmh = isMetric ? speedValue : speedValue / 0.621371; // Convert from mph if needed
-    const totalMinutes = 60 / speedKmh;
-    const minutes = Math.floor(totalMinutes);
-    const seconds = Math.round((totalMinutes - minutes) * 60);
-    
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  const stepSpeed = (delta: number) => {
+    const next = clamp(parseFloat((speedValue + delta).toFixed(2)), speedMin, speedMax);
+    onSpeedChange(next);
   };
-
-  const handlePaceChange = (value: string) => {
-    setPace(value);
-    if (value.includes(":")) {
-      const newSpeed = paceToSpeed(value);
-      setSpeed(newSpeed.toFixed(2));
-    }
-  };
-
-  const handleSpeedChange = (value: string) => {
-    setSpeed(value);
-    const speedValue = parseFloat(value);
-    if (!isNaN(speedValue) && speedValue > 0) {
-      const newPace = speedToPace(speedValue);
-      setPace(newPace);
-    }
-  };
-
-  // Update conversions when units change
-  useEffect(() => {
-    if (speed) {
-      const speedValue = parseFloat(speed);
-      if (!isNaN(speedValue) && speedValue > 0) {
-        const newPace = speedToPace(speedValue);
-        setPace(newPace);
-      }
-    }
-  }, [isMetric]);
 
   return (
     <Card className="glass-card p-6 animate-fade-in-up">
@@ -83,29 +70,54 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits }: PaceSpeedConvert
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Pace control */}
         <div className="space-y-3">
           <Label className="text-sm font-medium text-muted-foreground">
             Allure ({isMetric ? 'min/km' : 'min/mi'})
           </Label>
-          <Input
-            value={pace}
-            onChange={(e) => handlePaceChange(e.target.value)}
-            placeholder="4:30"
-            className="glass-card border-0 text-lg mono-numbers text-center h-14 text-foreground placeholder:text-muted-foreground focus:glow-effect transition-smooth"
-          />
+          <div className="glass-card rounded-lg p-4 flex items-center justify-between">
+            <Button onClick={() => stepPace(+1)} variant="outline" className="btn-glass h-10 w-10 rounded-full p-0">
+              <Plus className="h-5 w-5" />
+            </Button>
+            <div className="text-3xl font-semibold mono-numbers select-none">
+              {paceString}
+            </div>
+            <Button onClick={() => stepPace(-1)} variant="outline" className="btn-glass h-10 w-10 rounded-full p-0">
+              <Minus className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
 
+        {/* Speed control */}
         <div className="space-y-3">
           <Label className="text-sm font-medium text-muted-foreground">
             Vitesse ({isMetric ? 'km/h' : 'mph'})
           </Label>
-          <Input
-            value={speed}
-            onChange={(e) => handleSpeedChange(e.target.value)}
-            placeholder="13.33"
-            className="glass-card border-0 text-lg mono-numbers text-center h-14 text-foreground placeholder:text-muted-foreground focus:glow-effect transition-smooth"
-          />
+          <div className="glass-card rounded-lg p-4 flex items-center justify-between">
+            <Button onClick={() => stepSpeed(-0.1)} variant="outline" className="btn-glass h-10 w-10 rounded-full p-0">
+              <Minus className="h-5 w-5" />
+            </Button>
+            <div className="text-3xl font-semibold mono-numbers select-none">
+              {speedValue.toFixed(2)}
+            </div>
+            <Button onClick={() => stepSpeed(+0.1)} variant="outline" className="btn-glass h-10 w-10 rounded-full p-0">
+              <Plus className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
+      </div>
+
+      {/* Slider for speed */}
+      <div className="mt-6 space-y-3">
+        <Label className="text-sm font-medium text-muted-foreground">Ajuster finement</Label>
+        <Slider
+          min={speedMin}
+          max={speedMax}
+          step={0.01}
+          value={[clamp(speedValue, speedMin, speedMax)]}
+          onValueChange={(v) => onSpeedChange(clamp(v[0] ?? speedValue, speedMin, speedMax))}
+          className="cursor-pointer"
+        />
       </div>
     </Card>
   );

@@ -10,9 +10,17 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState("calculator");
   const [isMetric, setIsMetric] = useLocalStorage("pace-calc-metric", true);
   const [favorites, setFavorites] = useLocalStorage<RaceGoal[]>("pace-calc-favorites", []);
+  const [speedValue, setSpeedValue] = useLocalStorage<number>("pace-calc-speed", 13.33); // default km/h
 
   const handleToggleUnits = () => {
-    setIsMetric(!isMetric);
+    const nextIsMetric = !isMetric;
+    // Convert speed to the new unit to keep pace consistent across the app
+    const convertedSpeed = nextIsMetric
+      ? speedValue / 0.621371 // mph -> km/h
+      : speedValue * 0.621371; // km/h -> mph
+
+    setIsMetric(nextIsMetric);
+    setSpeedValue(parseFloat(convertedSpeed.toFixed(2)));
   };
 
   const handleSaveGoal = (goal: RaceGoal) => {
@@ -24,7 +32,10 @@ const Index = () => {
   };
 
   const handleUseFavorite = (goal: RaceGoal) => {
-    // Switch to calculator tab when using a favorite
+    // Load units and speed from favorite for real-time global sync
+    setIsMetric(goal.isMetric);
+    const s = parseFloat(goal.speed);
+    if (!Number.isNaN(s)) setSpeedValue(s);
     setActiveTab("calculator");
   };
 
@@ -36,6 +47,8 @@ const Index = () => {
             isMetric={isMetric}
             onToggleUnits={handleToggleUnits}
             onSaveGoal={handleSaveGoal}
+            speedValue={speedValue}
+            onSpeedChange={setSpeedValue}
           />
         );
       case "favorites":

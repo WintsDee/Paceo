@@ -5,9 +5,11 @@ interface CalculatorScreenProps {
   isMetric: boolean;
   onToggleUnits: () => void;
   onSaveGoal: (goal: RaceGoal) => void;
+  speedValue: number;
+  onSpeedChange: (speed: number) => void;
 }
 
-export const CalculatorScreen = ({ isMetric, onToggleUnits, onSaveGoal }: CalculatorScreenProps) => {
+export const CalculatorScreen = ({ isMetric, onToggleUnits, onSaveGoal, speedValue, onSpeedChange }: CalculatorScreenProps) => {
   return (
     <div className="space-y-6 pb-20">
       <div className="text-center py-6">
@@ -21,7 +23,9 @@ export const CalculatorScreen = ({ isMetric, onToggleUnits, onSaveGoal }: Calcul
       
       <PaceSpeedConverter 
         isMetric={isMetric} 
-        onToggleUnits={onToggleUnits} 
+        onToggleUnits={onToggleUnits}
+        speedValue={speedValue}
+        onSpeedChange={onSpeedChange}
       />
       
       <RaceGoalCalculator 
