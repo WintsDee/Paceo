@@ -2,6 +2,9 @@ import { useState } from "react";
 import { BottomNavigation } from "@/components/layout/BottomNavigation";
 import { CalculatorScreen } from "@/components/screens/CalculatorScreen";
 import { FavoritesScreen } from "@/components/screens/FavoritesScreen";
+import { QuickDistancesScreen } from "@/components/screens/QuickDistancesScreen";
+import { ConversionTableScreen } from "@/components/screens/ConversionTableScreen";
+import { SplitsScreen } from "@/components/screens/SplitsScreen";
 import { RaceGoal } from "@/components/calculator/RaceGoalCalculator";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { Card } from "@/components/ui/card";
@@ -60,17 +63,27 @@ const Index = () => {
           />
         );
       case "distances":
+        return (
+          <QuickDistancesScreen
+            isMetric={isMetric}
+            speedValue={speedValue}
+            onSpeedChange={setSpeedValue}
+            onNavigateToCalculator={() => setActiveTab("calculator")}
+          />
+        );
       case "table":
+        return (
+          <ConversionTableScreen
+            isMetric={isMetric}
+            onSpeedChange={setSpeedValue}
+          />
+        );
       case "splits":
         return (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center pb-20">
-            <Card className="glass-card p-8 max-w-sm mx-auto">
-              <h2 className="text-xl font-semibold mb-4">Bientôt disponible</h2>
-              <p className="text-muted-foreground">
-                Cette fonctionnalité sera ajoutée dans une prochaine version.
-              </p>
-            </Card>
-          </div>
+          <SplitsScreen
+            isMetric={isMetric}
+            speedValue={speedValue}
+          />
         );
       default:
         return null;
