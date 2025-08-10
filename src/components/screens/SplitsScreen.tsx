@@ -45,14 +45,14 @@ export const SplitsScreen = ({ isMetric, speedValue }: SplitsScreenProps) => {
   }
 
   return (
-    <div className="space-y-3 pb-20 animate-fade-in">
+    <div className="space-y-3 pb-20 animate-fade-in-up">
       <div className="text-center py-2">
         <h2 className="text-xl font-semibold">Splits simples</h2>
         <p className="text-muted-foreground text-sm">Basé sur votre allure actuelle</p>
       </div>
 
       <Tabs value={profile} onValueChange={(v) => setProfile(v as '5k' | '10k' | 'semi' | 'marathon')}>
-        <TabsList className="mx-auto justify-center">
+        <TabsList className="w-full flex justify-center gap-2">
           {profiles.map(p => (
             <TabsTrigger key={p.id} value={p.id}>
               {p.label}

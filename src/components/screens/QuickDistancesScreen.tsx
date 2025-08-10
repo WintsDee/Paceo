@@ -47,7 +47,7 @@ function timeForDistanceHours(km: number, isMetric: boolean, speedValue: number)
 
 export const QuickDistancesScreen = ({ isMetric, speedValue }: QuickDistancesScreenProps) => {
   return (
-    <div className="space-y-4 pb-20 animate-fade-in">
+    <div className="space-y-4 pb-20 animate-fade-in-up">
       <div className="text-center py-2">
         <h2 className="text-xl font-semibold">Distances rapides</h2>
         <p className="text-muted-foreground text-sm">Basé sur votre allure actuelle</p>
