@@ -79,7 +79,24 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
                       {goal.isMetric ? 'km/h' : 'mph'}
                     </span>
                   </div>
+                  <div>
+                    <span className="text-muted-foreground">Distance: </span>
+                    <span className="mono-numbers font-medium">{goal.distanceKm} km</span>
+                    <span className="text-muted-foreground ml-1">(≈ {goal.distanceMiles} mi)</span>
+                  </div>
+                  {goal.vmaKmh && (
+                    <div>
+                      <span className="text-muted-foreground">VMA: </span>
+                      <span className="mono-numbers font-medium">{goal.vmaKmh.toFixed(1)} km/h</span>
+                    </div>
+                  )}
                 </div>
+
+                {goal.vmaCoherence && (
+                  <div className="mt-3 text-xs text-muted-foreground">
+                    Cohérence vs VMA: {goal.vmaCoherence.pct}% — attendu {goal.vmaCoherence.expectedLow}-{goal.vmaCoherence.expectedHigh}% ({goal.vmaCoherence.status})
+                  </div>
+                )}
               </div>
               
               <div className="flex gap-2 ml-4">

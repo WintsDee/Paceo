@@ -13,6 +13,11 @@ const races = [
   { id: "10k", labelKm: "10 km", km: 10 },
   { id: "hm", labelKm: "Semi-marathon", km: 21.0975 },
   { id: "m", labelKm: "Marathon", km: 42.195 },
+  { id: "50k", labelKm: "50 km (Ultra)", km: 50 },
+  { id: "80k", labelKm: "80 km (Trail)", km: 80 },
+  { id: "100k", labelKm: "100 km (Ultra)", km: 100 },
+  { id: "100mi", labelKm: "100 miles (Ultra)", km: 160.934 },
+  { id: "utmb", labelKm: "UTMB ~171 km", km: 171 },
 ];
 
 function hoursToHHMMSS(hours: number) {

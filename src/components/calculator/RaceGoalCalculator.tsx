@@ -19,10 +19,20 @@ export interface RaceGoalCalculatorProps {
 export interface RaceGoal {
   id: string;
   distance: string;
+  selectedDistanceId: string;
   targetTime: string;
   pace: string;
   speed: string;
   isMetric: boolean;
+  vmaKmh?: number;
+  vmaCoherence?: {
+    pct: number;
+    status: "Sous-estimé" | "Ambitieux" | "Cohérent";
+    expectedLow: number;
+    expectedHigh: number;
+  };
+  distanceKm: number;
+  distanceMiles: number;
   savedAt: Date;
 }
 
@@ -57,12 +67,12 @@ function paceFromSpeed(speed: number) {
 }
 
 export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSaveGoal, showTimeSlider }: RaceGoalCalculatorProps) => {
-  const [selectedDistance, setSelectedDistance] = useState("10k");
+  const [selectedDistance, setSelectedDistance] = useLocalStorage<string>("pace-calc-goal-distance", "10k");
   const [targetTime, setTargetTime] = useState("00:45:00");
   const { toast } = useToast();
   const lastUpdate = useRef<"speed" | "time" | null>(null);
 
-  const [vmaKmh] = useLocalStorage<number>("pace-calc-vma", 0);
+  const [vmaKmh, setVmaKmh] = useLocalStorage<number>("pace-calc-vma", 0);
 
   const race = useMemo(() => raceDistances.find(d => d.id === selectedDistance)!, [selectedDistance]);
   const distanceUnits = isMetric ? race.distance : race.distanceMiles;
@@ -96,13 +106,37 @@ export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSave
   const speedDisplay = speedValue.toFixed(2);
 
   const handleSaveGoal = () => {
+    // Compute VMA coherence data if VMA provided
+    let vmaData: RaceGoal["vmaCoherence"] | undefined = undefined;
+    if (vmaKmh > 0) {
+      const timeH = timeStringToHours(targetTime);
+      const reqSpeedKmh = distanceKm / Math.max(0.0001, timeH);
+      const pct = (reqSpeedKmh / vmaKmh) * 100;
+      const getRange = (km: number) => {
+        if (km <= 3) return { low: 100, high: 108 } as const;
+        if (km <= 5) return { low: 92, high: 96 } as const;
+        if (km <= 10) return { low: 88, high: 92 } as const;
+        if (km <= 21.5) return { low: 80, high: 85 } as const;
+        return { low: 76, high: 82 } as const; // marathon / ultra
+      };
+      const { low, high } = getRange(distanceKm);
+      const margin = 2;
+      const status = pct < low - margin ? "Sous-estimé" as const : pct > high + margin ? "Ambitieux" as const : "Cohérent" as const;
+      vmaData = { pct: parseFloat(pct.toFixed(1)), status, expectedLow: low, expectedHigh: high };
+    }
+
     const goal: RaceGoal = {
       id: Date.now().toString(),
       distance: race.label,
+      selectedDistanceId: selectedDistance,
       targetTime,
       pace,
       speed: speedDisplay,
       isMetric,
+      vmaKmh: vmaKmh > 0 ? vmaKmh : undefined,
+      vmaCoherence: vmaData,
+      distanceKm: parseFloat(distanceKm.toFixed(3)),
+      distanceMiles: parseFloat((distanceKm * 0.621371).toFixed(3)),
       savedAt: new Date(),
     };
 

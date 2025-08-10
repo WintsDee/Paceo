@@ -35,11 +35,19 @@ const Index = () => {
   };
 
   const handleUseFavorite = (goal: RaceGoal) => {
-    // Load units and speed from favorite for real-time global sync
+    // Load units and speed + persist goal-specific settings for global sync
     setIsMetric(goal.isMetric);
     const s = parseFloat(goal.speed);
     if (!Number.isNaN(s)) setSpeedValue(s);
-    setActiveTab("calculator");
+    try {
+      if (goal.selectedDistanceId) {
+        window.localStorage.setItem("pace-calc-goal-distance", JSON.stringify(goal.selectedDistanceId));
+      }
+      if (goal.vmaKmh != null) {
+        window.localStorage.setItem("pace-calc-vma", JSON.stringify(goal.vmaKmh));
+      }
+    } catch {}
+    setActiveTab("goal");
   };
 
   const renderScreen = () => {

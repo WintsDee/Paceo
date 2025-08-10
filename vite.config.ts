@@ -30,13 +30,13 @@ export default defineConfig(({ mode }) => ({
         theme_color: '#0b1220',
         icons: [
           {
-            src: '/icons/paceo-icon-512.png',
+            src: '/lovable-uploads/e6fa3442-1562-489f-81ef-04f926e209fc.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
           },
           {
-            src: '/icons/paceo-icon-1024.png',
+            src: '/lovable-uploads/e6fa3442-1562-489f-81ef-04f926e209fc.png',
             sizes: '1024x1024',
             type: 'image/png',
             purpose: 'any maskable'
