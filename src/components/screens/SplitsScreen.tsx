@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface SplitsScreenProps {
   isMetric: boolean;
@@ -22,13 +24,21 @@ function formatHMS(totalSeconds: number) {
 
 export const SplitsScreen = ({ isMetric, speedValue }: SplitsScreenProps) => {
   const unitLabel = isMetric ? 'km' : 'mi';
-  const defaultDistance = isMetric ? 10 : 6; // simple sensible defaults
   const paceSec = paceSecondsFromSpeed(speedValue);
+  const [profile, setProfile] = useState<'10k' | 'semi' | 'marathon'>('10k');
+
+  const profiles = [
+    { id: '10k', label: '10K', km: 10, mi: 6 },
+    { id: 'semi', label: 'Semi', km: 21, mi: 13 },
+    { id: 'marathon', label: 'Marathon', km: 42, mi: 26 },
+  ] as const;
+  const current = profiles.find(p => p.id === profile)!;
+  const totalUnits = isMetric ? current.km : current.mi;
 
   // Build splits of 1 unit each
   const splits: { idx: number; length: number; splitSec: number; cumSec: number }[] = [];
   let cum = 0;
-  for (let i = 1; i <= defaultDistance; i++) {
+  for (let i = 1; i <= totalUnits; i++) {
     cum += paceSec;
     splits.push({ idx: i, length: 1, splitSec: paceSec, cumSec: cum });
   }
@@ -39,6 +49,17 @@ export const SplitsScreen = ({ isMetric, speedValue }: SplitsScreenProps) => {
         <h2 className="text-xl font-semibold">Splits simples</h2>
         <p className="text-muted-foreground text-sm">Basé sur votre allure actuelle</p>
       </div>
+
+      <Tabs value={profile} onValueChange={(v) => setProfile(v as '10k' | 'semi' | 'marathon')}>
+        <TabsList className="mx-auto">
+          {profiles.map(p => (
+            <TabsTrigger key={p.id} value={p.id}>
+              {p.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+
       <Card className="p-0">
         <table className="w-full text-sm">
           <thead>

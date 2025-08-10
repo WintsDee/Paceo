@@ -30,6 +30,13 @@ function hoursToHHMMSS(hours: number) {
   const ss = String(s).padStart(2, "0");
   return `${hh}${mm}:${ss}`;
 }
+function paceFromSpeed(isMetric: boolean, speed: number) {
+  if (!speed || speed <= 0) return isMetric ? "— min/km" : "— min/mi";
+  const totalMinutes = 60 / speed;
+  const minutes = Math.floor(totalMinutes);
+  const seconds = Math.round((totalMinutes - minutes) * 60);
+  return `${minutes}:${String(seconds).padStart(2, "0")} ${isMetric ? "min/km" : "min/mi"}`;
+}
 
 function timeForDistanceHours(km: number, isMetric: boolean, speedValue: number) {
   // speedValue is in km/h if metric else mph
@@ -53,11 +60,11 @@ export const QuickDistancesScreen = ({ isMetric, speedValue }: QuickDistancesScr
             <Card key={r.id} className="p-4 flex items-center justify-between">
               <div>
                 <div className="font-medium">{r.labelKm}</div>
-                <div className="text-sm text-muted-foreground">Temps estimé: {hoursToHHMMSS(t)}</div>
+                <div className="text-xs text-muted-foreground">
+                  {isMetric ? `${speedValue.toFixed(2)} km/h` : `${speedValue.toFixed(2)} mph`} • {paceFromSpeed(isMetric, speedValue)}
+                </div>
               </div>
-              <div className="text-xs text-muted-foreground">
-                {isMetric ? `${speedValue.toFixed(2)} km/h` : `${speedValue.toFixed(2)} mph`}
-              </div>
+              <div className="text-sm font-medium mono-numbers">{hoursToHHMMSS(t)}</div>
             </Card>
           );
         })}

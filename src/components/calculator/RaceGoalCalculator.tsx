@@ -198,7 +198,25 @@ export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSave
           </div>
         </div>
 
-        {/* VMA coherence (if provided) */}
+        {/* Sélection de la VMA */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-muted-foreground">VMA (km/h)</Label>
+          <div className="glass-card p-4 rounded-lg">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="text-sm text-muted-foreground">Ajustez votre VMA</div>
+              <div className="ml-auto text-sm font-medium mono-numbers">{(vmaKmh > 0 ? vmaKmh : 12).toFixed(1)} km/h</div>
+            </div>
+            <Slider
+              min={8}
+              max={25}
+              step={0.1}
+              value={[vmaKmh > 0 ? vmaKmh : 12]}
+              onValueChange={(v) => setVmaKmh(parseFloat(((v[0] ?? 12)).toFixed(1)))}
+            />
+          </div>
+        </div>
+
+        {/* Conseil VMA (cohérence) */}
         {vmaKmh > 0 && (
           <div className="glass-card p-4 rounded-lg">
             {(() => {
