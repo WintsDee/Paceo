@@ -213,6 +213,7 @@ export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSave
                   value={[Math.min(Math.max(currentH, minHours), maxHours)]}
                   onValueChange={(v) => {
                     const h = Math.min(Math.max(v[0] ?? currentH, minHours), maxHours);
+                    setTargetTime(hoursToHHMMSS(h));
                     const spd = distanceUnits / h;
                     lastUpdate.current = "time";
                     onSpeedChange(parseFloat(spd.toFixed(2)));
