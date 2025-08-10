@@ -1,5 +1,5 @@
 import { PaceSpeedConverter } from "@/components/calculator/PaceSpeedConverter";
-import { RaceGoalCalculator, RaceGoal } from "@/components/calculator/RaceGoalCalculator";
+import { RaceGoal } from "@/components/calculator/RaceGoalCalculator";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
@@ -16,13 +16,9 @@ interface CalculatorScreenProps {
 export const CalculatorScreen = ({ isMetric, onToggleUnits, onSaveGoal, speedValue, onSpeedChange }: CalculatorScreenProps) => {
   return (
     <div className="space-y-6 pb-20">
-      <div className="text-center py-6">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-          Paceo
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          Convertisseur et calculateur d'objectifs
-        </p>
+      <div className="text-center py-2">
+        <h2 className="text-xl font-semibold">Allure & Vitesse</h2>
+        <p className="text-muted-foreground text-sm">Contrôlez votre allure et vitesse</p>
       </div>
       
       <PaceSpeedConverter 
@@ -35,12 +31,6 @@ export const CalculatorScreen = ({ isMetric, onToggleUnits, onSaveGoal, speedVal
       {/* VMA card */}
       <VmaCard isMetric={isMetric} />
       
-      <RaceGoalCalculator 
-        isMetric={isMetric} 
-        speedValue={speedValue}
-        onSpeedChange={onSpeedChange}
-        onSaveGoal={onSaveGoal} 
-      />
     </div>
   );
 };
