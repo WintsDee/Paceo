@@ -3,13 +3,17 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 export interface RaceGoalCalculatorProps {
   isMetric: boolean;
   speedValue: number; // global speed in current units (km/h or mph)
   onSpeedChange: (speed: number) => void; // update global speed when time changes
   onSaveGoal: (goal: RaceGoal) => void;
+  showTimeSlider?: boolean; // show a slider to adjust target time directly
 }
 
 export interface RaceGoal {
@@ -52,14 +56,17 @@ function paceFromSpeed(speed: number) {
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
-export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSaveGoal }: RaceGoalCalculatorProps) => {
+export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSaveGoal, showTimeSlider }: RaceGoalCalculatorProps) => {
   const [selectedDistance, setSelectedDistance] = useState("10k");
   const [targetTime, setTargetTime] = useState("00:45:00");
   const { toast } = useToast();
   const lastUpdate = useRef<"speed" | "time" | null>(null);
 
+  const [vmaKmh] = useLocalStorage<number>("pace-calc-vma", 0);
+
   const race = useMemo(() => raceDistances.find(d => d.id === selectedDistance)!, [selectedDistance]);
   const distanceUnits = isMetric ? race.distance : race.distanceMiles;
+  const distanceKm = isMetric ? race.distance : race.distanceMiles * 1.60934;
 
   // Update target time whenever global speed or selection changes (unless we just set speed from time)
   useEffect(() => {
@@ -150,13 +157,72 @@ export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSave
             <div className="text-xl font-semibold mono-numbers text-primary">{pace}</div>
             <div className="text-xs text-muted-foreground">{isMetric ? 'min/km' : 'min/mi'}</div>
           </div>
-          
           <div className="glass-card p-4 rounded-lg">
             <div className="text-sm text-muted-foreground mb-1">Vitesse</div>
             <div className="text-xl font-semibold mono-numbers text-primary">{speedDisplay}</div>
             <div className="text-xs text-muted-foreground">{isMetric ? 'km/h' : 'mph'}</div>
           </div>
         </div>
+
+        {/* VMA coherence (if provided) */}
+        {vmaKmh > 0 && (
+          <div className="glass-card p-4 rounded-lg">
+            {(() => {
+              const timeH = timeStringToHours(targetTime);
+              const reqSpeedKmh = distanceKm / Math.max(0.0001, timeH);
+              const pct = (reqSpeedKmh / vmaKmh) * 100;
+              const getRange = (km: number) => {
+                if (km <= 3) return { low: 100, high: 108 };
+                if (km <= 5) return { low: 92, high: 96 };
+                if (km <= 10) return { low: 88, high: 92 };
+                if (km <= 21.5) return { low: 80, high: 85 };
+                return { low: 76, high: 82 }; // marathon
+              };
+              const { low, high } = getRange(distanceKm);
+              const margin = 2;
+              const status = pct < low - margin ? "Sous-estimé" : pct > high + margin ? "Ambitieux" : "Cohérent";
+              const variant = status === "Cohérent" ? "secondary" : status === "Ambitieux" ? "default" : "outline";
+              return (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-1">Cohérence vs VMA</div>
+                    <div className="text-sm">{pct.toFixed(1)}% de votre VMA — attendu {low}-{high}%</div>
+                  </div>
+                  <Badge variant={variant}>{status}</Badge>
+                </div>
+              );
+            })()}
+          </div>
+        )}
+
+        {/* Optional time slider */}
+        {showTimeSlider && (
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-muted-foreground">Ajuster le temps objectif</Label>
+            {(() => {
+              const paceSecMin = 150; // 2:30
+              const paceSecMax = 900; // 15:00
+              const minHours = (distanceUnits * paceSecMin) / 3600;
+              const maxHours = (distanceUnits * paceSecMax) / 3600;
+              const currentH = timeStringToHours(targetTime);
+              return (
+                <Slider
+                  min={minHours}
+                  max={maxHours}
+                  step={1 / 3600}
+                  value={[Math.min(Math.max(currentH, minHours), maxHours)]}
+                  onValueChange={(v) => {
+                    const h = Math.min(Math.max(v[0] ?? currentH, minHours), maxHours);
+                    const spd = distanceUnits / h;
+                    lastUpdate.current = "time";
+                    onSpeedChange(parseFloat(spd.toFixed(2)));
+                  }}
+                />
+              );
+            })()}
+            <div className="text-xs text-muted-foreground text-right">{targetTime}</div>
+          </div>
+        )}
 
         {/* Save button */}
         <Button onClick={handleSaveGoal} className="w-full btn-primary-glass h-12 text-base font-medium">

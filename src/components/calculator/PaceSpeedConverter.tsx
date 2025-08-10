@@ -107,17 +107,36 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
         </div>
       </div>
 
-      {/* Slider for speed */}
-      <div className="mt-6 space-y-3">
-        <Label className="text-sm font-medium text-muted-foreground">Ajuster finement la vitesse</Label>
-        <Slider
-          min={speedMin}
-          max={speedMax}
-          step={0.01}
-          value={[clamp(speedValue, speedMin, speedMax)]}
-          onValueChange={(v) => onSpeedChange(clamp(v[0] ?? speedValue, speedMin, speedMax))}
-          className="cursor-pointer"
-        />
+      {/* Sliders */}
+      <div className="mt-6 grid gap-5">
+        {/* Pace slider */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-muted-foreground">Ajuster finement l'allure</Label>
+          <Slider
+            min={paceSecMin}
+            max={paceSecMax}
+            step={1}
+            value={[clamp(paceSeconds, paceSecMin, paceSecMax)]}
+            onValueChange={(v) => {
+              const sec = clamp(v[0] ?? paceSeconds, paceSecMin, paceSecMax);
+              const newSpeed = 3600 / sec;
+              onSpeedChange(parseFloat(newSpeed.toFixed(2)));
+            }}
+            className="cursor-pointer"
+          />
+        </div>
+        {/* Speed slider */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-muted-foreground">Ajuster finement la vitesse</Label>
+          <Slider
+            min={speedMin}
+            max={speedMax}
+            step={0.01}
+            value={[clamp(speedValue, speedMin, speedMax)]}
+            onValueChange={(v) => onSpeedChange(clamp(v[0] ?? speedValue, speedMin, speedMax))}
+            className="cursor-pointer"
+          />
+        </div>
       </div>
     </Card>
   );

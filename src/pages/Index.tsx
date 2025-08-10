@@ -3,9 +3,9 @@ import { BottomNavigation } from "@/components/layout/BottomNavigation";
 import { CalculatorScreen } from "@/components/screens/CalculatorScreen";
 import { FavoritesScreen } from "@/components/screens/FavoritesScreen";
 import { QuickDistancesScreen } from "@/components/screens/QuickDistancesScreen";
-import { ConversionTableScreen } from "@/components/screens/ConversionTableScreen";
 import { SplitsScreen } from "@/components/screens/SplitsScreen";
 import { RaceGoal } from "@/components/calculator/RaceGoalCalculator";
+import { GoalScreen } from "@/components/screens/GoalScreen";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { Card } from "@/components/ui/card";
 
@@ -62,20 +62,20 @@ const Index = () => {
             onUseFavorite={handleUseFavorite}
           />
         );
+      case "goal":
+        return (
+          <GoalScreen
+            isMetric={isMetric}
+            speedValue={speedValue}
+            onSpeedChange={setSpeedValue}
+            onSaveGoal={handleSaveGoal}
+          />
+        );
       case "distances":
         return (
           <QuickDistancesScreen
             isMetric={isMetric}
             speedValue={speedValue}
-            onSpeedChange={setSpeedValue}
-            onNavigateToCalculator={() => setActiveTab("calculator")}
-          />
-        );
-      case "table":
-        return (
-          <ConversionTableScreen
-            isMetric={isMetric}
-            onSpeedChange={setSpeedValue}
           />
         );
       case "splits":

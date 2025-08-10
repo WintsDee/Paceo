@@ -1,12 +1,8 @@
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 interface QuickDistancesScreenProps {
   isMetric: boolean;
   speedValue: number; // km/h if metric, mph if imperial
-  onSpeedChange: (speed: number) => void;
-  onNavigateToCalculator: () => void;
 }
 
 const KM_TO_MI = 0.621371;
@@ -37,7 +33,7 @@ function timeForDistanceHours(km: number, isMetric: boolean, speedValue: number)
   return miles / Math.max(0.01, speedValue);
 }
 
-export const QuickDistancesScreen = ({ isMetric, speedValue, onSpeedChange, onNavigateToCalculator }: QuickDistancesScreenProps) => {
+export const QuickDistancesScreen = ({ isMetric, speedValue }: QuickDistancesScreenProps) => {
   return (
     <div className="space-y-4 pb-20">
       <div className="text-center py-2">
@@ -54,14 +50,9 @@ export const QuickDistancesScreen = ({ isMetric, speedValue, onSpeedChange, onNa
                 <div className="font-medium">{r.labelKm}</div>
                 <div className="text-sm text-muted-foreground">Temps estimé: {hoursToHHMMSS(t)}</div>
               </div>
-              <Button
-                variant="secondary"
-                onClick={onNavigateToCalculator}
-                className={cn("min-w-[100px]")}
-                aria-label={`Utiliser ${r.labelKm}`}
-              >
-                Utiliser
-              </Button>
+              <div className="text-xs text-muted-foreground">
+                {isMetric ? `${speedValue.toFixed(2)} km/h` : `${speedValue.toFixed(2)} mph`}
+              </div>
             </Card>
           );
         })}
