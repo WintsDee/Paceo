@@ -25,9 +25,10 @@ function formatHMS(totalSeconds: number) {
 export const SplitsScreen = ({ isMetric, speedValue }: SplitsScreenProps) => {
   const unitLabel = isMetric ? 'km' : 'mi';
   const paceSec = paceSecondsFromSpeed(speedValue);
-  const [profile, setProfile] = useState<'10k' | 'semi' | 'marathon'>('10k');
+  const [profile, setProfile] = useState<'5k' | '10k' | 'semi' | 'marathon'>('10k');
 
   const profiles = [
+    { id: '5k', label: '5K', km: 5, mi: 3 },
     { id: '10k', label: '10K', km: 10, mi: 6 },
     { id: 'semi', label: 'Semi', km: 21, mi: 13 },
     { id: 'marathon', label: 'Marathon', km: 42, mi: 26 },
@@ -44,14 +45,14 @@ export const SplitsScreen = ({ isMetric, speedValue }: SplitsScreenProps) => {
   }
 
   return (
-    <div className="space-y-3 pb-20">
+    <div className="space-y-3 pb-20 animate-fade-in">
       <div className="text-center py-2">
         <h2 className="text-xl font-semibold">Splits simples</h2>
         <p className="text-muted-foreground text-sm">Basé sur votre allure actuelle</p>
       </div>
 
-      <Tabs value={profile} onValueChange={(v) => setProfile(v as '10k' | 'semi' | 'marathon')}>
-        <TabsList className="mx-auto">
+      <Tabs value={profile} onValueChange={(v) => setProfile(v as '5k' | '10k' | 'semi' | 'marathon')}>
+        <TabsList className="mx-auto justify-center">
           {profiles.map(p => (
             <TabsTrigger key={p.id} value={p.id}>
               {p.label}

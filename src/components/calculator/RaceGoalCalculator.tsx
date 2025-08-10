@@ -184,6 +184,36 @@ export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSave
           />
         </div>
 
+        {/* Optional time slider */}
+        {showTimeSlider && (
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-muted-foreground">Ajuster le temps objectif</Label>
+            {(() => {
+              const paceSecMin = 150; // 2:30
+              const paceSecMax = 900; // 15:00
+              const minHours = (distanceUnits * paceSecMin) / 3600;
+              const maxHours = (distanceUnits * paceSecMax) / 3600;
+              const currentH = timeStringToHours(targetTime);
+              return (
+                <Slider
+                  min={minHours}
+                  max={maxHours}
+                  step={1 / 3600}
+                  value={[Math.min(Math.max(currentH, minHours), maxHours)]}
+                  onValueChange={(v) => {
+                    const h = Math.min(Math.max(v[0] ?? currentH, minHours), maxHours);
+                    setTargetTime(hoursToHHMMSS(h));
+                    const spd = distanceUnits / h;
+                    lastUpdate.current = "time";
+                    onSpeedChange(parseFloat(spd.toFixed(2)));
+                  }}
+                />
+              );
+            })()}
+            <div className="text-xs text-muted-foreground text-right">{targetTime}</div>
+          </div>
+        )}
+
         {/* Results display - always derived from global speed */}
         <div className="grid grid-cols-2 gap-4">
           <div className="glass-card p-4 rounded-lg">
@@ -247,39 +277,10 @@ export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSave
           </div>
         )}
 
-        {/* Optional time slider */}
-        {showTimeSlider && (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-muted-foreground">Ajuster le temps objectif</Label>
-            {(() => {
-              const paceSecMin = 150; // 2:30
-              const paceSecMax = 900; // 15:00
-              const minHours = (distanceUnits * paceSecMin) / 3600;
-              const maxHours = (distanceUnits * paceSecMax) / 3600;
-              const currentH = timeStringToHours(targetTime);
-              return (
-                <Slider
-                  min={minHours}
-                  max={maxHours}
-                  step={1 / 3600}
-                  value={[Math.min(Math.max(currentH, minHours), maxHours)]}
-                  onValueChange={(v) => {
-                    const h = Math.min(Math.max(v[0] ?? currentH, minHours), maxHours);
-                    setTargetTime(hoursToHHMMSS(h));
-                    const spd = distanceUnits / h;
-                    lastUpdate.current = "time";
-                    onSpeedChange(parseFloat(spd.toFixed(2)));
-                  }}
-                />
-              );
-            })()}
-            <div className="text-xs text-muted-foreground text-right">{targetTime}</div>
-          </div>
-        )}
 
         {/* Save button */}
         <Button onClick={handleSaveGoal} className="w-full btn-primary-glass h-12 text-base font-medium">
-          Enregistrer la cible
+          Enregistrer l’objectif
         </Button>
       </div>
     </Card>
