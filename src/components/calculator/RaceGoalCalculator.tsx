@@ -7,6 +7,8 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
+import { ChevronDown } from "lucide-react";
 
 export interface RaceGoalCalculatorProps {
   isMetric: boolean;
@@ -228,54 +230,59 @@ export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSave
           </div>
         </div>
 
-        {/* Sélection de la VMA */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-muted-foreground">VMA (km/h)</Label>
+        {/* VMA repliable */}
+        <Collapsible defaultOpen={false}>
           <div className="glass-card p-4 rounded-lg">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="text-sm text-muted-foreground">Ajustez votre VMA</div>
-              <div className="ml-auto text-sm font-medium mono-numbers">{(vmaKmh > 0 ? vmaKmh : 12).toFixed(1)} km/h</div>
-            </div>
-            <Slider
-              min={8}
-              max={25}
-              step={0.1}
-              value={[vmaKmh > 0 ? vmaKmh : 12]}
-              onValueChange={(v) => setVmaKmh(parseFloat(((v[0] ?? 12)).toFixed(1)))}
-            />
-          </div>
-        </div>
+            <CollapsibleTrigger className="flex w-full items-center gap-2 py-1.5 text-sm font-medium text-muted-foreground transition-all hover:underline [&[data-state=open]>svg]:rotate-180">
+              <span>VMA (km/h)</span>
+              <span className="ml-auto text-sm font-medium mono-numbers">{(vmaKmh > 0 ? vmaKmh : 12).toFixed(1)} km/h</span>
+              <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pt-3 overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
+              <div className="space-y-3">
+                {/* Curseur VMA */}
+                <Slider
+                  min={8}
+                  max={25}
+                  step={0.1}
+                  value={[vmaKmh > 0 ? vmaKmh : 12]}
+                  onValueChange={(v) => setVmaKmh(parseFloat(((v[0] ?? 12)).toFixed(1)))}
+                />
 
-        {/* Conseil VMA (cohérence) */}
-        {vmaKmh > 0 && (
-          <div className="glass-card p-4 rounded-lg">
-            {(() => {
-              const timeH = timeStringToHours(targetTime);
-              const reqSpeedKmh = distanceKm / Math.max(0.0001, timeH);
-              const pct = (reqSpeedKmh / vmaKmh) * 100;
-              const getRange = (km: number) => {
-                if (km <= 3) return { low: 100, high: 108 };
-                if (km <= 5) return { low: 92, high: 96 };
-                if (km <= 10) return { low: 88, high: 92 };
-                if (km <= 21.5) return { low: 80, high: 85 };
-                return { low: 76, high: 82 }; // marathon
-              };
-              const { low, high } = getRange(distanceKm);
-              const margin = 2;
-              const status = pct < low - margin ? "Sous-estimé" : pct > high + margin ? "Ambitieux" : "Cohérent";
-              const variant = status === "Cohérent" ? "secondary" : status === "Ambitieux" ? "default" : "outline";
-              return (
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-sm text-muted-foreground mb-1">Cohérence vs VMA</div>
-                    <div className="text-sm">{pct.toFixed(1)}% de votre VMA — attendu {low}-{high}%</div>
+                {/* Conseil VMA (cohérence) */}
+                {vmaKmh > 0 && (
+                  <div className="rounded-lg p-4 bg-background/40">
+                    {(() => {
+                      const timeH = timeStringToHours(targetTime);
+                      const reqSpeedKmh = distanceKm / Math.max(0.0001, timeH);
+                      const pct = (reqSpeedKmh / vmaKmh) * 100;
+                      const getRange = (km: number) => {
+                        if (km <= 3) return { low: 100, high: 108 };
+                        if (km <= 5) return { low: 92, high: 96 };
+                        if (km <= 10) return { low: 88, high: 92 };
+                        if (km <= 21.5) return { low: 80, high: 85 };
+                        return { low: 76, high: 82 }; // marathon
+                      };
+                      const { low, high } = getRange(distanceKm);
+                      const margin = 2;
+                      const status = pct < low - margin ? "Sous-estimé" : pct > high + margin ? "Ambitieux" : "Cohérent";
+                      const variant = status === "Cohérent" ? "secondary" : status === "Ambitieux" ? "default" : "outline";
+                      return (
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-sm text-muted-foreground mb-1">Cohérence vs VMA</div>
+                            <div className="text-sm">{pct.toFixed(1)}% de votre VMA — attendu {low}-{high}%</div>
+                          </div>
+                          <Badge variant={variant}>{status}</Badge>
+                        </div>
+                      );
+                    })()}
                   </div>
-                  <Badge variant={variant}>{status}</Badge>
-                </div>
-              );
-            })()}
+                )}
+              </div>
+            </CollapsibleContent>
           </div>
-        )}
+        </Collapsible>
 
 
         {/* Save button */}
