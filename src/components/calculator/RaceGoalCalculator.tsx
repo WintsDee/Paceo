@@ -232,59 +232,63 @@ export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSave
         </div>
 
         {/* VMA repliable */}
-        <Collapsible defaultOpen={false}>
-          <div className="glass-card p-4 rounded-lg">
-            <CollapsibleTrigger className="flex w-full items-center gap-2 py-1.5 text-sm font-medium text-muted-foreground transition-all hover:underline [&[data-state=open]>svg]:rotate-180">
-              <span>VMA (km/h)</span>
-              <span className="ml-auto text-sm font-medium mono-numbers">{(vmaKmh > 0 ? vmaKmh : 12).toFixed(1)} km/h</span>
-              <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
-            </CollapsibleTrigger>
-            <CollapsibleContent forceMount className="pt-3">
-              <div className="space-y-3">
-                {/* Curseur VMA */}
-                <Slider
-                  min={8}
-                  max={25}
-                  step={0.1}
-                  value={[vmaKmh > 0 ? vmaKmh : 12]}
-                  className="touch-none select-none"
-                  onValueChange={(v) => setVmaKmh(parseFloat(((v[0] ?? 12)).toFixed(1)))}
-                />
-
-                {/* Conseil VMA (cohérence) */}
-                {vmaKmh > 0 && (
-                  <div className="rounded-lg p-4 bg-background/40">
-                    {(() => {
-                      const timeH = timeStringToHours(targetTime);
-                      const reqSpeedKmh = distanceKm / Math.max(0.0001, timeH);
-                      const pct = (reqSpeedKmh / vmaKmh) * 100;
-                      const getRange = (km: number) => {
-                        if (km <= 3) return { low: 100, high: 108 };
-                        if (km <= 5) return { low: 92, high: 96 };
-                        if (km <= 10) return { low: 88, high: 92 };
-                        if (km <= 21.5) return { low: 80, high: 85 };
-                        return { low: 76, high: 82 }; // marathon
-                      };
-                      const { low, high } = getRange(distanceKm);
-                      const margin = 2;
-                      const status = pct < low - margin ? "Sous-estimé" : pct > high + margin ? "Ambitieux" : "Cohérent";
-                      const variant = status === "Cohérent" ? "secondary" : status === "Ambitieux" ? "default" : "outline";
-                      return (
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-sm text-muted-foreground mb-1">Cohérence vs VMA</div>
-                            <div className="text-sm">{pct.toFixed(1)}% de votre VMA — attendu {low}-{high}%</div>
-                          </div>
-                          <Badge variant={variant}>{status}</Badge>
-                        </div>
-                      );
-                    })()}
+        <div className="mb-6">
+          <Collapsible defaultOpen={false}>
+            <div className="glass-card p-4 rounded-lg">
+              <CollapsibleTrigger className="flex w-full items-center gap-2 py-1.5 text-sm font-medium text-muted-foreground transition-all hover:underline [&[data-state=open]>svg]:rotate-180">
+                <span>VMA (km/h)</span>
+                <span className="ml-auto text-sm font-medium mono-numbers">{(vmaKmh > 0 ? vmaKmh : 12).toFixed(1)} km/h</span>
+                <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-300 ease-out" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="overflow-hidden data-[state=open]:animate-in data-[state=open]:slide-down-1 data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:slide-up-1 data-[state=closed]:fade-out-0 duration-300 ease-out">
+                <div className="space-y-4 pt-4 pb-2">
+                  {/* Curseur VMA */}
+                  <div className="px-2">
+                    <Slider
+                      min={8}
+                      max={25}
+                      step={0.1}
+                      value={[vmaKmh > 0 ? vmaKmh : 12]}
+                      className="touch-none select-none w-full"
+                      onValueChange={(v) => setVmaKmh(parseFloat(((v[0] ?? 12)).toFixed(1)))}
+                    />
                   </div>
-                )}
-              </div>
-            </CollapsibleContent>
-          </div>
-        </Collapsible>
+
+                  {/* Conseil VMA (cohérence) */}
+                  {vmaKmh > 0 && (
+                    <div className="rounded-lg p-3 bg-background/40 mx-1">
+                      {(() => {
+                        const timeH = timeStringToHours(targetTime);
+                        const reqSpeedKmh = distanceKm / Math.max(0.0001, timeH);
+                        const pct = (reqSpeedKmh / vmaKmh) * 100;
+                        const getRange = (km: number) => {
+                          if (km <= 3) return { low: 100, high: 108 };
+                          if (km <= 5) return { low: 92, high: 96 };
+                          if (km <= 10) return { low: 88, high: 92 };
+                          if (km <= 21.5) return { low: 80, high: 85 };
+                          return { low: 76, high: 82 }; // marathon
+                        };
+                        const { low, high } = getRange(distanceKm);
+                        const margin = 2;
+                        const status = pct < low - margin ? "Sous-estimé" : pct > high + margin ? "Ambitieux" : "Cohérent";
+                        const variant = status === "Cohérent" ? "secondary" : status === "Ambitieux" ? "default" : "outline";
+                        return (
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm text-muted-foreground mb-1">Cohérence vs VMA</div>
+                              <div className="text-sm break-words">{pct.toFixed(1)}% de votre VMA — attendu {low}-{high}%</div>
+                            </div>
+                            <Badge variant={variant} className="shrink-0">{status}</Badge>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
+                </div>
+              </CollapsibleContent>
+            </div>
+          </Collapsible>
+        </div>
 
 
         {/* Save button */}
