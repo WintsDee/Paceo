@@ -239,7 +239,7 @@ export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSave
               <span className="ml-auto text-sm font-medium mono-numbers">{(vmaKmh > 0 ? vmaKmh : 12).toFixed(1)} km/h</span>
               <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
             </CollapsibleTrigger>
-            <CollapsibleContent className="pt-3 overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
+            <CollapsibleContent forceMount className="pt-3">
               <div className="space-y-3">
                 {/* Curseur VMA */}
                 <Slider

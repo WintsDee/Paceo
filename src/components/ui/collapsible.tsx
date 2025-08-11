@@ -27,7 +27,7 @@ const CollapsibleContent = React.forwardRef<
       ["--radix-accordion-content-height" as any]: "var(--radix-collapsible-content-height)",
     }}
     className={cn(
-      "overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up will-change-[height,opacity]",
+      "overflow-hidden will-change-[height,opacity] transform-gpu data-[state=open]:animate-[accordion-down_0.3s_ease-out] data-[state=closed]:animate-[accordion-up_0.3s_ease-out]",
       className
     )}
     {...props}
