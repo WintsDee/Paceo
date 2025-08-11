@@ -202,6 +202,7 @@ export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSave
                   max={maxHours}
                   step={1 / 3600}
                   value={[Math.min(Math.max(currentH, minHours), maxHours)]}
+                  className="touch-none select-none"
                   onValueChange={(v) => {
                     const h = Math.min(Math.max(v[0] ?? currentH, minHours), maxHours);
                     setTargetTime(hoursToHHMMSS(h));
@@ -246,6 +247,7 @@ export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSave
                   max={25}
                   step={0.1}
                   value={[vmaKmh > 0 ? vmaKmh : 12]}
+                  className="touch-none select-none"
                   onValueChange={(v) => setVmaKmh(parseFloat(((v[0] ?? 12)).toFixed(1)))}
                 />
 

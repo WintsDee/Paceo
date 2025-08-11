@@ -30,13 +30,13 @@ export default defineConfig(({ mode }) => ({
         theme_color: '#0b1220',
         icons: [
           {
-            src: '/lovable-uploads/e6fa3442-1562-489f-81ef-04f926e209fc.png',
+            src: '/lovable-uploads/d29782f0-6c03-4fba-8973-cad6cf2c5ed3.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
           },
           {
-            src: '/lovable-uploads/e6fa3442-1562-489f-81ef-04f926e209fc.png',
+            src: '/lovable-uploads/d29782f0-6c03-4fba-8973-cad6cf2c5ed3.png',
             sizes: '1024x1024',
             type: 'image/png',
             purpose: 'any maskable'
