@@ -41,12 +41,12 @@ const RACE_DISTANCES = [
 ] as const;
 
 const SESSION_TEMPLATES = {
-  2: ["INT", "Longue"],
-  3: ["INT", "THR", "Longue"],
-  4: ["INT", "EASY", "THR", "Longue"], 
-  5: ["INT", "EASY", "THR", "EASY", "Longue"],
-  6: ["INT", "EASY", "THR", "EASY", "Longue", "EASY"]
-} as const;
+  2: ["INT", "Longue"] as const,
+  3: ["INT", "THR", "Longue"] as const,
+  4: ["INT", "EASY", "THR", "Longue"] as const, 
+  5: ["INT", "EASY", "THR", "STEADY", "Longue"] as const,
+  6: ["INT", "EASY", "THR", "STEADY", "Longue", "EASY"] as const
+};
 
 const SESSION_COLORS = {
   EASY: 'bg-green-500 text-white hover:bg-green-600',
@@ -65,6 +65,49 @@ const SESSION_EXPLANATIONS = {
   RP: "Allure course - l'allure exacte de votre objectif de compétition",
   Longue: "Sortie longue pour développer l'endurance et l'économie de course"
 } as const;
+
+// Moteur de programme d'entraînement selon spécifications 2025
+const calculateVMAPaces = (vma: number) => {
+  const vmaAllure = 60 / vma; // min/km
+  return {
+    EASY: vmaAllure * 1.15,    // 60-70% VMA
+    STEADY: vmaAllure * 1.08,  // 70-75% VMA  
+    THR: vmaAllure * 0.95,     // 80-85% VMA
+    INT: vmaAllure * 0.90,     // 95-105% VMA
+    VMA: vmaAllure             // 100-110% VMA
+  };
+};
+
+const calculateWeeklyVolume = (sessionsPerWeek: number, vma: number): number => {
+  const multipliers = {
+    2: { min: 1.8, max: 2.2 },
+    3: { min: 2.2, max: 2.8 },
+    4: { min: 2.8, max: 3.5 },
+    5: { min: 3.5, max: 4.2 },
+    6: { min: 4.2, max: 5.0 }
+  };
+  
+  const mult = multipliers[sessionsPerWeek as keyof typeof multipliers] || multipliers[3];
+  return Math.round(vma * ((mult.min + mult.max) / 2));
+};
+
+const assessObjectiveRealism = (goalSpeed: number, vma: number, distance: string): number => {
+  const goalPercent = (goalSpeed / vma) * 100;
+  
+  // Seuils selon distance
+  const thresholds = {
+    "10k": { realistic: 85, challenging: 92, extreme: 100 },
+    "semi": { realistic: 75, challenging: 82, extreme: 90 },
+    "marathon": { realistic: 70, challenging: 78, extreme: 85 }
+  };
+  
+  const thresh = thresholds[distance as keyof typeof thresholds] || thresholds["10k"];
+  
+  if (goalPercent <= thresh.realistic) return 1.0; // Objectif réaliste
+  if (goalPercent <= thresh.challenging) return 0.85; // Objectif challengeant
+  if (goalPercent <= thresh.extreme) return 0.7; // Objectif extrême
+  return 0.5; // Objectif irréaliste - volume très réduit
+};
 
 // Fonctions utilitaires memoized
 const paceFromSpeed = (speed: number): string => {
@@ -108,33 +151,63 @@ const useRunnerLevel = (speed: number, distance: string) => {
   }, [speed, distance]);
 };
 
-// Hook pour les zones d'allure
+// Hook pour les zones d'allure basées VMA (spécifications 2025)
 const usePaceZones = (goalSpeed: number, distance: string, level: string, vma?: number) => {
   return useMemo(() => {
+    if (!vma || vma <= 8) {
+      // Fallback ancien système si pas de VMA
+      const goalPace = paceFromSpeed(goalSpeed);
+      let easyOffset = 60, steadyOffset = 30;
+      let thrOffset = distance === "10k" ? -5 : distance === "semi" ? -10 : -20;
+      let intOffset = distance === "10k" ? -18 : distance === "semi" ? -25 : -35;
+      
+      if (level === 'beginner') {
+        easyOffset = 75;
+        steadyOffset = 45;
+        thrOffset = Math.max(thrOffset + 15, 0);
+        intOffset = Math.max(intOffset + 20, -5);
+      } else if (level === 'advanced' && vma && vma > 16) {
+        easyOffset = 45;
+        steadyOffset = 20;
+        thrOffset -= 5;
+        intOffset -= 10;
+      }
+      
+      return {
+        EASY: addSecondsToMmSs(goalPace, easyOffset),
+        STEADY: addSecondsToMmSs(goalPace, steadyOffset),
+        THR: addSecondsToMmSs(goalPace, thrOffset),
+        INT: addSecondsToMmSs(goalPace, intOffset),
+        RP: paceFromSpeed(goalSpeed)
+      };
+    }
+
+    // Nouveau système basé VMA (2025)
+    const vmaPaces = calculateVMAPaces(vma);
     const goalPace = paceFromSpeed(goalSpeed);
     
-    let easyOffset = 60, steadyOffset = 30;
-    let thrOffset = distance === "10k" ? -5 : distance === "semi" ? -10 : -20;
-    let intOffset = distance === "10k" ? -18 : distance === "semi" ? -25 : -35;
+    // Adapter les zones selon la distance et l'objectif
+    const realismFactor = assessObjectiveRealism(goalSpeed, vma, distance);
     
-    if (level === 'beginner') {
-      easyOffset = 75;
-      steadyOffset = 45;
-      thrOffset = Math.max(thrOffset + 15, 0);
-      intOffset = Math.max(intOffset + 20, -5);
-    } else if (level === 'advanced' && vma && vma > 16) {
-      easyOffset = 45;
-      steadyOffset = 20;
-      thrOffset -= 5;
-      intOffset -= 10;
+    // Ajustement selon distance pour RP
+    let rpPace = goalPace;
+    if (distance === "marathon") {
+      // Pour marathon, RP = 70-78% VMA typiquement
+      rpPace = paceFromSpeed(vma * 0.74);
+    } else if (distance === "semi") {
+      // Pour semi, RP = 75-82% VMA typiquement  
+      rpPace = paceFromSpeed(vma * 0.79);
+    } else {
+      // Pour 10k, RP = 85-95% VMA typiquement
+      rpPace = paceFromSpeed(vma * 0.90);
     }
     
     return {
-      EASY: addSecondsToMmSs(goalPace, easyOffset),
-      STEADY: addSecondsToMmSs(goalPace, steadyOffset),
-      THR: addSecondsToMmSs(goalPace, thrOffset),
-      INT: addSecondsToMmSs(goalPace, intOffset),
-      RP: goalPace
+      EASY: `${Math.floor(vmaPaces.EASY)}:${Math.round((vmaPaces.EASY % 1) * 60).toString().padStart(2, '0')}`,
+      STEADY: `${Math.floor(vmaPaces.STEADY)}:${Math.round((vmaPaces.STEADY % 1) * 60).toString().padStart(2, '0')}`,
+      THR: `${Math.floor(vmaPaces.THR)}:${Math.round((vmaPaces.THR % 1) * 60).toString().padStart(2, '0')}`,
+      INT: `${Math.floor(vmaPaces.INT)}:${Math.round((vmaPaces.INT % 1) * 60).toString().padStart(2, '0')}`,
+      RP: goalPace // Utiliser l'objectif réel de l'utilisateur
     };
   }, [goalSpeed, distance, level, vma]);
 };
@@ -176,105 +249,159 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
   const runnerLevel = useRunnerLevel(speedValue, selectedDistanceId);
   const paceZones = usePaceZones(speedValue, selectedDistanceId, runnerLevel, vmaValue);
 
-  // Volume de base optimisé
+  // Volume de base selon spécifications 2025 (basé VMA)
   const baseVolume = useMemo(() => {
-    const volumes = {
-      beginner: {
-        "10k": { 2: isMetric ? 15 : 9, 3: isMetric ? 20 : 12, 4: isMetric ? 25 : 16, 5: isMetric ? 30 : 19, 6: isMetric ? 35 : 22 },
-        "semi": { 2: isMetric ? 25 : 16, 3: isMetric ? 35 : 22, 4: isMetric ? 45 : 28, 5: isMetric ? 55 : 34, 6: isMetric ? 65 : 40 },
-        "marathon": { 2: isMetric ? 35 : 22, 3: isMetric ? 50 : 31, 4: isMetric ? 65 : 40, 5: isMetric ? 80 : 50, 6: isMetric ? 95 : 59 }
-      },
-      intermediate: {
-        "10k": { 2: isMetric ? 25 : 16, 3: isMetric ? 35 : 22, 4: isMetric ? 45 : 28, 5: isMetric ? 55 : 34, 6: isMetric ? 65 : 40 },
-        "semi": { 2: isMetric ? 40 : 25, 3: isMetric ? 55 : 34, 4: isMetric ? 70 : 43, 5: isMetric ? 85 : 53, 6: isMetric ? 100 : 62 },
-        "marathon": { 2: isMetric ? 55 : 34, 3: isMetric ? 75 : 47, 4: isMetric ? 95 : 59, 5: isMetric ? 115 : 71, 6: isMetric ? 135 : 84 }
-      },
-      advanced: {
-        "10k": { 2: isMetric ? 35 : 22, 3: isMetric ? 50 : 31, 4: isMetric ? 65 : 40, 5: isMetric ? 80 : 50, 6: isMetric ? 95 : 59 },
-        "semi": { 2: isMetric ? 55 : 34, 3: isMetric ? 75 : 47, 4: isMetric ? 95 : 59, 5: isMetric ? 115 : 71, 6: isMetric ? 135 : 84 },
-        "marathon": { 2: isMetric ? 75 : 47, 3: isMetric ? 105 : 65, 4: isMetric ? 135 : 84, 5: isMetric ? 165 : 102, 6: isMetric ? 195 : 121 }
-      }
-    };
-    
-    return volumes[runnerLevel as keyof typeof volumes][selectedDistanceId as keyof typeof volumes.beginner][sessionsPerWeek as keyof typeof volumes.beginner["10k"]] || 35;
-  }, [runnerLevel, selectedDistanceId, sessionsPerWeek, isMetric]);
+    if (!vmaValue || vmaValue <= 8) {
+      // Fallback ancien système
+      const volumes = {
+        beginner: {
+          "10k": { 2: isMetric ? 15 : 9, 3: isMetric ? 20 : 12, 4: isMetric ? 25 : 16, 5: isMetric ? 30 : 19, 6: isMetric ? 35 : 22 },
+          "semi": { 2: isMetric ? 25 : 16, 3: isMetric ? 35 : 22, 4: isMetric ? 45 : 28, 5: isMetric ? 55 : 34, 6: isMetric ? 65 : 40 },
+          "marathon": { 2: isMetric ? 35 : 22, 3: isMetric ? 50 : 31, 4: isMetric ? 65 : 40, 5: isMetric ? 80 : 50, 6: isMetric ? 95 : 59 }
+        },
+        intermediate: {
+          "10k": { 2: isMetric ? 25 : 16, 3: isMetric ? 35 : 22, 4: isMetric ? 45 : 28, 5: isMetric ? 55 : 34, 6: isMetric ? 65 : 40 },
+          "semi": { 2: isMetric ? 40 : 25, 3: isMetric ? 55 : 34, 4: isMetric ? 70 : 43, 5: isMetric ? 85 : 53, 6: isMetric ? 100 : 62 },
+          "marathon": { 2: isMetric ? 55 : 34, 3: isMetric ? 75 : 47, 4: isMetric ? 95 : 59, 5: isMetric ? 115 : 71, 6: isMetric ? 135 : 84 }
+        },
+        advanced: {
+          "10k": { 2: isMetric ? 35 : 22, 3: isMetric ? 50 : 31, 4: isMetric ? 65 : 40, 5: isMetric ? 80 : 50, 6: isMetric ? 95 : 59 },
+          "semi": { 2: isMetric ? 55 : 34, 3: isMetric ? 75 : 47, 4: isMetric ? 95 : 59, 5: isMetric ? 115 : 71, 6: isMetric ? 135 : 84 },
+          "marathon": { 2: isMetric ? 75 : 47, 3: isMetric ? 105 : 65, 4: isMetric ? 135 : 84, 5: isMetric ? 165 : 102, 6: isMetric ? 195 : 121 }
+        }
+      };
+      return volumes[runnerLevel as keyof typeof volumes][selectedDistanceId as keyof typeof volumes.beginner][sessionsPerWeek as keyof typeof volumes.beginner["10k"]] || 35;
+    }
 
-  // Génération de session optimisée
+    // Nouveau système basé VMA (2025)
+    let baseVolumeKm = calculateWeeklyVolume(sessionsPerWeek, vmaValue);
+    
+    // Facteur de réalisme selon l'objectif 
+    const realismFactor = assessObjectiveRealism(speedValue, vmaValue, selectedDistanceId);
+    baseVolumeKm = Math.round(baseVolumeKm * realismFactor);
+    
+    // Conversion unités si nécessaire
+    return isMetric ? baseVolumeKm : Math.round(baseVolumeKm * 0.621371);
+  }, [runnerLevel, selectedDistanceId, sessionsPerWeek, isMetric, vmaValue, speedValue]);
+
+  // Génération gabarits sessions selon spécifications 2025
   const createSession = useCallback((
     type: TrainingSession['type'],
     phase: WeekProgram['phase'],
     distance: string,
-    volume: number
+    volume: number,
+    weekNumber: number
   ): TrainingSession => {
+    const isHighIntensityWeek = weekNumber % 4 !== 0; // Deload chaque 4ème semaine
+    
     switch (type) {
       case "INT":
+        // Séances intensité 95-105% VMA
         if (distance === "10k") {
+          const reps = phase === "PEAK" ? (isHighIntensityWeek ? 8 : 6) : 6;
           return {
             type: "INT",
             duration: "40-50 min",
             pace: formatPace(paceZones.INT, isMetric),
-            description: phase === "PEAK" ? `8×400m @ ${formatPace(paceZones.INT, isMetric)}, récup 200m` : 
-                        `6×400m @ ${formatPace(paceZones.INT, isMetric)}, récup 200m`
+            description: `${reps}×400m @ ${formatPace(paceZones.INT, isMetric)}, récup 200m trot`
           };
-        } else {
+        } else if (distance === "semi") {
+          const reps = phase === "PEAK" ? (isHighIntensityWeek ? 6 : 4) : 4;
           return {
             type: "INT", 
-            duration: "45-60 min",
+            duration: "45-55 min",
             pace: formatPace(paceZones.INT, isMetric),
-            description: phase === "PEAK" ? `5×1000m @ ${formatPace(paceZones.INT, isMetric)}, récup 2 min` :
-                        `4×1000m @ ${formatPace(paceZones.INT, isMetric)}, récup 2 min`
+            description: `${reps}×800m @ ${formatPace(paceZones.INT, isMetric)}, récup 400m trot`
+          };
+        } else { // marathon
+          const reps = phase === "PEAK" ? (isHighIntensityWeek ? 5 : 4) : 3;
+          return {
+            type: "INT",
+            duration: "50-65 min", 
+            pace: formatPace(paceZones.INT, isMetric),
+            description: `${reps}×1000m @ ${formatPace(paceZones.INT, isMetric)}, récup 2min trot`
           };
         }
         
       case "THR":
+        // Séances seuil 80-85% VMA
+        const thrDuration = distance === "marathon" ? 15 : 10;
+        const thrReps = phase === "PEAK" ? 3 : distance === "marathon" ? 2 : 3;
         return {
           type: "THR",
           duration: "50-70 min", 
           pace: formatPace(paceZones.THR, isMetric),
-          description: distance === "marathon" ? `3×15 min @ ${formatPace(paceZones.THR, isMetric)}, récup 3 min` :
-                      `3×10 min @ ${formatPace(paceZones.THR, isMetric)}, récup 2 min`
+          description: `${thrReps}×${thrDuration}min @ ${formatPace(paceZones.THR, isMetric)}, récup 3min`
         };
         
       case "RP":
+        // Allure course spécifique
+        const rpDuration = phase === "BUILD" || phase === "PEAK" ? 20 : 15;
+        const rpReps = (phase === "BUILD" || phase === "PEAK") && distance !== "10k" ? 2 : 1;
         return {
           type: "RP",
           duration: "60-80 min",
           pace: formatPace(paceZones.RP, isMetric),
-          description: phase === "BUILD" || phase === "PEAK" ? 
-                      `2×20 min @ ${formatPace(paceZones.RP, isMetric)}, récup 5 min` :
-                      `15 min @ ${formatPace(paceZones.RP, isMetric)}`
+          description: rpReps > 1 ? 
+                      `${rpReps}×${rpDuration}min @ ${formatPace(paceZones.RP, isMetric)}, récup 5min` :
+                      `${rpDuration}min @ ${formatPace(paceZones.RP, isMetric)}`
         };
         
       case "Longue":
-        const volumeRatio = distance === "10k" ? 0.35 : distance === "semi" ? 0.4 : 0.45;
+        // Sortie longue adaptée selon phase et distance
+        let volumeRatio: number;
+        if (phase === "BASE") volumeRatio = distance === "10k" ? 0.30 : distance === "semi" ? 0.32 : 0.35;
+        else if (phase === "BUILD") volumeRatio = distance === "10k" ? 0.35 : distance === "semi" ? 0.38 : 0.40;
+        else volumeRatio = distance === "10k" ? 0.40 : distance === "semi" ? 0.42 : 0.45;
+        
         const longDistance = Math.round(volume * volumeRatio);
-        const longDuration = Math.round(longDistance * (isMetric ? 6 : 9.5));
+        const longDuration = Math.round(longDistance * (isMetric ? 6.5 : 10));
+        
+        // Blocs RP intégrés selon phase
         const hasRPSegment = (phase === "BUILD" || phase === "PEAK") && distance !== "10k";
+        const rpSegmentDistance = hasRPSegment ? Math.round(longDistance * 0.25) : 0;
+        
         return {
           type: "Longue",
           duration: `${longDuration}-${longDuration + 15} min`,
           pace: formatPace(paceZones.EASY, isMetric),
           description: hasRPSegment ? 
-                      `${longDistance}${isMetric ? 'km' : 'mi'} @ ${formatPace(paceZones.EASY, isMetric)}, dont ${Math.round(longDistance * 0.3)}${isMetric ? 'km' : 'mi'} @ ${formatPace(paceZones.RP, isMetric)}` :
+                      `${longDistance}${isMetric ? 'km' : 'mi'} EASY @ ${formatPace(paceZones.EASY, isMetric)}, inclus ${rpSegmentDistance}${isMetric ? 'km' : 'mi'} @ ${formatPace(paceZones.RP, isMetric)}` :
                       `${longDistance}${isMetric ? 'km' : 'mi'} @ ${formatPace(paceZones.EASY, isMetric)}`
         };
         
+      case "STEADY":
+        // Allure confortable 70-75% VMA
+        return {
+          type: "STEADY",
+          duration: "40-60 min",
+          pace: formatPace(paceZones.STEADY, isMetric),
+          description: `45-55min @ ${formatPace(paceZones.STEADY, isMetric)} (tempo confortable)`
+        };
+        
       default: // EASY
+        // Course facile 60-70% VMA + strides optionnelles
+        const hasStrides = type === "EASY" && (phase === "BUILD" || phase === "PEAK") && Math.random() > 0.5;
         return {
           type: "EASY",
           duration: "30-50 min",
           pace: formatPace(paceZones.EASY, isMetric), 
-          description: `40-50 min @ ${formatPace(paceZones.EASY, isMetric)}`
+          description: hasStrides ? 
+                      `40-50min @ ${formatPace(paceZones.EASY, isMetric)} + 4×100m strides` :
+                      `40-50min @ ${formatPace(paceZones.EASY, isMetric)}`
         };
     }
   }, [paceZones, isMetric]);
 
-  // Programme optimisé avec mémorisation
+  // Moteur programme selon spécifications 2025
   const program = useMemo((): WeekProgram[] => {
     const weeks = effectiveWeeks;
-    const baseWeeks = Math.floor(weeks * 0.5);
-    const buildWeeks = Math.floor(weeks * 0.35);
-    const taperWeeks = 1;
+    
+    // Périodisation moderne
+    const baseWeeks = Math.floor(weeks * 0.45);    // BASE: 45%
+    const buildWeeks = Math.floor(weeks * 0.35);   // BUILD: 35% 
+    const peakWeeks = Math.floor(weeks * 0.15);    // PEAK: 15%
+    const taperWeeks = Math.max(1, weeks - baseWeeks - buildWeeks - peakWeeks); // TAPER: 5%
     
     const program: WeekProgram[] = [];
     let currentVolume = baseVolume;
@@ -283,34 +410,52 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
       let phase: WeekProgram['phase'];
       if (week <= baseWeeks) phase = "BASE";
       else if (week <= baseWeeks + buildWeeks) phase = "BUILD";
-      else if (week <= weeks - taperWeeks) phase = "PEAK";
+      else if (week <= baseWeeks + buildWeeks + peakWeeks) phase = "PEAK";
       else phase = "TAPER";
       
-      // Volume progression
-      if (phase === "BASE" || phase === "BUILD") {
+      // Progression volumique selon coaching moderne 2025
+      if (phase === "BASE") {
         if (week % 4 === 0) {
-          currentVolume *= runnerLevel === 'beginner' ? 0.8 : 0.85;
+          // Deload week -15%
+          currentVolume *= 0.85;
         } else {
-          const progression = runnerLevel === 'beginner' ? 1.08 : runnerLevel === 'intermediate' ? 1.1 : 1.12;
-          currentVolume *= progression;
+          // Progression +5-10%/semaine selon niveau
+          const progression = vmaValue && vmaValue > 16 ? 1.10 : vmaValue && vmaValue > 14 ? 1.08 : 1.06;
+          currentVolume = Math.min(currentVolume * progression, baseVolume * 1.6); // Cap à +60%
         }
+      } else if (phase === "BUILD") {
+        if (week % 3 === 0) {
+          // Deload week -15%
+          currentVolume *= 0.85;
+        } else {
+          // Progression modérée +5%
+          currentVolume = Math.min(currentVolume * 1.05, baseVolume * 1.8); // Cap à +80%
+        }
+      } else if (phase === "PEAK") {
+        // Maintenir volume max
+        currentVolume = baseVolume * 1.7;
       } else if (phase === "TAPER") {
-        const taperReduction = runnerLevel === 'beginner' ? 0.5 : runnerLevel === 'intermediate' ? 0.6 : 0.65;
+        // Réduction taper -30 à -50%
+        const realismFactor = vmaValue ? assessObjectiveRealism(speedValue, vmaValue, selectedDistanceId) : 0.8;
+        const taperReduction = realismFactor > 0.9 ? 0.4 : realismFactor > 0.7 ? 0.5 : 0.6;
         currentVolume *= taperReduction;
       }
       
       const volume = Math.round(currentVolume);
-      const template = SESSION_TEMPLATES[sessionsPerWeek as keyof typeof SESSION_TEMPLATES] || SESSION_TEMPLATES[3];
       
-      const sessions = template.map(type => 
-        createSession(type as TrainingSession['type'], phase, selectedDistanceId, volume)
+      // Gabarits sessions modernes adaptés au nb de séances
+      const sessionTemplate = SESSION_TEMPLATES[sessionsPerWeek as keyof typeof SESSION_TEMPLATES] || SESSION_TEMPLATES[3];
+      
+      // Utiliser directement le gabarit sans modification complexe
+      const sessions = sessionTemplate.map(type => 
+        createSession(type as TrainingSession['type'], phase, selectedDistanceId, volume, week)
       );
       
       program.push({ week, phase, volume, sessions });
     }
     
     return program;
-  }, [effectiveWeeks, baseVolume, runnerLevel, sessionsPerWeek, selectedDistanceId, createSession]);
+  }, [effectiveWeeks, baseVolume, sessionsPerWeek, selectedDistanceId, createSession, vmaValue, speedValue]);
 
   // Callbacks optimisés
   const toggleWeekExpansion = useCallback((week: number) => {
@@ -590,15 +735,42 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
         </div>
       </Card>
 
-      {/* Context Banner */}
-      <Card className="glass-card p-4">
-        <div className="text-center text-sm">
-          <span className="text-muted-foreground">{t("Objectif")}: </span>
-          <span className="font-medium">{race.label} — {paceFromSpeed(speedValue)}</span>
-          <span className="text-muted-foreground"> • {t("Allure cible")} </span>
-          <span className="font-medium mono-numbers">{formatPace(paceFromSpeed(speedValue), isMetric)}</span>
-          <span className="text-muted-foreground"> • {t("Vitesse")} </span>
-          <span className="font-medium mono-numbers">{speedValue.toFixed(2)} {isMetric ? 'km/h' : 'mph'}</span>
+      {/* Cadre Objectif Élégant */}
+      <Card className="glass-card p-6 border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+        <div className="text-center space-y-3">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Target className="w-5 h-5 text-primary" />
+            <h3 className="text-lg font-semibold text-primary">Objectif de Course</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            <div className="space-y-1">
+              <div className="text-2xl font-bold text-foreground">{race.label}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider">Distance</div>
+            </div>
+            
+            <div className="space-y-1">
+              <div className="text-2xl font-bold text-primary mono-numbers">{paceFromSpeed(speedValue)}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider">Temps Objectif</div>
+            </div>
+            
+            <div className="space-y-1">
+              <div className="text-2xl font-bold text-secondary mono-numbers">{formatPace(paceFromSpeed(speedValue), isMetric)}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider">Allure Cible</div>
+            </div>
+          </div>
+          
+          {vmaValue && (
+            <div className="pt-3 border-t border-border/50">
+              <div className="flex items-center justify-center gap-4 text-sm">
+                <span className="text-muted-foreground">VMA:</span>
+                <span className="font-semibold mono-numbers">{vmaValue.toFixed(1)} km/h</span>
+                <span className="text-muted-foreground">•</span>
+                <span className="text-muted-foreground">Vitesse:</span>
+                <span className="font-semibold mono-numbers">{speedValue.toFixed(2)} {isMetric ? 'km/h' : 'mph'}</span>
+              </div>
+            </div>
+          )}
         </div>
       </Card>
 
