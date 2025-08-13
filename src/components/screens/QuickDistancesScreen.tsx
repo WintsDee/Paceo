@@ -1,4 +1,6 @@
+import React from "react";
 import { Card } from "@/components/ui/card";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface QuickDistancesScreenProps {
   isMetric: boolean;
@@ -7,18 +9,6 @@ interface QuickDistancesScreenProps {
 
 const KM_TO_MI = 0.621371;
 
-const races = [
-  { id: "1k", labelKm: "1 km", km: 1 },
-  { id: "5k", labelKm: "5 km", km: 5 },
-  { id: "10k", labelKm: "10 km", km: 10 },
-  { id: "hm", labelKm: "Semi-marathon", km: 21.0975 },
-  { id: "m", labelKm: "Marathon", km: 42.195 },
-  { id: "50k", labelKm: "50 km (Ultra)", km: 50 },
-  { id: "80k", labelKm: "80 km (Trail)", km: 80 },
-  { id: "100k", labelKm: "100 km (Ultra)", km: 100 },
-  { id: "100mi", labelKm: "100 miles (Ultra)", km: 160.934 },
-  { id: "utmb", labelKm: "UTMB ~171 km", km: 171 },
-];
 
 function hoursToHHMMSS(hours: number) {
   const totalSeconds = Math.max(0, Math.round(hours * 3600));
@@ -45,12 +35,27 @@ function timeForDistanceHours(km: number, isMetric: boolean, speedValue: number)
   return miles / Math.max(0.01, speedValue);
 }
 
-export const QuickDistancesScreen = ({ isMetric, speedValue }: QuickDistancesScreenProps) => {
+export const QuickDistancesScreen = React.memo(({ isMetric, speedValue }: QuickDistancesScreenProps) => {
+  const { t } = useLanguage();
+  
+  const races = React.useMemo(() => [
+    { id: "1k", labelKm: "1 km", km: 1 },
+    { id: "5k", labelKm: "5 km", km: 5 },
+    { id: "10k", labelKm: "10 km", km: 10 },
+    { id: "hm", labelKm: t("Semi-marathon"), km: 21.0975 },
+    { id: "m", labelKm: t("Marathon"), km: 42.195 },
+    { id: "50k", labelKm: `50 km (${t("Ultra")})`, km: 50 },
+    { id: "80k", labelKm: `80 km (${t("Trail")})`, km: 80 },
+    { id: "100k", labelKm: `100 km (${t("Ultra")})`, km: 100 },
+    { id: "100mi", labelKm: `100 miles (${t("Ultra")})`, km: 160.934 },
+    { id: "utmb", labelKm: "UTMB ~171 km", km: 171 },
+  ], [t]);
+
   return (
     <div className="space-y-4 animate-fade-in-up">
       <div className="text-center py-2">
-        <h3 className="text-lg font-semibold">Distances rapides</h3>
-        <p className="text-muted-foreground text-sm">Basé sur votre allure actuelle</p>
+        <h3 className="text-lg font-semibold">{t("Distances rapides")}</h3>
+        <p className="text-muted-foreground text-sm">{t("Basé sur votre allure actuelle")}</p>
       </div>
 
       <div className="grid gap-3">
@@ -71,4 +76,5 @@ export const QuickDistancesScreen = ({ isMetric, speedValue }: QuickDistancesScr
       </div>
     </div>
   );
-};
+});
+QuickDistancesScreen.displayName = "QuickDistancesScreen";

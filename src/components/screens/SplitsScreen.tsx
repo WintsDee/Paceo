@@ -1,6 +1,8 @@
+import React from "react";
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface SplitsScreenProps {
   isMetric: boolean;
@@ -22,17 +24,18 @@ function formatHMS(totalSeconds: number) {
   return `${hh}${mm}:${ss}`;
 }
 
-export const SplitsScreen = ({ isMetric, speedValue }: SplitsScreenProps) => {
+export const SplitsScreen = React.memo(({ isMetric, speedValue }: SplitsScreenProps) => {
+  const { t } = useLanguage();
   const unitLabel = isMetric ? 'km' : 'mi';
   const paceSec = paceSecondsFromSpeed(speedValue);
   const [profile, setProfile] = useState<'5k' | '10k' | 'semi' | 'marathon'>('10k');
 
-  const profiles = [
+  const profiles = React.useMemo(() => [
     { id: '5k', label: '5K', km: 5, mi: 3 },
     { id: '10k', label: '10K', km: 10, mi: 6 },
     { id: 'semi', label: 'Semi', km: 21, mi: 13 },
-    { id: 'marathon', label: 'Marathon', km: 42, mi: 26 },
-  ] as const;
+    { id: 'marathon', label: t("Marathon"), km: 42, mi: 26 },
+  ] as const, [t]);
   const current = profiles.find(p => p.id === profile)!;
   const totalUnits = isMetric ? current.km : current.mi;
 
@@ -47,8 +50,8 @@ export const SplitsScreen = ({ isMetric, speedValue }: SplitsScreenProps) => {
   return (
     <div className="space-y-3 animate-fade-in-up">
       <div className="text-center py-2">
-        <h3 className="text-lg font-semibold">Splits simples</h3>
-        <p className="text-muted-foreground text-sm">Basé sur votre allure actuelle</p>
+        <h3 className="text-lg font-semibold">{t("Splits simples")}</h3>
+        <p className="text-muted-foreground text-sm">{t("Basé sur votre allure actuelle")}</p>
       </div>
 
       <Tabs value={profile} onValueChange={(v) => setProfile(v as '5k' | '10k' | 'semi' | 'marathon')}>
@@ -85,4 +88,5 @@ export const SplitsScreen = ({ isMetric, speedValue }: SplitsScreenProps) => {
       </Card>
     </div>
   );
-};
+});
+SplitsScreen.displayName = "SplitsScreen";

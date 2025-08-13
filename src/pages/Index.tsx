@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import { BottomNavigation } from "@/components/layout/BottomNavigation";
 import { CalculatorScreen } from "@/components/screens/CalculatorScreen";
@@ -14,7 +15,7 @@ const Index = () => {
   const [favorites, setFavorites] = useLocalStorage<RaceGoal[]>("pace-calc-favorites", []);
   const [speedValue, setSpeedValue] = useLocalStorage<number>("pace-calc-speed", 13.33); // default km/h
 
-  const handleToggleUnits = () => {
+  const handleToggleUnits = React.useCallback(() => {
     const nextIsMetric = !isMetric;
     // Convert speed to the new unit to keep pace consistent across the app
     const convertedSpeed = nextIsMetric
@@ -23,17 +24,17 @@ const Index = () => {
 
     setIsMetric(nextIsMetric);
     setSpeedValue(parseFloat(convertedSpeed.toFixed(2)));
-  };
+  }, [isMetric, speedValue, setIsMetric, setSpeedValue]);
 
-  const handleSaveGoal = (goal: RaceGoal) => {
+  const handleSaveGoal = React.useCallback((goal: RaceGoal) => {
     setFavorites([goal, ...favorites]);
-  };
+  }, [favorites, setFavorites]);
 
-  const handleDeleteFavorite = (id: string) => {
+  const handleDeleteFavorite = React.useCallback((id: string) => {
     setFavorites(favorites.filter(fav => fav.id !== id));
-  };
+  }, [favorites, setFavorites]);
 
-  const handleUseFavorite = (goal: RaceGoal) => {
+  const handleUseFavorite = React.useCallback((goal: RaceGoal) => {
     // Load units and speed + persist goal-specific settings for global sync
     setIsMetric(goal.isMetric);
     const s = parseFloat(goal.speed);
@@ -47,9 +48,9 @@ const Index = () => {
       }
     } catch {}
     setActiveTab("goal");
-  };
+  }, [setIsMetric, setSpeedValue, setActiveTab]);
 
-  const renderScreen = () => {
+  const renderScreen = React.useCallback(() => {
     switch (activeTab) {
       case "calculator":
         return (
@@ -88,7 +89,7 @@ const Index = () => {
       default:
         return null;
     }
-  };
+  }, [activeTab, isMetric, handleToggleUnits, handleSaveGoal, speedValue, setSpeedValue, favorites, handleDeleteFavorite, handleUseFavorite]);
 
   return (
     <div className="min-h-screen bg-background">

@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Settings } from "lucide-react";
@@ -12,16 +13,16 @@ interface AppInfoButtonProps {
   onToggleUnits: () => void;
 }
 
-export const AppInfoButton = ({ isMetric, onToggleUnits }: AppInfoButtonProps) => {
+export const AppInfoButton = React.memo(({ isMetric, onToggleUnits }: AppInfoButtonProps) => {
   const APP_VERSION = "v1.0.0";
   const { language, setLanguage, t } = useLanguage();
   
-  const languages: { code: Language; name: string }[] = [
-    { code: 'fr', name: t('Français') },
-    { code: 'en', name: t('English') },
-    { code: 'es', name: t('Español') },
-    { code: 'de', name: t('Deutsch') },
-  ];
+  const languages = React.useMemo(() => [
+    { code: 'fr' as Language, name: t('Français') },
+    { code: 'en' as Language, name: t('English') },
+    { code: 'es' as Language, name: t('Español') },
+    { code: 'de' as Language, name: t('Deutsch') },
+  ], [t]);
 
   return (
     <div className="fixed top-3 right-3 md:top-4 md:right-4 z-[60]">
@@ -84,4 +85,5 @@ export const AppInfoButton = ({ isMetric, onToggleUnits }: AppInfoButtonProps) =
       </Dialog>
     </div>
   );
-};
+});
+AppInfoButton.displayName = "AppInfoButton";

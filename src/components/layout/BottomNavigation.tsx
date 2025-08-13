@@ -1,3 +1,4 @@
+import React from "react";
 import { Calculator, Zap, Route, Heart, Flag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -14,15 +15,15 @@ interface BottomNavigationProps {
 }
 
 
-export const BottomNavigation = ({ activeTab, onTabChange }: BottomNavigationProps) => {
+export const BottomNavigation = React.memo(({ activeTab, onTabChange }: BottomNavigationProps) => {
   const { t } = useLanguage();
   
-  const navigationItems: NavigationItem[] = [
+  const navigationItems = React.useMemo(() => [
     { id: "calculator", label: t("Allure & Vitesse"), icon: Calculator },
     { id: "goal", label: t("Objectif"), icon: Flag },
     { id: "distances", label: t("Splits"), icon: Route },
     { id: "favorites", label: t("Favoris"), icon: Heart },
-  ];
+  ], [t]);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 glass-card border-t z-50">
@@ -55,4 +56,5 @@ export const BottomNavigation = ({ activeTab, onTabChange }: BottomNavigationPro
       </div>
     </nav>
   );
-};
+});
+BottomNavigation.displayName = "BottomNavigation";
