@@ -90,6 +90,7 @@ const Index = () => {
           <ProgramScreen
             isMetric={isMetric}
             speedValue={speedValue}
+            index={3}
             vmaValue={(() => {
               try {
                 const vma = window.localStorage.getItem("pace-calc-vma");

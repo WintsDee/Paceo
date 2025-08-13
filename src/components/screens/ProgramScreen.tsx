@@ -17,6 +17,7 @@ interface ProgramScreenProps {
   isMetric: boolean;
   speedValue: number;
   vmaValue?: number;
+  index?: number; // For staggered animations
 }
 
 interface TrainingSession {
@@ -223,7 +224,7 @@ const usePaceZones = (goalSpeed: number, distance: string, level: string, vma?: 
   }, [goalSpeed, distance, level, vma]);
 };
 
-export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: ProgramScreenProps) => {
+export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue, index = 0 }: ProgramScreenProps) => {
   const { t, language } = useLanguage();
   const [sessionsPerWeek, setSessionsPerWeek] = useLocalStorage<number>("program-sessions-week", 3);
   const [weeksBeforeRace, setWeeksBeforeRace] = useLocalStorage<number>("program-weeks-before", 12);
@@ -657,7 +658,7 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
   }
 
   return (
-    <div className="space-y-6 pb-20 animate-fade-in">
+    <div className="space-y-6 pb-20 animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
       {/* Header */}
       <div className="relative text-center py-2">
         <h2 className="text-xl font-semibold">{t("Programme")}</h2>
@@ -665,7 +666,7 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
       </div>
 
       {/* Sticky Controls Header */}
-      <Card className="glass-card p-4 sticky top-0 z-10">
+      <Card className="glass-card p-4 sticky top-0 z-10 animate-scale-in" style={{ animationDelay: `${index * 0.1 + 0.1}s` }}>
         <div className="flex items-center justify-between gap-4">
           {/* Sessions per week */}
           <div className="flex items-center gap-2">
@@ -810,13 +811,16 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
 
       {/* Weekly Program */}
       <div className="space-y-3">
-        {program.map((week) => (
+        {program.map((week, weekIndex) => (
           <Collapsible
             key={week.week}
             open={expandedWeeks.has(week.week)}
             onOpenChange={() => toggleWeekExpansion(week.week)}
           >
-            <Card className="glass-card">
+            <Card 
+              className="glass-card animate-fade-in-up hover-scale transition-smooth" 
+              style={{ animationDelay: `${index * 0.1 + 0.5 + weekIndex * 0.05}s` }}
+            >
               <CollapsibleTrigger className="w-full p-4 text-left">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -841,7 +845,11 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
               
               <CollapsibleContent className="space-y-3 pt-4">
                 {week.sessions.map((session, sessionIndex) => (
-                  <div key={sessionIndex} className="glass-card p-3 rounded-lg">
+                  <div 
+                    key={sessionIndex} 
+                    className="glass-card p-3 rounded-lg animate-fade-in transition-smooth hover:bg-secondary/10" 
+                    style={{ animationDelay: `${index * 0.1 + 0.6 + weekIndex * 0.05 + sessionIndex * 0.02}s` }}
+                  >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
