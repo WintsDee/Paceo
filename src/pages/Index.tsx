@@ -6,6 +6,7 @@ import { FavoritesScreen } from "@/components/screens/FavoritesScreen";
 import { CombinedDistancesScreen } from "@/components/screens/CombinedDistancesScreen";
 import { RaceGoal } from "@/components/calculator/RaceGoalCalculator";
 import { GoalScreen } from "@/components/screens/GoalScreen";
+import { ProgramScreen } from "@/components/screens/ProgramScreen";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { AppInfoButton } from "@/components/layout/AppInfoButton";
 
@@ -77,6 +78,13 @@ const Index = () => {
             speedValue={speedValue}
             onSpeedChange={setSpeedValue}
             onSaveGoal={handleSaveGoal}
+          />
+        );
+      case "program":
+        return (
+          <ProgramScreen
+            isMetric={isMetric}
+            speedValue={speedValue}
           />
         );
       case "distances":

@@ -21,6 +21,7 @@ export const BottomNavigation = React.memo(({ activeTab, onTabChange }: BottomNa
   const navigationItems = React.useMemo(() => [
     { id: "calculator", label: t("Allure & Vitesse"), icon: Calculator },
     { id: "goal", label: t("Objectif"), icon: Flag },
+    { id: "program", label: t("Programme"), icon: Zap },
     { id: "distances", label: t("Splits"), icon: Route },
     { id: "favorites", label: t("Favoris"), icon: Heart },
   ], [t]);

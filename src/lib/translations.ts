@@ -5,6 +5,7 @@ export const translations = {
     "Objectif": "Objectif",
     "Splits": "Splits",
     "Favoris": "Favoris",
+    "Programme": "Programme",
     
     // Calculator Screen
     "Calculateur d'allure": "Calculateur d'allure",
@@ -61,7 +62,41 @@ export const translations = {
     "Aucun favori": "Aucun favori",
     "Sauvegardez vos objectifs": "Sauvegardez vos objectifs",
     "Supprimer": "Supprimer",
-    "Utiliser": "Utiliser"
+    "Utiliser": "Utiliser",
+    
+    // Program Screen
+    "Plan d'entraînement automatique": "Plan d'entraînement automatique",
+    "Sessions/sem.": "Sessions/sem.",
+    "Avant course": "Avant course",
+    "Avant objectif": "Avant objectif", 
+    "Date": "Date",
+    "Objectif :": "Objectif :",
+    "Allure cible": "Allure cible",
+    "Semaine": "Semaine",
+    "Volume": "Volume", 
+    "séances": "séances",
+    "Détails": "Détails",
+    "Copier": "Copier",
+    "Partager": "Partager",
+    "Définis ton objectif pour générer ton programme.": "Définis ton objectif pour générer ton programme.",
+    "Définir l'objectif": "Définir l'objectif",
+    "Programme d'entraînement": "Programme d'entraînement",
+    "Phase": "Phase",
+    "BASE": "BASE",
+    "BUILD": "BUILD",
+    "PEAK": "PEAK",
+    "TAPER": "TAPER",
+    "EASY": "EASY",
+    "STEADY": "STEADY",
+    "THR": "THR",
+    "INT": "INT", 
+    "RP": "RP",
+    "Longue": "Longue",
+    "Strides": "Strides",
+    "récup": "récup",
+    "min": "min",
+    "s": "s",
+    "dont": "dont"
   },
   en: {
     // Navigation
@@ -69,6 +104,7 @@ export const translations = {
     "Objectif": "Goal",
     "Splits": "Splits",
     "Favoris": "Favorites",
+    "Programme": "Program",
     
     // Calculator Screen
     "Calculateur d'allure": "Pace Calculator",
@@ -125,7 +161,41 @@ export const translations = {
     "Aucun favori": "No favorites",
     "Sauvegardez vos objectifs": "Save your goals",
     "Supprimer": "Delete",
-    "Utiliser": "Use"
+    "Utiliser": "Use",
+    
+    // Program Screen
+    "Plan d'entraînement automatique": "Automatic training plan",
+    "Sessions/sem.": "Sessions/week",
+    "Avant course": "Before race",
+    "Avant objectif": "Before goal",
+    "Date": "Date",
+    "Objectif :": "Goal:",
+    "Allure cible": "Target pace",
+    "Semaine": "Week",
+    "Volume": "Volume",
+    "séances": "sessions",
+    "Détails": "Details",
+    "Copier": "Copy",
+    "Partager": "Share",
+    "Définis ton objectif pour générer ton programme.": "Set your goal to generate your plan.",
+    "Définir l'objectif": "Set goal",
+    "Programme d'entraînement": "Training Program",
+    "Phase": "Phase",
+    "BASE": "BASE",
+    "BUILD": "BUILD", 
+    "PEAK": "PEAK",
+    "TAPER": "TAPER",
+    "EASY": "EASY",
+    "STEADY": "STEADY",
+    "THR": "THR",
+    "INT": "INT", 
+    "RP": "RP",
+    "Longue": "Long Run",
+    "Strides": "Strides",
+    "récup": "recovery",
+    "min": "min",
+    "s": "s",
+    "dont": "with"
   },
   es: {
     // Navigation
@@ -133,6 +203,7 @@ export const translations = {
     "Objectif": "Objetivo",
     "Splits": "Parciales",
     "Favoris": "Favoritos",
+    "Programme": "Programa",
     
     // Calculator Screen
     "Calculateur d'allure": "Calculadora de Ritmo",
@@ -189,7 +260,41 @@ export const translations = {
     "Aucun favori": "Sin favoritos",
     "Sauvegardez vos objectifs": "Guarda tus objetivos",
     "Supprimer": "Eliminar",
-    "Utiliser": "Usar"
+    "Utiliser": "Usar",
+    
+    // Program Screen
+    "Plan d'entraînement automatique": "Plan de entrenamiento automático",
+    "Sessions/sem.": "Sesiones/sem.",
+    "Avant course": "Antes de carrera",
+    "Avant objectif": "Antes del objetivo", 
+    "Date": "Fecha",
+    "Objectif :": "Objetivo:",
+    "Allure cible": "Ritmo objetivo",
+    "Semaine": "Semana",
+    "Volume": "Volumen", 
+    "séances": "sesiones",
+    "Détails": "Detalles",
+    "Copier": "Copiar",
+    "Partager": "Compartir",
+    "Définis ton objectif pour générer ton programme.": "Define tu objetivo para generar tu programa.",
+    "Définir l'objectif": "Definir objetivo",
+    "Programme d'entraînement": "Programa de Entrenamiento",
+    "Phase": "Fase",
+    "BASE": "BASE",
+    "BUILD": "BUILD",
+    "PEAK": "PICO", 
+    "TAPER": "DESCARGA",
+    "EASY": "FÁCIL",
+    "STEADY": "CONSTANTE", 
+    "THR": "UMBRAL",
+    "INT": "INTERVALOS",
+    "RP": "RITMO",
+    "Longue": "Larga",
+    "Strides": "Progresiones",
+    "récup": "recuperación",
+    "min": "min",
+    "s": "s",
+    "dont": "con"
   },
   de: {
     // Navigation
@@ -197,6 +302,7 @@ export const translations = {
     "Objectif": "Ziel",
     "Splits": "Zwischenzeiten",
     "Favoris": "Favoriten",
+    "Programme": "Programm",
     
     // Calculator Screen
     "Calculateur d'allure": "Tempo-Rechner",
@@ -253,7 +359,41 @@ export const translations = {
     "Aucun favori": "Keine Favoriten",
     "Sauvegardez vos objectifs": "Speichere deine Ziele",
     "Supprimer": "Löschen",
-    "Utiliser": "Verwenden"
+    "Utiliser": "Verwenden",
+    
+    // Program Screen
+    "Plan d'entraînement automatique": "Automatischer Trainingsplan",
+    "Sessions/sem.": "Einheiten/Wo.",
+    "Avant course": "Vor Wettkampf",
+    "Avant objectif": "Vor Ziel",
+    "Date": "Datum", 
+    "Objectif :": "Ziel:",
+    "Allure cible": "Zieltempo",
+    "Semaine": "Woche",
+    "Volume": "Umfang",
+    "séances": "Einheiten", 
+    "Détails": "Details",
+    "Copier": "Kopieren",
+    "Partager": "Teilen",
+    "Définis ton objectif pour générer ton programme.": "Definiere dein Ziel um deinen Plan zu erstellen.",
+    "Définir l'objectif": "Ziel definieren",
+    "Programme d'entraînement": "Trainingsprogramm",
+    "Phase": "Phase",
+    "BASE": "BASIS",
+    "BUILD": "AUFBAU",
+    "PEAK": "SPITZE", 
+    "TAPER": "ENTLASTUNG",
+    "EASY": "LOCKER",
+    "STEADY": "STEADY",
+    "THR": "SCHWELLE",
+    "INT": "INTERVALLE",
+    "RP": "WK-TEMPO",
+    "Longue": "Langer Lauf", 
+    "Strides": "Steigerungen",
+    "récup": "Erholung",
+    "min": "min",
+    "s": "s",
+    "dont": "davon"
   }
 };
 
