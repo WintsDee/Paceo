@@ -1,5 +1,6 @@
 import { Calculator, Zap, Route, Heart, Flag } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface NavigationItem {
   id: string;
@@ -12,14 +13,16 @@ interface BottomNavigationProps {
   onTabChange: (tabId: string) => void;
 }
 
-const navigationItems: NavigationItem[] = [
-  { id: "calculator", label: "Allure & Vitesse", icon: Calculator },
-  { id: "goal", label: "Objectif", icon: Flag },
-  { id: "distances", label: "Distances", icon: Zap },
-  { id: "favorites", label: "Favoris", icon: Heart },
-];
 
 export const BottomNavigation = ({ activeTab, onTabChange }: BottomNavigationProps) => {
+  const { t } = useLanguage();
+  
+  const navigationItems: NavigationItem[] = [
+    { id: "calculator", label: t("Allure & Vitesse"), icon: Calculator },
+    { id: "goal", label: t("Objectif"), icon: Flag },
+    { id: "distances", label: t("Splits"), icon: Route },
+    { id: "favorites", label: t("Favoris"), icon: Heart },
+  ];
   return (
     <nav className="fixed bottom-0 left-0 right-0 glass-card border-t z-50">
       <div className="flex items-center justify-around px-2 py-3 max-w-md mx-auto">

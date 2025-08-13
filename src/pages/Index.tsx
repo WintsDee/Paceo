@@ -6,7 +6,7 @@ import { CombinedDistancesScreen } from "@/components/screens/CombinedDistancesS
 import { RaceGoal } from "@/components/calculator/RaceGoalCalculator";
 import { GoalScreen } from "@/components/screens/GoalScreen";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { Card } from "@/components/ui/card";
+import { AppInfoButton } from "@/components/layout/AppInfoButton";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("calculator");
@@ -92,6 +92,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <AppInfoButton isMetric={isMetric} onToggleUnits={handleToggleUnits} />
       <main className="container mx-auto px-4 py-6 max-w-md">
         {renderScreen()}
       </main>
