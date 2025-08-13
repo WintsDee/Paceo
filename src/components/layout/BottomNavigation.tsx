@@ -23,6 +23,7 @@ export const BottomNavigation = ({ activeTab, onTabChange }: BottomNavigationPro
     { id: "distances", label: t("Splits"), icon: Route },
     { id: "favorites", label: t("Favoris"), icon: Heart },
   ];
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 glass-card border-t z-50">
       <div className="flex items-center justify-around px-2 py-3 max-w-md mx-auto">
