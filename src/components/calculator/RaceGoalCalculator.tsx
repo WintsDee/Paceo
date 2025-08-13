@@ -37,6 +37,11 @@ export interface RaceGoal {
   distanceKm: number;
   distanceMiles: number;
   savedAt: Date;
+  program?: {
+    sessionsPerWeek: number;
+    weeksBeforeRace: number;
+    weeks: any[];
+  };
 }
 
 const raceDistances = [
@@ -242,7 +247,9 @@ export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSave
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <HelpCircle className="h-3 w-3 text-muted-foreground/60 hover:text-muted-foreground cursor-help" />
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <HelpCircle className="h-3 w-3 text-muted-foreground/60 hover:text-muted-foreground cursor-help" />
+                        </div>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
                         <div className="space-y-2 text-sm">

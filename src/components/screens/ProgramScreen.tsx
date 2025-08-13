@@ -8,7 +8,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { CalendarIcon, ChevronDown, Plus, Minus, Copy, Share2, Target, HelpCircle } from "lucide-react";
+import { CalendarIcon, ChevronDown, Plus, Minus, Copy, Share2, Target, HelpCircle, Printer } from "lucide-react";
 import { differenceInWeeks } from "date-fns";
 import { fr, enUS, es, de } from "date-fns/locale";
 import { toast } from "sonner";
@@ -67,6 +67,7 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
   const [useRaceDate, setUseRaceDate] = useState(false);
   const [selectedDistanceId] = useLocalStorage<string>("pace-calc-goal-distance", "10k");
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set());
+  const [favorites] = useLocalStorage<any[]>("race-goals", []);
 
   const dateLocale = useMemo(() => {
     switch (language) {
@@ -285,15 +286,15 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
         };
         
       case "Longue":
-        const longVolume = Math.round(volume * 0.3);
+        const longDuration = Math.round(volume * 0.25); // Minutes based on volume
         const hasRPSegment = (phase === "BUILD" || phase === "PEAK") && distance !== "10k";
         return {
           type: "Longue",
-          duration: `${Math.round(longVolume * 0.8)}-${longVolume + 5} min`,
+          duration: `${longDuration}-${longDuration + 15} min`,
           pace: formatPace(paces.EASY, metric),
           description: hasRPSegment ? 
-                      `${longVolume + 10}-${longVolume + 20} min @ ${formatPace(paces.EASY, metric)}, dont 20-30 min @ ${formatPace(paces.RP, metric)}` :
-                      `${longVolume}-${longVolume + 10} min @ ${formatPace(paces.EASY, metric)}`
+                      `${longDuration + 10}-${longDuration + 20} min @ ${formatPace(paces.EASY, metric)}, dont 20-30 min @ ${formatPace(paces.RP, metric)}` :
+                      `${longDuration}-${longDuration + 10} min @ ${formatPace(paces.EASY, metric)}`
         };
         
       default: // EASY
@@ -330,26 +331,26 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
 
   const getSessionTypeColor = useCallback((type: TrainingSession['type']): string => {
     switch (type) {
-      case 'EASY': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'STEADY': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-      case 'THR': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
-      case 'INT': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-      case 'RP': return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
-      case 'Longue': return 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-300';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+      case 'EASY': return 'bg-green-600 text-white hover:bg-green-700';
+      case 'STEADY': return 'bg-blue-600 text-white hover:bg-blue-700';
+      case 'THR': return 'bg-orange-600 text-white hover:bg-orange-700';
+      case 'INT': return 'bg-red-600 text-white hover:bg-red-700';
+      case 'RP': return 'bg-purple-600 text-white hover:bg-purple-700';
+      case 'Longue': return 'bg-cyan-600 text-white hover:bg-cyan-700';
+      default: return 'bg-gray-600 text-white hover:bg-gray-700';
     }
   }, []);
 
-  const getSessionTypeExplanation = useCallback((type: TrainingSession['type'], t: any): string => {
-    switch (type) {
-      case 'EASY': return 'Course à allure tranquille pour récupérer et développer l\'endurance de base';
-      case 'STEADY': return 'Allure confortable et soutenue, légèrement plus rapide que l\'allure facile';
-      case 'THR': return 'Allure seuil/tempo - intensité modérée à élevée, proche du seuil lactique';
-      case 'INT': return 'Intervalles courts à haute intensité pour améliorer VO2max';
-      case 'RP': return 'Allure course - l\'allure exacte de votre objectif de compétition';
-      case 'Longue': return 'Sortie longue pour développer l\'endurance et l\'économie de course';
-      default: return '';
-    }
+  const getSessionTypeExplanation = useCallback((type: TrainingSession['type']): string => {
+    const explanations = {
+      'EASY': "Course à allure tranquille pour récupérer et développer l'endurance de base",
+      'STEADY': "Allure confortable et soutenue, légèrement plus rapide que l'allure facile",
+      'THR': "Allure seuil/tempo - intensité modérée à élevée, proche du seuil lactique",
+      'INT': "Intervalles courts à haute intensité pour améliorer VO2max",
+      'RP': "Allure course - l'allure exacte de votre objectif de compétition",
+      'Longue': "Sortie longue pour développer l'endurance et l'économie de course"
+    };
+    return explanations[type] || '';
   }, []);
 
   const copyWeekToClipboard = useCallback(async (week: WeekProgram) => {
@@ -377,13 +378,113 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
           text: weekText,
         });
       } catch (err) {
-        // Fallback to clipboard
         copyWeekToClipboard(week);
       }
     } else {
       copyWeekToClipboard(week);
     }
   }, [t, isMetric, copyWeekToClipboard]);
+
+  const shareFullProgram = useCallback(async () => {
+    const fullText = `Programme d'entraînement - Paceo\n\n${t("Objectif")}: ${race.label} — ${paceFromSpeed(speedValue)} (${formatPace(paceFromSpeed(speedValue), isMetric)})\n${t("Sessions/sem.")}: ${sessionsPerWeek} • ${t("Avant objectif")}: ${effectiveWeeks} semaines\n\n${program.map(week => 
+      `${t("Semaine")} ${week.week} - ${t(week.phase)} (${week.volume}${isMetric ? 'km' : 'mi'})\n${week.sessions.map((session, index) => 
+        `  ${index + 1}. ${t(session.type)} - ${session.duration} - ${session.description}`
+      ).join('\n')}`
+    ).join('\n\n')}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Programme d\'entraînement',
+          text: fullText,
+        });
+      } catch (err) {
+        try {
+          await navigator.clipboard.writeText(fullText);
+          toast.success('Programme copié dans le presse-papiers !');
+        } catch (clipErr) {
+          toast.error('Erreur lors du partage');
+        }
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(fullText);
+        toast.success('Programme copié dans le presse-papiers !');
+      } catch (err) {
+        toast.error('Erreur lors de la copie');
+      }
+    }
+  }, [program, t, race.label, speedValue, isMetric, sessionsPerWeek, effectiveWeeks]);
+
+  const printProgram = useCallback(() => {
+    const printContent = `
+      <html>
+        <head>
+          <title>Programme d'entraînement - Paceo</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #333; border-bottom: 2px solid #333; }
+            h2 { color: #666; margin-top: 20px; }
+            .week { margin-bottom: 20px; border: 1px solid #ddd; padding: 15px; }
+            .session { margin: 5px 0; padding: 8px; background: #f5f5f5; }
+            .header { margin-bottom: 30px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>Programme d'entraînement</h1>
+            <p><strong>${t("Objectif")}:</strong> ${race.label} — ${paceFromSpeed(speedValue)} (${formatPace(paceFromSpeed(speedValue), isMetric)})</p>
+            <p><strong>${t("Sessions/sem.")}:</strong> ${sessionsPerWeek} • <strong>${t("Avant objectif")}:</strong> ${effectiveWeeks} semaines</p>
+          </div>
+          ${program.map(week => `
+            <div class="week">
+              <h2>${t("Semaine")} ${week.week} - ${t(week.phase)} (${week.volume}${isMetric ? 'km' : 'mi'})</h2>
+              ${week.sessions.map((session, index) => `
+                <div class="session">
+                  <strong>${index + 1}. ${t(session.type)}</strong> - ${session.duration}<br>
+                  ${session.description}
+                </div>
+              `).join('')}
+            </div>
+          `).join('')}
+        </body>
+      </html>
+    `;
+    
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  }, [program, t, race.label, speedValue, isMetric, sessionsPerWeek, effectiveWeeks]);
+
+  const saveProgramToFavorites = useCallback(() => {
+    const currentGoal = {
+      id: Date.now().toString(),
+      distance: race.label,
+      selectedDistanceId: selectedDistanceId,
+      targetTime: paceFromSpeed(speedValue),
+      pace: paceFromSpeed(speedValue),
+      speed: speedValue.toFixed(2),
+      isMetric,
+      vmaKmh: vmaValue,
+      distanceKm: isMetric ? race.distance : race.distanceMiles * 1.60934,
+      distanceMiles: isMetric ? race.distance * 0.621371 : race.distanceMiles,
+      savedAt: new Date(),
+      program: {
+        sessionsPerWeek,
+        weeksBeforeRace: effectiveWeeks,
+        weeks: program
+      }
+    };
+    
+    const currentFavorites = favorites;
+    const newFavorites = [...currentFavorites, currentGoal];
+    localStorage.setItem("race-goals", JSON.stringify(newFavorites));
+    
+    toast.success('Programme enregistré dans les favoris !');
+  }, [race, selectedDistanceId, speedValue, isMetric, vmaValue, sessionsPerWeek, effectiveWeeks, program, favorites]);
 
   if (!speedValue || speedValue <= 0) {
     return (
@@ -452,7 +553,7 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
                   <Minus className="h-4 w-4" />
                 </Button>
                 <div className="text-center min-w-[80px]">
-                  <div className="text-sm font-medium">{weeksBeforeRace}</div>
+                  <div className="text-sm font-medium">{effectiveWeeks}</div>
                   <div className="text-xs text-muted-foreground">{t("Avant objectif")} (sem.)</div>
                 </div>
                 <Button
@@ -468,56 +569,76 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
             ) : (
               <div className="text-center min-w-[80px]">
                 <div className="text-sm font-medium">{effectiveWeeks}</div>
-                <div className="text-xs text-muted-foreground">{t("Avant objectif")} (sem.)</div>
+                <div className="text-xs text-muted-foreground">sem. calculées</div>
               </div>
             )}
             
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" size="icon" className="h-8 w-8 btn-glass">
+                <Button variant="outline" size="sm" className="btn-glass ml-2">
                   <CalendarIcon className="h-4 w-4" />
+                  Date de l'objectif
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="end">
-                <div className="p-3">
-                  <Calendar
-                    mode="single"
-                    selected={raceDate}
-                    onSelect={(date) => {
-                      setRaceDate(date);
-                      setUseRaceDate(!!date);
-                    }}
-                    disabled={(date) => date <= new Date()}
-                    initialFocus
-                    className="pointer-events-auto"
-                    locale={dateLocale}
-                  />
-                  {useRaceDate && (
+                <Calendar
+                  mode="single"
+                  selected={raceDate}
+                  onSelect={(date) => {
+                    setRaceDate(date);
+                    if (date) {
+                      setUseRaceDate(true);
+                    }
+                  }}
+                  disabled={(date) => date < new Date()}
+                  initialFocus
+                  locale={dateLocale}
+                  className="pointer-events-auto"
+                />
+                {useRaceDate && (
+                  <div className="p-2 border-t">
                     <Button
                       variant="outline"
                       size="sm"
-                      className="w-full mt-2"
+                      className="w-full"
                       onClick={() => {
                         setUseRaceDate(false);
                         setRaceDate(undefined);
                       }}
                     >
-                      Utiliser semaines
+                      Utiliser nombre de semaines
                     </Button>
-                  )}
-                </div>
+                  </div>
+                )}
               </PopoverContent>
             </Popover>
           </div>
         </div>
       </Card>
 
-      {/* Goal Context Banner */}
+      {/* Context Banner */}
       <Card className="glass-card p-4">
-        <div className="text-sm text-muted-foreground">
-          {t("Objectif :")} <span className="font-semibold text-foreground">{race.label}</span> • 
-          <span className="font-semibold text-primary ml-1">{t("Allure cible")} {targetPace}/{isMetric ? 'km' : 'mi'}</span> • 
-          <span className="font-semibold text-foreground ml-1">{t("Vitesse")} {speedValue.toFixed(1)}{isMetric ? 'km/h' : 'mph'}</span>
+        <div className="text-center text-sm">
+          <span className="text-muted-foreground">{t("Objectif")}: </span>
+          <span className="font-medium">{race.label} — {paceFromSpeed(speedValue)}</span>
+          <span className="text-muted-foreground"> • {t("Allure cible")} </span>
+          <span className="font-medium mono-numbers">{formatPace(paceFromSpeed(speedValue), isMetric)}</span>
+          <span className="text-muted-foreground"> • {t("Vitesse")} </span>
+          <span className="font-medium mono-numbers">{speedValue.toFixed(2)} {isMetric ? 'km/h' : 'mph'}</span>
+        </div>
+      </Card>
+
+      {/* Global Actions */}
+      <Card className="glass-card p-4">
+        <div className="flex gap-2 justify-center">
+          <Button variant="outline" size="sm" className="btn-glass" onClick={shareFullProgram}>
+            <Share2 className="h-4 w-4 mr-2" />
+            {t("Partager")}
+          </Button>
+          <Button variant="outline" size="sm" className="btn-glass" onClick={printProgram}>
+            <Printer className="h-4 w-4 mr-2" />
+            Imprimer
+          </Button>
         </div>
       </Card>
 
@@ -540,76 +661,109 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
                       {t(week.phase)}
                     </Badge>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span>{week.volume}{isMetric ? 'km' : 'mi'}</span>
-                    <span>• {week.sessions.length} {t("séances")}</span>
-                    <ChevronDown className="h-4 w-4 transition-transform duration-200" />
+                  <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {week.sessions.map((session, sessionIndex) => (
+                        <TooltipProvider key={sessionIndex}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Badge 
+                                variant="secondary" 
+                                className={`${getSessionTypeColor(session.type)} text-xs font-medium px-2 py-1 cursor-help transition-colors`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                }}
+                              >
+                                {t(session.type)}
+                              </Badge>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="max-w-xs text-sm">{getSessionTypeExplanation(session.type)}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <span>{week.volume}{isMetric ? 'km' : 'mi'}</span>
+                      <ChevronDown className="h-4 w-4 transition-transform duration-200" />
+                    </div>
                   </div>
                 </div>
               </CollapsibleTrigger>
               
-              <CollapsibleContent className="overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
-                <div className="px-4 pb-4 space-y-3">
-                  {week.sessions.map((session, index) => (
-                    <div key={index} className="p-3 rounded-lg bg-background/40">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1">
-                           <div className="flex items-center gap-2 mb-1">
-                             <TooltipProvider>
-                               <Tooltip>
-                                 <TooltipTrigger asChild>
-                                   <Badge 
-                                     variant="secondary" 
-                                     className={`text-xs cursor-help ${getSessionTypeColor(session.type)}`}
-                                   >
-                                     {t(session.type)}
-                                   </Badge>
-                                 </TooltipTrigger>
-                                 <TooltipContent>
-                                   <p className="max-w-xs text-sm">{getSessionTypeExplanation(session.type, t)}</p>
-                                 </TooltipContent>
-                               </Tooltip>
-                             </TooltipProvider>
-                             <span className="text-sm font-medium">{session.duration}</span>
-                           </div>
-                          <div className="text-sm text-muted-foreground">
-                            {session.description}
-                          </div>
+              <CollapsibleContent className="space-y-3 pt-4">
+                {week.sessions.map((session, sessionIndex) => (
+                  <div key={sessionIndex} className="glass-card p-3 rounded-lg">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge 
+                                  variant="secondary" 
+                                  className={`${getSessionTypeColor(session.type)} text-xs font-medium cursor-help transition-colors`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                  }}
+                                >
+                                  {t(session.type)}
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-xs text-sm">{getSessionTypeExplanation(session.type)}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          <span className="text-sm text-muted-foreground">{session.duration}</span>
+                          <span className="text-sm font-medium mono-numbers">{session.pace}</span>
                         </div>
-                        <div className="text-sm font-medium text-primary">
-                          {session.pace}
-                        </div>
+                        <div className="text-sm text-muted-foreground">{session.description}</div>
                       </div>
                     </div>
-                  ))}
-                  
-                   {/* Actions */}
-                   <div className="flex gap-2 pt-2">
-                     <Button 
-                       variant="outline" 
-                       size="sm" 
-                       className="btn-glass flex-1"
-                       onClick={() => copyWeekToClipboard(week)}
-                     >
-                       <Copy className="h-3 w-3 mr-1" />
-                       {t("Copier")}
-                     </Button>
-                     <Button 
-                       variant="outline" 
-                       size="sm" 
-                       className="btn-glass flex-1"
-                       onClick={() => shareWeek(week)}
-                     >
-                       <Share2 className="h-3 w-3 mr-1" />
-                       {t("Partager")}
-                     </Button>
-                   </div>
+                  </div>
+                ))}
+                
+                <div className="flex gap-2 pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="btn-glass"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      copyWeekToClipboard(week);
+                    }}
+                  >
+                    <Copy className="h-3 w-3 mr-2" />
+                    {t("Copier")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="btn-glass"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      shareWeek(week);
+                    }}
+                  >
+                    <Share2 className="h-3 w-3 mr-2" />
+                    {t("Partager")}
+                  </Button>
                 </div>
               </CollapsibleContent>
             </Card>
           </Collapsible>
         ))}
       </div>
+      
+      {/* Save Program Button */}
+      <Card className="glass-card p-4 mt-6">
+        <Button onClick={saveProgramToFavorites} className="w-full btn-primary-glass h-12 text-base font-medium">
+          <Target className="w-4 h-4 mr-2" />
+          Enregistrer le programme
+        </Button>
+      </Card>
     </div>
   );
 });

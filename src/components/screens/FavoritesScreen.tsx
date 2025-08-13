@@ -90,6 +90,15 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
                   )}
                 </div>
 
+                {goal.program && (
+                  <div className="mt-3 p-3 bg-background/40 rounded-lg">
+                    <div className="text-sm font-medium mb-2">Programme d'entraînement</div>
+                    <div className="text-xs text-muted-foreground">
+                      {goal.program.sessionsPerWeek} sessions/sem • {goal.program.weeksBeforeRace} semaines
+                    </div>
+                  </div>
+                )}
+
                 {goal.vmaCoherence && (
                   <div className="mt-3 text-xs text-muted-foreground">
                     Cohérence vs VMA: {goal.vmaCoherence.pct}% — attendu {goal.vmaCoherence.expectedLow}-{goal.vmaCoherence.expectedHigh}% ({goal.vmaCoherence.status})
