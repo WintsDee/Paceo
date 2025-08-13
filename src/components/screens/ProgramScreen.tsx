@@ -642,7 +642,7 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
 
   if (!speedValue || speedValue <= 0) {
     return (
-      <div className="space-y-6 pb-20 animate-fade-in">
+      <div className="space-y-6 pb-20 animate-fade-in-up">
         <div className="text-center py-8">
           <div className="text-muted-foreground mb-4">
             {t("Définis ton objectif pour générer ton programme.")}
@@ -657,7 +657,7 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
   }
 
   return (
-    <div className="space-y-6 pb-20 animate-fade-in">
+    <div className="space-y-6 pb-20 animate-fade-in-up">
       {/* Header */}
       <div className="relative text-center py-2">
         <h2 className="text-xl font-semibold">{t("Programme")}</h2>
