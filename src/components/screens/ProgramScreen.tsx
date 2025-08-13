@@ -49,21 +49,47 @@ const SESSION_TEMPLATES = {
 };
 
 const SESSION_COLORS = {
-  EASY: 'bg-green-500 text-white hover:bg-green-600',
-  STEADY: 'bg-blue-500 text-white hover:bg-blue-600',
-  THR: 'bg-orange-500 text-white hover:bg-orange-600',
-  INT: 'bg-red-500 text-white hover:bg-red-600',
-  RP: 'bg-purple-500 text-white hover:bg-purple-600',
-  Longue: 'bg-cyan-500 text-white hover:bg-cyan-600',
+  EASY: 'bg-green-600/90 text-white hover:bg-green-600 border-green-500/50',
+  STEADY: 'bg-blue-600/90 text-white hover:bg-blue-600 border-blue-500/50',
+  THR: 'bg-orange-600/90 text-white hover:bg-orange-600 border-orange-500/50',
+  INT: 'bg-red-600/90 text-white hover:bg-red-600 border-red-500/50',
+  RP: 'bg-purple-600/90 text-white hover:bg-purple-600 border-purple-500/50',
+  Longue: 'bg-cyan-600/90 text-white hover:bg-cyan-600 border-cyan-500/50',
 } as const;
 
 const SESSION_EXPLANATIONS = {
-  EASY: "Course à allure tranquille pour récupérer et développer l'endurance de base",
-  STEADY: "Allure confortable et soutenue, légèrement plus rapide que l'allure facile",
-  THR: "Allure seuil/tempo - intensité modérée à élevée, proche du seuil lactique",
-  INT: "Intervalles courts à haute intensité pour améliorer VO2max",
-  RP: "Allure course - l'allure exacte de votre objectif de compétition",
-  Longue: "Sortie longue pour développer l'endurance et l'économie de course"
+  fr: {
+    EASY: "Course à allure tranquille pour récupérer et développer l'endurance de base",
+    STEADY: "Allure confortable et soutenue, légèrement plus rapide que l'allure facile",
+    THR: "Allure seuil/tempo - intensité modérée à élevée, proche du seuil lactique",
+    INT: "Intervalles courts à haute intensité pour améliorer VO2max",
+    RP: "Allure course - l'allure exacte de votre objectif de compétition",
+    Longue: "Sortie longue pour développer l'endurance et l'économie de course"
+  },
+  en: {
+    EASY: "Easy pace for recovery and building aerobic base",
+    STEADY: "Comfortable steady pace, slightly faster than easy pace",
+    THR: "Threshold/tempo pace - moderate to high intensity, near lactate threshold",
+    INT: "High intensity intervals to improve VO2max",
+    RP: "Race pace - the exact pace of your competition goal",
+    Longue: "Long run to develop endurance and running economy"
+  },
+  es: {
+    EASY: "Ritmo fácil para recuperación y desarrollo de base aeróbica",
+    STEADY: "Ritmo constante cómodo, ligeramente más rápido que el ritmo fácil",
+    THR: "Ritmo umbral/tempo - intensidad moderada a alta, cerca del umbral láctico",
+    INT: "Intervalos de alta intensidad para mejorar VO2max",
+    RP: "Ritmo de carrera - el ritmo exacto de tu objetivo de competición",
+    Longue: "Carrera larga para desarrollar resistencia y economía de carrera"
+  },
+  de: {
+    EASY: "Lockeres Tempo zur Erholung und Aufbau der aeroben Basis",
+    STEADY: "Komfortables, gleichmäßiges Tempo, etwas schneller als lockeres Tempo",
+    THR: "Schwellen-/Tempo-Pace - moderate bis hohe Intensität, nahe der Laktatschwelle",
+    INT: "Hochintensive Intervalle zur Verbesserung der VO2max",
+    RP: "Wettkampftempo - das exakte Tempo deines Wettkampfziels",
+    Longue: "Langer Lauf zur Entwicklung von Ausdauer und Laufökonomie"
+  }
 } as const;
 
 // Moteur de programme d'entraînement selon spécifications 2025
@@ -582,13 +608,29 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
     }
   }, [program, t, race.label, speedValue, isMetric, sessionsPerWeek, effectiveWeeks]);
 
+  const goalTime = useMemo(() => {
+    if (!speedValue || speedValue <= 0) return "0:00:00";
+    
+    const distanceKm = isMetric ? race.distance : race.distanceMiles;
+    const hours = distanceKm / speedValue;
+    const totalMinutes = hours * 60;
+    const h = Math.floor(totalMinutes / 60);
+    const m = Math.floor(totalMinutes % 60);
+    const s = Math.round((totalMinutes % 1) * 60);
+    
+    if (h > 0) return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  }, [speedValue, race, isMetric]);
+
+  const goalPace = useMemo(() => paceFromSpeed(speedValue), [speedValue]);
+
   const saveProgramToFavorites = useCallback(() => {
     const currentGoal = {
       id: Date.now().toString(),
       distance: race.label,
       selectedDistanceId: selectedDistanceId,
-      targetTime: paceFromSpeed(speedValue),
-      pace: paceFromSpeed(speedValue),
+      targetTime: goalTime,
+      pace: goalPace,
       speed: speedValue.toFixed(2),
       isMetric,
       vmaKmh: vmaValue,
@@ -604,7 +646,7 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
     
     setFavorites([currentGoal, ...favorites]);
     toast.success('Programme enregistré dans les favoris !');
-  }, [race, selectedDistanceId, speedValue, isMetric, vmaValue, sessionsPerWeek, effectiveWeeks, program, setFavorites]);
+  }, [race, selectedDistanceId, goalTime, goalPace, speedValue, isMetric, vmaValue, sessionsPerWeek, effectiveWeeks, program, setFavorites, favorites]);
 
   if (!speedValue || speedValue <= 0) {
     return (
@@ -750,12 +792,12 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
             </div>
             
             <div className="space-y-1">
-              <div className="text-2xl font-bold text-primary mono-numbers">{paceFromSpeed(speedValue)}</div>
+              <div className="text-2xl font-bold text-primary mono-numbers">{goalTime}</div>
               <div className="text-xs text-muted-foreground uppercase tracking-wider">Temps Objectif</div>
             </div>
             
             <div className="space-y-1">
-              <div className="text-2xl font-bold text-secondary mono-numbers">{formatPace(paceFromSpeed(speedValue), isMetric)}</div>
+              <div className="text-2xl font-bold text-foreground mono-numbers">{formatPace(goalPace, isMetric)}</div>
               <div className="text-xs text-muted-foreground uppercase tracking-wider">Allure Cible</div>
             </div>
           </div>
@@ -821,9 +863,12 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
                                   {t(session.type)}
                                 </Badge>
                               </TooltipTrigger>
-                              <TooltipContent>
-                                <p className="max-w-xs text-sm">{SESSION_EXPLANATIONS[session.type]}</p>
-                              </TooltipContent>
+                               <TooltipContent>
+                                 <p className="max-w-xs text-sm">
+                                   {SESSION_EXPLANATIONS[language as keyof typeof SESSION_EXPLANATIONS]?.[session.type] || 
+                                    SESSION_EXPLANATIONS.fr[session.type]}
+                                 </p>
+                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
                           <span className="text-sm text-muted-foreground">{session.duration}</span>

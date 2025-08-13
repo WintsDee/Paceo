@@ -53,7 +53,7 @@ const Index = () => {
         window.localStorage.setItem("program-weeks-before", JSON.stringify(goal.program.weeksBeforeRace));
       }
     } catch {}
-    setActiveTab("goal");
+    setActiveTab("program");
   }, [setIsMetric, setSpeedValue, setActiveTab]);
 
   const renderScreen = React.useCallback(() => {

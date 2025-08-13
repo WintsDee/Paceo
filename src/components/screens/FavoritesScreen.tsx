@@ -1,8 +1,11 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { RaceGoal } from "@/components/calculator/RaceGoalCalculator";
-import { Heart, Trash2, Play } from "lucide-react";
+import { Heart, Trash2, Play, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface FavoritesScreenProps {
   favorites: RaceGoal[];
@@ -12,6 +15,7 @@ interface FavoritesScreenProps {
 
 export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: FavoritesScreenProps) => {
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const handleDelete = (id: string, distance: string) => {
     onDeleteFavorite(id);
@@ -27,6 +31,50 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
       title: "Objectif chargé",
       description: `Objectif ${goal.distance} et son programme chargés`,
     });
+  };
+
+  const renderProgramPreview = (program: any) => {
+    if (!program || !program.weeks) return null;
+
+    return (
+      <div className="space-y-3 max-h-80 overflow-y-auto">
+        <div className="grid grid-cols-2 gap-2 text-sm">
+          <div>
+            <span className="font-medium">Sessions/semaine:</span> {program.sessionsPerWeek}
+          </div>
+          <div>
+            <span className="font-medium">Durée:</span> {program.weeksBeforeRace} semaines
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          {program.weeks.slice(0, 5).map((week: any, index: number) => (
+            <div key={index} className="border border-border/50 rounded-lg p-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-medium">Semaine {week.week}</span>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs">{week.phase}</Badge>
+                  <span className="text-sm text-muted-foreground">{week.volume}km</span>
+                </div>
+              </div>
+              <div className="space-y-1">
+                {week.sessions.map((session: any, sessionIndex: number) => (
+                  <div key={sessionIndex} className="text-xs flex items-center gap-2">
+                    <Badge variant="secondary" className="text-xs">{session.type}</Badge>
+                    <span className="text-muted-foreground">{session.description}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+          {program.weeks.length > 5 && (
+            <div className="text-center text-sm text-muted-foreground">
+              ... et {program.weeks.length - 5} semaines supplémentaires
+            </div>
+          )}
+        </div>
+      </div>
+    );
   };
 
   if (favorites.length === 0) {
@@ -107,6 +155,26 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
               </div>
               
               <div className="flex gap-2 ml-4">
+                {goal.program && (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="btn-glass p-2"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden">
+                      <DialogHeader>
+                        <DialogTitle>Programme - {goal.distance} en {goal.targetTime}</DialogTitle>
+                      </DialogHeader>
+                      {renderProgramPreview(goal.program)}
+                    </DialogContent>
+                  </Dialog>
+                )}
+                
                 <Button
                   variant="outline"
                   size="sm"

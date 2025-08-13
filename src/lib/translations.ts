@@ -195,7 +195,13 @@ export const translations = {
     "récup": "recovery",
     "min": "min",
     "s": "s",
-    "dont": "with"
+    "dont": "with",
+    "Imprimer": "Print",
+    "Enregistrer le programme": "Save program",
+    "Programme enregistré": "Program saved",
+    "Semaines": "Weeks",
+    "semaines": "weeks",
+    "Temps cible": "Target time"
   },
   es: {
     // Navigation
@@ -294,7 +300,13 @@ export const translations = {
     "récup": "recuperación",
     "min": "min",
     "s": "s",
-    "dont": "con"
+    "dont": "con",
+    "Imprimer": "Imprimir",
+    "Enregistrer le programme": "Guardar programa",
+    "Programme enregistré": "Programa guardado",
+    "Semaines": "Semanas",
+    "semaines": "semanas",
+    "Temps cible": "Tiempo objetivo"
   },
   de: {
     // Navigation
@@ -393,7 +405,13 @@ export const translations = {
     "récup": "Erholung",
     "min": "min",
     "s": "s",
-    "dont": "davon"
+    "dont": "davon",
+    "Imprimer": "Drucken",
+    "Enregistrer le programme": "Programm speichern",
+    "Programme enregistré": "Programm gespeichert",
+    "Semaines": "Wochen",
+    "semaines": "wochen",
+    "Temps cible": "Zielzeit"
   }
 };
 
