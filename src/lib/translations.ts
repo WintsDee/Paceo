@@ -67,8 +67,8 @@ export const translations = {
     // Program Screen
     "Plan d'entraînement automatique": "Plan d'entraînement automatique",
     "Sessions/sem.": "Sessions/sem.",
-    "Avant course": "Avant course",
-    "Avant objectif": "Avant objectif", 
+    "Avant course": "Avant objectif",
+    "Avant objectif": "Avant objectif",
     "Date": "Date",
     "Objectif :": "Objectif :",
     "Allure cible": "Allure cible",
@@ -166,7 +166,7 @@ export const translations = {
     // Program Screen
     "Plan d'entraînement automatique": "Automatic training plan",
     "Sessions/sem.": "Sessions/week",
-    "Avant course": "Before race",
+    "Avant course": "Before goal",
     "Avant objectif": "Before goal",
     "Date": "Date",
     "Objectif :": "Goal:",
@@ -265,8 +265,8 @@ export const translations = {
     // Program Screen
     "Plan d'entraînement automatique": "Plan de entrenamiento automático",
     "Sessions/sem.": "Sesiones/sem.",
-    "Avant course": "Antes de carrera",
-    "Avant objectif": "Antes del objetivo", 
+    "Avant course": "Antes del objetivo", 
+    "Avant objectif": "Antes del objetivo",
     "Date": "Fecha",
     "Objectif :": "Objetivo:",
     "Allure cible": "Ritmo objetivo",
@@ -364,7 +364,7 @@ export const translations = {
     // Program Screen
     "Plan d'entraînement automatique": "Automatischer Trainingsplan",
     "Sessions/sem.": "Einheiten/Wo.",
-    "Avant course": "Vor Wettkampf",
+    "Avant course": "Vor Ziel",
     "Avant objectif": "Vor Ziel",
     "Date": "Datum", 
     "Objectif :": "Ziel:",

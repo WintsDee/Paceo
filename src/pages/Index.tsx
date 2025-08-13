@@ -85,6 +85,14 @@ const Index = () => {
           <ProgramScreen
             isMetric={isMetric}
             speedValue={speedValue}
+            vmaValue={(() => {
+              try {
+                const vma = window.localStorage.getItem("pace-calc-vma");
+                return vma ? JSON.parse(vma) : undefined;
+              } catch {
+                return undefined;
+              }
+            })()}
           />
         );
       case "distances":

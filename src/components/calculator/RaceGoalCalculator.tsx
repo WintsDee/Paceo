@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
-import { ChevronDown } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ChevronDown, HelpCircle } from "lucide-react";
 
 export interface RaceGoalCalculatorProps {
   isMetric: boolean;
@@ -235,8 +236,25 @@ export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSave
         <div className="mb-6">
           <Collapsible defaultOpen={false}>
             <div className="glass-card p-4 rounded-lg">
-              <CollapsibleTrigger className="flex w-full items-center gap-2 py-1.5 text-sm font-medium text-muted-foreground transition-all hover:underline [&[data-state=open]>svg]:rotate-180">
-                <span>VMA (km/h)</span>
+              <CollapsibleTrigger className="flex w-full items-center gap-2 py-1.5 text-sm font-medium text-muted-foreground transition-all [&[data-state=open]>svg]:rotate-180">
+                <div className="flex items-center gap-2">
+                  <span>VMA (km/h)</span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-3 w-3 text-muted-foreground/60 hover:text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <div className="space-y-2 text-sm">
+                          <p><strong>VMA (Vitesse Maximale Aérobie)</strong></p>
+                          <p>Intensité maximale que vous pouvez maintenir pendant 6-8 minutes.</p>
+                          <p><strong>Test demi-Cooper :</strong> Courez le plus loin possible en 6 minutes, puis VMA = distance(m) ÷ 100</p>
+                          <p>Exemple : 1200m en 6min → VMA = 12 km/h</p>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <span className="ml-auto text-sm font-medium mono-numbers">{(vmaKmh > 0 ? vmaKmh : 12).toFixed(1)} km/h</span>
                 <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-300 ease-out" />
               </CollapsibleTrigger>
