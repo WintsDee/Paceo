@@ -223,30 +223,17 @@ export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSave
           </div>
         )}
 
-        {/* Results display - enhanced visibility */}
-        <div className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-background to-secondary/5 rounded-lg p-6">
-          <div className="text-center mb-4">
-            <h3 className="text-lg font-semibold text-primary mb-1">Objectif de Course</h3>
-            <div className="text-xs text-muted-foreground uppercase tracking-wider">{race.label}</div>
+        {/* Results display - always derived from global speed */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="glass-card p-4 rounded-lg">
+            <div className="text-sm text-muted-foreground mb-1">Allure cible</div>
+            <div className="text-xl font-semibold mono-numbers text-primary">{pace}</div>
+            <div className="text-xs text-muted-foreground">{isMetric ? 'min/km' : 'min/mi'}</div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <div className="glass-card p-4 rounded-lg">
-              <div className="text-sm text-muted-foreground mb-1">Temps Objectif</div>
-              <div className="text-2xl font-bold mono-numbers text-primary">{targetTime}</div>
-            </div>
-            
-            <div className="glass-card p-4 rounded-lg">
-              <div className="text-sm text-muted-foreground mb-1">Allure cible</div>
-              <div className="text-xl font-semibold mono-numbers text-foreground">{pace}</div>
-              <div className="text-xs text-muted-foreground">{isMetric ? 'min/km' : 'min/mi'}</div>
-            </div>
-            
-            <div className="glass-card p-4 rounded-lg">
-              <div className="text-sm text-muted-foreground mb-1">Vitesse</div>
-              <div className="text-xl font-semibold mono-numbers text-foreground">{speedDisplay}</div>
-              <div className="text-xs text-muted-foreground">{isMetric ? 'km/h' : 'mph'}</div>
-            </div>
+          <div className="glass-card p-4 rounded-lg">
+            <div className="text-sm text-muted-foreground mb-1">Vitesse</div>
+            <div className="text-xl font-semibold mono-numbers text-primary">{speedDisplay}</div>
+            <div className="text-xs text-muted-foreground">{isMetric ? 'km/h' : 'mph'}</div>
           </div>
         </div>
 
