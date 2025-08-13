@@ -16,7 +16,6 @@ const navigationItems: NavigationItem[] = [
   { id: "calculator", label: "Allure & Vitesse", icon: Calculator },
   { id: "goal", label: "Objectif", icon: Flag },
   { id: "distances", label: "Distances", icon: Zap },
-  { id: "splits", label: "Splits", icon: Route },
   { id: "favorites", label: "Favoris", icon: Heart },
 ];
 

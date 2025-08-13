@@ -2,8 +2,7 @@ import { useState } from "react";
 import { BottomNavigation } from "@/components/layout/BottomNavigation";
 import { CalculatorScreen } from "@/components/screens/CalculatorScreen";
 import { FavoritesScreen } from "@/components/screens/FavoritesScreen";
-import { QuickDistancesScreen } from "@/components/screens/QuickDistancesScreen";
-import { SplitsScreen } from "@/components/screens/SplitsScreen";
+import { CombinedDistancesScreen } from "@/components/screens/CombinedDistancesScreen";
 import { RaceGoal } from "@/components/calculator/RaceGoalCalculator";
 import { GoalScreen } from "@/components/screens/GoalScreen";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
@@ -81,14 +80,7 @@ const Index = () => {
         );
       case "distances":
         return (
-          <QuickDistancesScreen
-            isMetric={isMetric}
-            speedValue={speedValue}
-          />
-        );
-      case "splits":
-        return (
-          <SplitsScreen
+          <CombinedDistancesScreen
             isMetric={isMetric}
             speedValue={speedValue}
           />

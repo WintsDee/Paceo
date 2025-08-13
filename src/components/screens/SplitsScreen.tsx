@@ -45,9 +45,9 @@ export const SplitsScreen = ({ isMetric, speedValue }: SplitsScreenProps) => {
   }
 
   return (
-    <div className="space-y-3 pb-20 animate-fade-in-up">
+    <div className="space-y-3 animate-fade-in-up">
       <div className="text-center py-2">
-        <h2 className="text-xl font-semibold">Splits simples</h2>
+        <h3 className="text-lg font-semibold">Splits simples</h3>
         <p className="text-muted-foreground text-sm">Basé sur votre allure actuelle</p>
       </div>
 
