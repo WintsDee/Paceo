@@ -49,12 +49,12 @@ const SESSION_TEMPLATES = {
 };
 
 const SESSION_COLORS = {
-  EASY: 'bg-green-600/90 text-white hover:bg-green-600 border-green-500/50',
-  STEADY: 'bg-blue-600/90 text-white hover:bg-blue-600 border-blue-500/50',
-  THR: 'bg-orange-600/90 text-white hover:bg-orange-600 border-orange-500/50',
-  INT: 'bg-red-600/90 text-white hover:bg-red-600 border-red-500/50',
-  RP: 'bg-purple-600/90 text-white hover:bg-purple-600 border-purple-500/50',
-  Longue: 'bg-cyan-600/90 text-white hover:bg-cyan-600 border-cyan-500/50',
+  EASY: 'bg-green-500/80 text-white hover:bg-green-500/90 border-green-400/30',
+  STEADY: 'bg-blue-500/80 text-white hover:bg-blue-500/90 border-blue-400/30',
+  THR: 'bg-orange-500/80 text-white hover:bg-orange-500/90 border-orange-400/30',
+  INT: 'bg-red-500/80 text-white hover:bg-red-500/90 border-red-400/30',
+  RP: 'bg-purple-500/80 text-white hover:bg-purple-500/90 border-purple-400/30',
+  Longue: 'bg-cyan-500/80 text-white hover:bg-cyan-500/90 border-cyan-400/30',
 } as const;
 
 const SESSION_EXPLANATIONS = {
@@ -92,47 +92,42 @@ const SESSION_EXPLANATIONS = {
   }
 } as const;
 
-// Moteur de programme d'entraînement selon spécifications 2025
+// Moteur de programme d'entraînement selon spécifications exactes 2025
 const calculateVMAPaces = (vma: number) => {
-  const vmaAllure = 60 / vma; // min/km
+  const vmaAllure = 60 / vma; // min/km selon spec: Allure_VMA = 60 / VMA
   return {
-    EASY: vmaAllure * 1.15,    // 60-70% VMA
-    STEADY: vmaAllure * 1.08,  // 70-75% VMA  
-    THR: vmaAllure * 0.95,     // 80-85% VMA
-    INT: vmaAllure * 0.90,     // 95-105% VMA
-    VMA: vmaAllure             // 100-110% VMA
+    EASY: vmaAllure * 1.15,    // 60-70% VMA selon spec: EASY = 1,15 × Allure_VMA
+    STEADY: vmaAllure * 1.08,  // 70-75% VMA selon spec: STEADY = 1,08 × Allure_VMA  
+    THR: vmaAllure * 0.95,     // 80-85% VMA selon spec: THR = 0,95 × Allure_VMA
+    INT: vmaAllure * 0.90,     // 95-105% VMA selon spec: INT = 0,90 × Allure_VMA
+    VMA: vmaAllure             // 100-110% VMA pur
   };
 };
 
 const calculateWeeklyVolume = (sessionsPerWeek: number, vma: number): number => {
+  // Volume S1 selon spec exacte: Base sur Sessions/semaine + VMA
   const multipliers = {
-    2: { min: 1.8, max: 2.2 },
-    3: { min: 2.2, max: 2.8 },
-    4: { min: 2.8, max: 3.5 },
-    5: { min: 3.5, max: 4.2 },
-    6: { min: 4.2, max: 5.0 }
+    2: { min: 1.8, max: 2.2 },  // 2 séances : (VMA × 1,8) à (VMA × 2,2)
+    3: { min: 2.2, max: 2.8 },  // 3 séances : (VMA × 2,2) à (VMA × 2,8)
+    4: { min: 2.8, max: 3.5 },  // 4 séances : (VMA × 2,8) à (VMA × 3,5)
+    5: { min: 3.5, max: 4.2 },  // 5 séances : (VMA × 3,5) à (VMA × 4,2)
+    6: { min: 4.2, max: 5.0 }   // 6 séances : (VMA × 4,2) à (VMA × 5)
   };
   
   const mult = multipliers[sessionsPerWeek as keyof typeof multipliers] || multipliers[3];
-  return Math.round(vma * ((mult.min + mult.max) / 2));
+  return Math.round(vma * ((mult.min + mult.max) / 2)); // arrondir au km le plus proche
 };
 
 const assessObjectiveRealism = (goalSpeed: number, vma: number, distance: string): number => {
   const goalPercent = (goalSpeed / vma) * 100;
   
-  // Seuils selon distance
-  const thresholds = {
-    "10k": { realistic: 85, challenging: 92, extreme: 100 },
-    "semi": { realistic: 75, challenging: 82, extreme: 90 },
-    "marathon": { realistic: 70, challenging: 78, extreme: 85 }
-  };
+  // Exigence réaliste selon objectif - spec exacte
+  // Si allure cible > 80 % VMA → volume/intensité réduits pour éviter la blessure
+  if (goalPercent > 80) return 0.6; // max 1 séance intense/semaine
+  // Si allure cible < 75 % VMA → intensité progressive et volume complet
+  if (goalPercent < 75) return 1.0;
   
-  const thresh = thresholds[distance as keyof typeof thresholds] || thresholds["10k"];
-  
-  if (goalPercent <= thresh.realistic) return 1.0; // Objectif réaliste
-  if (goalPercent <= thresh.challenging) return 0.85; // Objectif challengeant
-  if (goalPercent <= thresh.extreme) return 0.7; // Objectif extrême
-  return 0.5; // Objectif irréaliste - volume très réduit
+  return 0.85; // Entre 75-80% VMA
 };
 
 // Fonctions utilitaires memoized
@@ -208,32 +203,22 @@ const usePaceZones = (goalSpeed: number, distance: string, level: string, vma?: 
       };
     }
 
-    // Nouveau système basé VMA (2025)
+    // Nouveau système basé VMA (2025) - spec exacte
     const vmaPaces = calculateVMAPaces(vma);
     const goalPace = paceFromSpeed(goalSpeed);
     
-    // Adapter les zones selon la distance et l'objectif
-    const realismFactor = assessObjectiveRealism(goalSpeed, vma, distance);
+    // RP = Allure cible GP selon spec exacte
+    const rpPace = goalPace;
     
-    // Ajustement selon distance pour RP
-    let rpPace = goalPace;
-    if (distance === "marathon") {
-      // Pour marathon, RP = 70-78% VMA typiquement
-      rpPace = paceFromSpeed(vma * 0.74);
-    } else if (distance === "semi") {
-      // Pour semi, RP = 75-82% VMA typiquement  
-      rpPace = paceFromSpeed(vma * 0.79);
-    } else {
-      // Pour 10k, RP = 85-95% VMA typiquement
-      rpPace = paceFromSpeed(vma * 0.90);
-    }
+    // Adapter les zones selon distance et l'objectif - spec exacte
+    const realismFactor = assessObjectiveRealism(goalSpeed, vma, distance);
     
     return {
       EASY: `${Math.floor(vmaPaces.EASY)}:${Math.round((vmaPaces.EASY % 1) * 60).toString().padStart(2, '0')}`,
       STEADY: `${Math.floor(vmaPaces.STEADY)}:${Math.round((vmaPaces.STEADY % 1) * 60).toString().padStart(2, '0')}`,
       THR: `${Math.floor(vmaPaces.THR)}:${Math.round((vmaPaces.THR % 1) * 60).toString().padStart(2, '0')}`,
       INT: `${Math.floor(vmaPaces.INT)}:${Math.round((vmaPaces.INT % 1) * 60).toString().padStart(2, '0')}`,
-      RP: goalPace // Utiliser l'objectif réel de l'utilisateur
+      RP: rpPace // RP = Allure cible GP selon spécification exacte
     };
   }, [goalSpeed, distance, level, vma]);
 };
@@ -299,14 +284,14 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
       return volumes[runnerLevel as keyof typeof volumes][selectedDistanceId as keyof typeof volumes.beginner][sessionsPerWeek as keyof typeof volumes.beginner["10k"]] || 35;
     }
 
-    // Nouveau système basé VMA (2025)
+    // Nouveau système basé VMA (2025) - spec exacte
     let baseVolumeKm = calculateWeeklyVolume(sessionsPerWeek, vmaValue);
     
-    // Facteur de réalisme selon l'objectif 
+    // Facteur de réalisme selon l'objectif - spec exacte
     const realismFactor = assessObjectiveRealism(speedValue, vmaValue, selectedDistanceId);
     baseVolumeKm = Math.round(baseVolumeKm * realismFactor);
     
-    // Conversion unités si nécessaire
+    // Conversion unités si nécessaire - convertir en mi si besoin selon spec
     return isMetric ? baseVolumeKm : Math.round(baseVolumeKm * 0.621371);
   }, [runnerLevel, selectedDistanceId, sessionsPerWeek, isMetric, vmaValue, speedValue]);
 
@@ -374,16 +359,23 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
         };
         
       case "Longue":
-        // Sortie longue adaptée selon phase et distance
+        // Sortie longue adaptée selon phase et distance - spec exacte
         let volumeRatio: number;
-        if (phase === "BASE") volumeRatio = distance === "10k" ? 0.30 : distance === "semi" ? 0.32 : 0.35;
-        else if (phase === "BUILD") volumeRatio = distance === "10k" ? 0.35 : distance === "semi" ? 0.38 : 0.40;
-        else volumeRatio = distance === "10k" ? 0.40 : distance === "semi" ? 0.42 : 0.45;
+        // BASE : 25–30 % du volume hebdo, BUILD : 30–35 %, PEAK : 35–40 %
+        if (phase === "BASE") volumeRatio = 0.275; // 25-30% moyenne = 27.5%
+        else if (phase === "BUILD") volumeRatio = 0.325; // 30-35% moyenne = 32.5%
+        else if (phase === "PEAK") volumeRatio = 0.375; // 35-40% moyenne = 37.5%
+        else volumeRatio = 0.25; // TAPER réduit
+        
+        // Marathon haut niveau : pic à 42–45 % selon spec
+        if (distance === "marathon" && vmaValue && vmaValue > 18 && sessionsPerWeek >= 5 && phase === "PEAK") {
+          volumeRatio = 0.435; // 42-45% moyenne = 43.5%
+        }
         
         const longDistance = Math.round(volume * volumeRatio);
         const longDuration = Math.round(longDistance * (isMetric ? 6.5 : 10));
         
-        // Blocs RP intégrés selon phase
+        // Blocs RP intégrés selon phase - BUILD : avec blocs RP intégrés
         const hasRPSegment = (phase === "BUILD" || phase === "PEAK") && distance !== "10k";
         const rpSegmentDistance = hasRPSegment ? Math.round(longDistance * 0.25) : 0;
         

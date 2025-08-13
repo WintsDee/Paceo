@@ -304,7 +304,11 @@ export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSave
                               <div className="text-sm text-muted-foreground mb-1">Cohérence vs VMA</div>
                               <div className="text-sm break-words">{pct.toFixed(1)}% de votre VMA — attendu {low}-{high}%</div>
                             </div>
-                            <Badge variant={variant} className={`shrink-0 ${status === "Cohérent" ? "bg-green-500 text-white" : status === "Ambitieux" ? "bg-red-500 text-white" : "bg-orange-500 text-white"}`}>{status}</Badge>
+                             <Badge variant={variant} className={`shrink-0 ${
+                               status === "Cohérent" ? "bg-green-500/80 text-white border-green-400/30" : 
+                               status === "Ambitieux" ? "bg-red-500/80 text-white border-red-400/30" : 
+                               "bg-orange-500/80 text-white border-orange-400/30"
+                             }`}>{status}</Badge>
                           </div>
                         );
                       })()}
