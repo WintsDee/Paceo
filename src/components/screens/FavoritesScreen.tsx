@@ -25,7 +25,7 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
     onUseFavorite(goal);
     toast({
       title: "Objectif chargé",
-      description: `Objectif ${goal.distance} chargé dans le calculateur`,
+      description: `Objectif ${goal.distance} et son programme chargés`,
     });
   };
 

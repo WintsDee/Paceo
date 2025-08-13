@@ -118,15 +118,15 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
     let intOffset = distance === "10k" ? -18 : distance === "semi" ? -25 : -35;
     
     if (level === 'beginner') {
-      easyOffset = 90; // More conservative for beginners
+      easyOffset = 75; // More conservative for beginners
       steadyOffset = 45;
-      thrOffset = Math.max(thrOffset + 10, -5); // Closer to goal pace
-      intOffset = Math.max(intOffset + 15, -10);
+      thrOffset = Math.max(thrOffset + 15, 0); // Much closer to goal pace
+      intOffset = Math.max(intOffset + 20, -5);
     } else if (level === 'advanced' && vma && vma > 16) {
       easyOffset = 45; // Faster recovery for advanced runners
       steadyOffset = 20;
       thrOffset -= 5; // More aggressive zones
-      intOffset -= 5;
+      intOffset -= 10;
     }
     
     const paces = {
@@ -151,32 +151,29 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
     const level = getRunnerLevel(speedValue, selectedDistanceId);
     const program: WeekProgram[] = [];
     
-    // Base volume per sessions/week adjusted by level
-    const baseVolumes = {
-      beginner: {
-        2: isMetric ? 20 : 12,
-        3: isMetric ? 25 : 16, 
-        4: isMetric ? 30 : 19,
-        5: isMetric ? 35 : 22,
-        6: isMetric ? 40 : 25
-      },
-      intermediate: {
-        2: isMetric ? 30 : 19,
-        3: isMetric ? 40 : 25, 
-        4: isMetric ? 50 : 31,
-        5: isMetric ? 60 : 37,
-        6: isMetric ? 70 : 43
-      },
-      advanced: {
-        2: isMetric ? 40 : 25,
-        3: isMetric ? 55 : 34, 
-        4: isMetric ? 70 : 43,
-        5: isMetric ? 85 : 53,
-        6: isMetric ? 100 : 62
-      }
+    // Base volume per sessions/week adjusted by level and distance
+    const getBaseVolume = (level: string, sessions: number, distance: string) => {
+      const baseVolumes = {
+        beginner: {
+          "10k": { 2: isMetric ? 15 : 9, 3: isMetric ? 20 : 12, 4: isMetric ? 25 : 16, 5: isMetric ? 30 : 19, 6: isMetric ? 35 : 22 },
+          "semi": { 2: isMetric ? 25 : 16, 3: isMetric ? 35 : 22, 4: isMetric ? 45 : 28, 5: isMetric ? 55 : 34, 6: isMetric ? 65 : 40 },
+          "marathon": { 2: isMetric ? 35 : 22, 3: isMetric ? 50 : 31, 4: isMetric ? 65 : 40, 5: isMetric ? 80 : 50, 6: isMetric ? 95 : 59 }
+        },
+        intermediate: {
+          "10k": { 2: isMetric ? 25 : 16, 3: isMetric ? 35 : 22, 4: isMetric ? 45 : 28, 5: isMetric ? 55 : 34, 6: isMetric ? 65 : 40 },
+          "semi": { 2: isMetric ? 40 : 25, 3: isMetric ? 55 : 34, 4: isMetric ? 70 : 43, 5: isMetric ? 85 : 53, 6: isMetric ? 100 : 62 },
+          "marathon": { 2: isMetric ? 55 : 34, 3: isMetric ? 75 : 47, 4: isMetric ? 95 : 59, 5: isMetric ? 115 : 71, 6: isMetric ? 135 : 84 }
+        },
+        advanced: {
+          "10k": { 2: isMetric ? 35 : 22, 3: isMetric ? 50 : 31, 4: isMetric ? 65 : 40, 5: isMetric ? 80 : 50, 6: isMetric ? 95 : 59 },
+          "semi": { 2: isMetric ? 55 : 34, 3: isMetric ? 75 : 47, 4: isMetric ? 95 : 59, 5: isMetric ? 115 : 71, 6: isMetric ? 135 : 84 },
+          "marathon": { 2: isMetric ? 75 : 47, 3: isMetric ? 105 : 65, 4: isMetric ? 135 : 84, 5: isMetric ? 165 : 102, 6: isMetric ? 195 : 121 }
+        }
+      };
+      return baseVolumes[level as keyof typeof baseVolumes][distance as keyof typeof baseVolumes.beginner][sessions as keyof typeof baseVolumes.beginner["10k"]] || 35;
     };
     
-    let currentVolume = baseVolumes[level][sessionsPerWeek as keyof typeof baseVolumes.beginner] || 35;
+    let currentVolume = getBaseVolume(level, sessionsPerWeek, selectedDistanceId);
     
     for (let week = 1; week <= weeks; week++) {
       let phase: WeekProgram['phase'];
@@ -286,15 +283,17 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
         };
         
       case "Longue":
-        const longDuration = Math.round(volume * 0.25); // Minutes based on volume
+        const volumeRatio = distance === "10k" ? 0.35 : distance === "semi" ? 0.4 : 0.45;
+        const longDistance = Math.round(volume * volumeRatio);
+        const longDuration = Math.round(longDistance * (metric ? 6 : 9.5)); // Approximative duration
         const hasRPSegment = (phase === "BUILD" || phase === "PEAK") && distance !== "10k";
         return {
           type: "Longue",
           duration: `${longDuration}-${longDuration + 15} min`,
           pace: formatPace(paces.EASY, metric),
           description: hasRPSegment ? 
-                      `${longDuration + 10}-${longDuration + 20} min @ ${formatPace(paces.EASY, metric)}, dont 20-30 min @ ${formatPace(paces.RP, metric)}` :
-                      `${longDuration}-${longDuration + 10} min @ ${formatPace(paces.EASY, metric)}`
+                      `${longDistance}${metric ? 'km' : 'mi'} @ ${formatPace(paces.EASY, metric)}, dont ${Math.round(longDistance * 0.3)}${metric ? 'km' : 'mi'} @ ${formatPace(paces.RP, metric)}` :
+                      `${longDistance}${metric ? 'km' : 'mi'} @ ${formatPace(paces.EASY, metric)}`
         };
         
       default: // EASY
@@ -331,13 +330,13 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
 
   const getSessionTypeColor = useCallback((type: TrainingSession['type']): string => {
     switch (type) {
-      case 'EASY': return 'bg-green-600 text-white hover:bg-green-700';
-      case 'STEADY': return 'bg-blue-600 text-white hover:bg-blue-700';
-      case 'THR': return 'bg-orange-600 text-white hover:bg-orange-700';
-      case 'INT': return 'bg-red-600 text-white hover:bg-red-700';
-      case 'RP': return 'bg-purple-600 text-white hover:bg-purple-700';
-      case 'Longue': return 'bg-cyan-600 text-white hover:bg-cyan-700';
-      default: return 'bg-gray-600 text-white hover:bg-gray-700';
+      case 'EASY': return 'bg-green-500 text-white hover:bg-green-600';
+      case 'STEADY': return 'bg-blue-500 text-white hover:bg-blue-600';
+      case 'THR': return 'bg-orange-500 text-white hover:bg-orange-600';
+      case 'INT': return 'bg-red-500 text-white hover:bg-red-600';
+      case 'RP': return 'bg-purple-500 text-white hover:bg-purple-600';
+      case 'Longue': return 'bg-cyan-500 text-white hover:bg-cyan-600';
+      default: return 'bg-gray-500 text-white hover:bg-gray-600';
     }
   }, []);
 
@@ -574,12 +573,11 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
             )}
             
             <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="btn-glass ml-2">
-                  <CalendarIcon className="h-4 w-4" />
-                  Date de l'objectif
-                </Button>
-              </PopoverTrigger>
+               <PopoverTrigger asChild>
+                 <Button variant="outline" size="sm" className="btn-glass ml-2 px-2">
+                   <CalendarIcon className="h-4 w-4" />
+                 </Button>
+               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="end">
                 <Calendar
                   mode="single"
@@ -628,19 +626,6 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
         </div>
       </Card>
 
-      {/* Global Actions */}
-      <Card className="glass-card p-4">
-        <div className="flex gap-2 justify-center">
-          <Button variant="outline" size="sm" className="btn-glass" onClick={shareFullProgram}>
-            <Share2 className="h-4 w-4 mr-2" />
-            {t("Partager")}
-          </Button>
-          <Button variant="outline" size="sm" className="btn-glass" onClick={printProgram}>
-            <Printer className="h-4 w-4 mr-2" />
-            Imprimer
-          </Button>
-        </div>
-      </Card>
 
       {/* Weekly Program */}
       <div className="space-y-3">
@@ -662,28 +647,9 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
                     </Badge>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="flex flex-wrap gap-2 mb-2">
-                      {week.sessions.map((session, sessionIndex) => (
-                        <TooltipProvider key={sessionIndex}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Badge 
-                                variant="secondary" 
-                                className={`${getSessionTypeColor(session.type)} text-xs font-medium px-2 py-1 cursor-help transition-colors`}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                }}
-                              >
-                                {t(session.type)}
-                              </Badge>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="max-w-xs text-sm">{getSessionTypeExplanation(session.type)}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      ))}
-                    </div>
+                     <div className="text-sm text-muted-foreground">
+                       {week.sessions.length} séances
+                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <span>{week.volume}{isMetric ? 'km' : 'mi'}</span>
                       <ChevronDown className="h-4 w-4 transition-transform duration-200" />
@@ -757,13 +723,31 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
         ))}
       </div>
       
-      {/* Save Program Button */}
-      <Card className="glass-card p-4 mt-6">
-        <Button onClick={saveProgramToFavorites} className="w-full btn-primary-glass h-12 text-base font-medium">
-          <Target className="w-4 h-4 mr-2" />
-          Enregistrer le programme
-        </Button>
-      </Card>
+       {/* Save Program Button */}
+       <Card className="glass-card p-4 mt-6">
+         <Button onClick={saveProgramToFavorites} className="w-full btn-primary-glass h-12 text-base font-medium">
+           Enregistrer le programme
+         </Button>
+         
+         <div className="flex gap-3 mt-4">
+           <Button
+             variant="outline"
+             onClick={shareFullProgram}
+             className="flex-1 btn-glass h-10"
+           >
+             <Share2 className="h-4 w-4 mr-2" />
+             Partager
+           </Button>
+           <Button
+             variant="outline"
+             onClick={printProgram}
+             className="flex-1 btn-glass h-10"
+           >
+             <Printer className="h-4 w-4 mr-2" />
+             Imprimer
+           </Button>
+         </div>
+       </Card>
     </div>
   );
 });

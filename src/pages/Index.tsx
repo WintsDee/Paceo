@@ -47,6 +47,11 @@ const Index = () => {
       if (goal.vmaKmh != null) {
         window.localStorage.setItem("pace-calc-vma", JSON.stringify(goal.vmaKmh));
       }
+      // Load program parameters if they exist
+      if (goal.program) {
+        window.localStorage.setItem("program-sessions-week", JSON.stringify(goal.program.sessionsPerWeek));
+        window.localStorage.setItem("program-weeks-before", JSON.stringify(goal.program.weeksBeforeRace));
+      }
     } catch {}
     setActiveTab("goal");
   }, [setIsMetric, setSpeedValue, setActiveTab]);

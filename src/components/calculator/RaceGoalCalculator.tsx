@@ -244,13 +244,14 @@ export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSave
               <CollapsibleTrigger className="flex w-full items-center gap-2 py-1.5 text-sm font-medium text-muted-foreground transition-all [&[data-state=open]>svg]:rotate-180">
                 <div className="flex items-center gap-2">
                   <span>VMA (km/h)</span>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div onClick={(e) => e.stopPropagation()}>
-                          <HelpCircle className="h-3 w-3 text-muted-foreground/60 hover:text-muted-foreground cursor-help" />
-                        </div>
-                      </TooltipTrigger>
+                   <TooltipProvider>
+                     <Tooltip>
+                       <TooltipTrigger asChild>
+                         <HelpCircle 
+                           className="h-3 w-3 text-muted-foreground/60 hover:text-muted-foreground cursor-help" 
+                           onClick={(e) => e.stopPropagation()}
+                         />
+                       </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
                         <div className="space-y-2 text-sm">
                           <p><strong>VMA (Vitesse Maximale Aérobie)</strong></p>
@@ -303,7 +304,7 @@ export const RaceGoalCalculator = ({ isMetric, speedValue, onSpeedChange, onSave
                               <div className="text-sm text-muted-foreground mb-1">Cohérence vs VMA</div>
                               <div className="text-sm break-words">{pct.toFixed(1)}% de votre VMA — attendu {low}-{high}%</div>
                             </div>
-                            <Badge variant={variant} className="shrink-0">{status}</Badge>
+                            <Badge variant={variant} className={`shrink-0 ${status === "Cohérent" ? "bg-green-500 text-white" : status === "Ambitieux" ? "bg-red-500 text-white" : "bg-orange-500 text-white"}`}>{status}</Badge>
                           </div>
                         );
                       })()}
