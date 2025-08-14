@@ -8,7 +8,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { CalendarIcon, ChevronDown, Plus, Minus, Copy, Share2, Target, Printer } from "lucide-react";
+import { CalendarIcon, ChevronDown, Plus, Minus, Copy, Share2, Printer, Target } from "lucide-react";
 import { differenceInWeeks } from "date-fns";
 import { fr, enUS, es, de } from "date-fns/locale";
 import { toast } from "sonner";
@@ -694,100 +694,86 @@ export const ProgramScreen = React.memo(({
         <p className="text-muted-foreground text-sm">{t("Plan d'entraînement automatique")}</p>
       </div>
 
-      {/* Sticky Controls Header */}
-      <Card className="glass-card p-4 sticky top-0 z-10">
-        <div className="flex items-center justify-between gap-4">
-          {/* Sessions per week */}
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" className="h-8 w-8 btn-glass" onClick={() => adjustSessions(-1)} disabled={sessionsPerWeek <= 2}>
-              <Minus className="h-4 w-4" />
-            </Button>
-            <div className="text-center min-w-[80px]">
-              <div className="text-sm font-medium">{sessionsPerWeek}</div>
-              <div className="text-xs text-muted-foreground">{t("Sessions/sem.")}</div>
+      {/* Objectif de Course - moved before controls */}
+      <Card className="glass-card p-4">
+        <div className="text-center space-y-3">
+          <h3 className="text-lg font-semibold text-foreground">Objectif de Course</h3>
+          
+          <div className="grid grid-cols-3 gap-2 text-sm">
+            <div className="text-center">
+              <div className="text-base font-bold text-foreground">{race.label}</div>
+              <div className="text-xs text-muted-foreground">Distance</div>
             </div>
-            <Button variant="outline" size="icon" className="h-8 w-8 btn-glass" onClick={() => adjustSessions(1)} disabled={sessionsPerWeek >= 6}>
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Weeks before race / Date picker */}
-          <div className="flex items-center gap-2">
-            {!useRaceDate ? <>
-                <Button variant="outline" size="icon" className="h-8 w-8 btn-glass" onClick={() => adjustWeeks(-1)} disabled={weeksBeforeRace <= 2}>
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <div className="text-center min-w-[80px]">
-                  <div className="text-sm font-medium">{effectiveWeeks}</div>
-                  <div className="text-xs text-muted-foreground">{t("Avant objectif")} (sem.)</div>
-                </div>
-                <Button variant="outline" size="icon" className="h-8 w-8 btn-glass" onClick={() => adjustWeeks(1)} disabled={weeksBeforeRace >= 16}>
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </> : <div className="text-center min-w-[80px]">
-                <div className="text-sm font-medium">{effectiveWeeks}</div>
-                <div className="text-xs text-muted-foreground">sem. calculées</div>
-              </div>}
             
-            <Popover>
-              <PopoverTrigger asChild>
-                
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="end">
-                <Calendar mode="single" selected={raceDate} onSelect={date => {
-                setRaceDate(date);
-                if (date) {
-                  setUseRaceDate(true);
-                }
-              }} disabled={date => date < new Date()} initialFocus locale={dateLocale} className="pointer-events-auto" />
-                {useRaceDate && <div className="p-2 border-t">
-                    <Button variant="outline" size="sm" className="w-full" onClick={() => {
-                  setUseRaceDate(false);
-                  setRaceDate(undefined);
-                }}>
-                      Utiliser nombre de semaines
-                    </Button>
-                  </div>}
-              </PopoverContent>
-            </Popover>
+            <div className="text-center">
+              <div className="text-base font-bold text-primary mono-numbers">{goalTime}</div>
+              <div className="text-xs text-muted-foreground">Temps</div>
+            </div>
+            
+            <div className="text-center">
+              <div className="text-base font-bold text-foreground mono-numbers">{formatPace(goalPace, isMetric)}</div>
+              <div className="text-xs text-muted-foreground">Allure</div>
+            </div>
           </div>
+          
+          {vmaValue && (
+            <div className="grid grid-cols-2 gap-2 text-sm pt-2 border-t border-border/50">
+              <div className="text-center">
+                <div className="text-base font-bold text-foreground mono-numbers">{vmaValue.toFixed(1)} km/h</div>
+                <div className="text-xs text-muted-foreground">VMA</div>
+              </div>
+              <div className="text-center">
+                <div className="text-base font-bold text-foreground mono-numbers">{speedValue.toFixed(1)} {isMetric ? 'km/h' : 'mph'}</div>
+                <div className="text-xs text-muted-foreground">Vitesse</div>
+              </div>
+            </div>
+          )}
         </div>
       </Card>
 
-      {/* Cadre Objectif Élégant */}
-      <Card className="glass-card p-6 border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
-        <div className="text-center space-y-3">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Target className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-semibold text-primary">Objectif de Course</h3>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <div className="space-y-1">
-              <div className="text-2xl font-bold text-foreground">{race.label}</div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wider">Distance</div>
-            </div>
-            
-            <div className="space-y-1">
-              <div className="text-2xl font-bold text-primary mono-numbers">{goalTime}</div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wider">Temps Objectif</div>
-            </div>
-            
-            <div className="space-y-1">
-              <div className="text-2xl font-bold text-foreground mono-numbers">{formatPace(goalPace, isMetric)}</div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wider">Allure Cible</div>
+      {/* Réglages - simplified controls */}
+      <Card className="glass-card p-4">
+        <div className="grid grid-cols-2 gap-3">
+          {/* Sessions per week */}
+          <div className="text-center">
+            <div className="text-sm font-medium text-foreground mb-2">Sessions/semaine</div>
+            <div className="flex items-center justify-center gap-2">
+              <Button variant="outline" size="icon" className="h-8 w-8 btn-glass" onClick={() => adjustSessions(-1)} disabled={sessionsPerWeek <= 2}>
+                <Minus className="h-4 w-4" />
+              </Button>
+              <span className="font-mono text-lg font-bold text-primary min-w-[2ch] text-center">
+                {sessionsPerWeek}
+              </span>
+              <Button variant="outline" size="icon" className="h-8 w-8 btn-glass" onClick={() => adjustSessions(1)} disabled={sessionsPerWeek >= 6}>
+                <Plus className="h-4 w-4" />
+              </Button>
             </div>
           </div>
-          
-          {vmaValue && <div className="pt-3 border-t border-border/50">
-              <div className="flex items-center justify-center gap-4 text-sm">
-                <span className="text-muted-foreground">VMA:</span>
-                <span className="font-semibold mono-numbers">{vmaValue.toFixed(1)} km/h</span>
-                <span className="text-muted-foreground">•</span>
-                <span className="text-muted-foreground">Vitesse:</span>
-                <span className="font-semibold mono-numbers">{speedValue.toFixed(2)} {isMetric ? 'km/h' : 'mph'}</span>
-              </div>
-            </div>}
+
+          {/* Weeks before race */}
+          <div className="text-center">
+            <div className="text-sm font-medium text-foreground mb-2">Durée programme</div>
+            <div className="flex items-center justify-center gap-2">
+              {!useRaceDate ? (
+                <>
+                  <Button variant="outline" size="icon" className="h-8 w-8 btn-glass" onClick={() => adjustWeeks(-1)} disabled={weeksBeforeRace <= 2}>
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <span className="font-mono text-lg font-bold text-primary min-w-[2ch] text-center">
+                    {effectiveWeeks}
+                  </span>
+                  <Button variant="outline" size="icon" className="h-8 w-8 btn-glass" onClick={() => adjustWeeks(1)} disabled={weeksBeforeRace >= 16}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </>
+              ) : (
+                <span className="font-mono text-lg font-bold text-primary">
+                  {effectiveWeeks}
+                </span>
+              )}
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">semaines</div>
+          </div>
         </div>
       </Card>
 

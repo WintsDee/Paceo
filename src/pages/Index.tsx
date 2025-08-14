@@ -36,24 +36,58 @@ const Index = () => {
   }, [favorites, setFavorites]);
 
   const handleUseFavorite = React.useCallback((goal: RaceGoal) => {
-    // Load units and speed + persist goal-specific settings for global sync
-    setIsMetric(goal.isMetric);
-    const s = parseFloat(goal.speed);
-    if (!Number.isNaN(s)) setSpeedValue(s);
+    // Clear current state completely
+    setSpeedValue(0);
+    
+    // Force a state refresh by clearing localStorage temporarily
     try {
-      if (goal.selectedDistanceId) {
-        window.localStorage.setItem("pace-calc-goal-distance", JSON.stringify(goal.selectedDistanceId));
-      }
-      if (goal.vmaKmh != null) {
-        window.localStorage.setItem("pace-calc-vma", JSON.stringify(goal.vmaKmh));
-      }
-      // Load program parameters if they exist
-      if (goal.program) {
-        window.localStorage.setItem("program-sessions-week", JSON.stringify(goal.program.sessionsPerWeek));
-        window.localStorage.setItem("program-weeks-before", JSON.stringify(goal.program.weeksBeforeRace));
-      }
+      const keysToPreserve = ["pace-calc-favorites"];
+      const preservedData: Record<string, string> = {};
+      keysToPreserve.forEach(key => {
+        const value = window.localStorage.getItem(key);
+        if (value) preservedData[key] = value;
+      });
+      
+      // Clear all pace-calc related localStorage
+      Object.keys(window.localStorage).forEach(key => {
+        if (key.startsWith("pace-calc") || key.startsWith("program-")) {
+          window.localStorage.removeItem(key);
+        }
+      });
+      
+      // Restore preserved data
+      Object.entries(preservedData).forEach(([key, value]) => {
+        window.localStorage.setItem(key, value);
+      });
     } catch {}
-    setActiveTab("program");
+    
+    // Load the favorite goal with a slight delay to ensure clean state
+    setTimeout(() => {
+      setIsMetric(goal.isMetric);
+      const s = parseFloat(goal.speed);
+      if (!Number.isNaN(s)) setSpeedValue(s);
+      
+      try {
+        if (goal.selectedDistanceId) {
+          window.localStorage.setItem("pace-calc-goal-distance", JSON.stringify(goal.selectedDistanceId));
+        }
+        if (goal.vmaKmh != null) {
+          window.localStorage.setItem("pace-calc-vma", JSON.stringify(goal.vmaKmh));
+        }
+        // Load program parameters if they exist
+        if (goal.program) {
+          window.localStorage.setItem("program-sessions-week", JSON.stringify(goal.program.sessionsPerWeek));
+          window.localStorage.setItem("program-weeks-before", JSON.stringify(goal.program.weeksBeforeRace));
+        }
+      } catch {}
+      
+      setActiveTab("program");
+      
+      // Force a full page refresh to ensure all components reload with new data
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    }, 50);
   }, [setIsMetric, setSpeedValue, setActiveTab]);
 
   const renderScreen = React.useCallback(() => {
