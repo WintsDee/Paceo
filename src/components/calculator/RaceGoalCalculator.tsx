@@ -226,13 +226,7 @@ export const RaceGoalCalculator = ({
         {/* Results display - Enhanced mobile visibility */}
         <div className="space-y-4">
           {/* Temps objectif mis en avant */}
-          <div className="glass-card p-6 rounded-lg border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-            <div className="text-center">
-              <div className="text-sm text-muted-foreground mb-2">Temps objectif</div>
-              <div className="text-3xl font-bold mono-numbers text-primary mb-1">{targetTime}</div>
-              <div className="text-sm text-muted-foreground">pour {race.label}</div>
-            </div>
-          </div>
+          
           
           {/* Allure et vitesse */}
           <div className="grid grid-cols-2 gap-4">
