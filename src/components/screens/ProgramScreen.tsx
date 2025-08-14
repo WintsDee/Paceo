@@ -673,65 +673,55 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
 
       {/* Section configuration du programme - Design iOS natif moderne */}
       <div className="mb-6 space-y-6">
-        {/* Contrôles sessions et semaines - Layout responsive */}
-        <div className="flex flex-col sm:flex-row gap-4">
+        {/* Contrôles sessions et semaines - Layout mobile compact */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* Sessions par semaine */}
-          <div className="flex-1 glass-card rounded-2xl p-5">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-full">
-                  <Target className="h-4 w-4 text-primary" />
-                </div>
-                <span className="text-sm font-medium text-foreground">
-                  Sessions/semaine
-                </span>
-              </div>
+          <div className="glass-card rounded-2xl p-4">
+            <div className="mb-3">
+              <span className="text-sm font-medium text-foreground">
+                Sessions/semaine
+              </span>
             </div>
-            <div className="flex items-center justify-center gap-4">
+            <div className="flex items-center justify-center gap-3">
               <button
                 onClick={() => setSessionsPerWeek(Math.max(2, sessionsPerWeek - 1))}
                 disabled={sessionsPerWeek <= 2}
-                className="flex items-center justify-center w-10 h-10 rounded-full glass-card hover:glow-effect disabled:opacity-50 disabled:cursor-not-allowed transition-smooth active:scale-95"
+                className="flex items-center justify-center w-8 h-8 rounded-full glass-card hover:glow-effect disabled:opacity-50 disabled:cursor-not-allowed transition-smooth active:scale-95"
               >
-                <Minus className="h-4 w-4 text-foreground" />
+                <Minus className="h-3 w-3 text-foreground" />
               </button>
-              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 border-2 border-primary/20">
-                <span className="text-2xl font-bold text-primary">
+              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 border-2 border-primary/20">
+                <span className="text-xl font-bold text-primary">
                   {sessionsPerWeek}
                 </span>
               </div>
               <button
                 onClick={() => setSessionsPerWeek(Math.min(6, sessionsPerWeek + 1))}
                 disabled={sessionsPerWeek >= 6}
-                className="flex items-center justify-center w-10 h-10 rounded-full glass-card hover:glow-effect disabled:opacity-50 disabled:cursor-not-allowed transition-smooth active:scale-95"
+                className="flex items-center justify-center w-8 h-8 rounded-full glass-card hover:glow-effect disabled:opacity-50 disabled:cursor-not-allowed transition-smooth active:scale-95"
               >
-                <Plus className="h-4 w-4 text-foreground" />
+                <Plus className="h-3 w-3 text-foreground" />
               </button>
             </div>
           </div>
 
           {/* Configuration date/semaines */}
-          <div className="flex-1 glass-card rounded-2xl p-5">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-full">
-                  <CalendarIcon className="h-4 w-4 text-primary" />
-                </div>
-                <span className="text-sm font-medium text-foreground">
-                  {useRaceDate ? "Date de course" : "Durée programme"}
-                </span>
-              </div>
+          <div className="glass-card rounded-2xl p-4">
+            <div className="mb-3">
+              <span className="text-sm font-medium text-foreground">
+                {useRaceDate ? "Date de course" : "Durée programme"}
+              </span>
             </div>
             
             {useRaceDate ? (
               <Popover>
                 <PopoverTrigger asChild>
-                  <button className="w-full p-3 rounded-xl glass-card text-left hover:glow-effect transition-smooth">
+                  <button className="w-full p-2 rounded-xl glass-card text-center hover:glow-effect transition-smooth">
                     <div className="flex items-center justify-center gap-2 text-sm">
                       <CalendarIcon className="h-4 w-4" />
                       {raceDate ? 
                         raceDate.toLocaleDateString(language === 'fr' ? 'fr-FR' : language === 'de' ? 'de-DE' : language === 'es' ? 'es-ES' : 'en-US') :
-                        "Choisir une date"
+                        "Choisir"
                       }
                     </div>
                   </button>
@@ -749,25 +739,25 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
                 </PopoverContent>
               </Popover>
             ) : (
-              <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center justify-center gap-3">
                 <button
                   onClick={() => setWeeksBeforeRace(Math.max(2, weeksBeforeRace - 1))}
                   disabled={weeksBeforeRace <= 2}
-                  className="flex items-center justify-center w-10 h-10 rounded-full glass-card hover:glow-effect disabled:opacity-50 disabled:cursor-not-allowed transition-smooth active:scale-95"
+                  className="flex items-center justify-center w-8 h-8 rounded-full glass-card hover:glow-effect disabled:opacity-50 disabled:cursor-not-allowed transition-smooth active:scale-95"
                 >
-                  <Minus className="h-4 w-4 text-foreground" />
+                  <Minus className="h-3 w-3 text-foreground" />
                 </button>
-                <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 border-2 border-primary/20">
-                  <span className="text-2xl font-bold text-primary">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 border-2 border-primary/20">
+                  <span className="text-xl font-bold text-primary">
                     {weeksBeforeRace}
                   </span>
                 </div>
                 <button
                   onClick={() => setWeeksBeforeRace(Math.min(16, weeksBeforeRace + 1))}
                   disabled={weeksBeforeRace >= 16}
-                  className="flex items-center justify-center w-10 h-10 rounded-full glass-card hover:glow-effect disabled:opacity-50 disabled:cursor-not-allowed transition-smooth active:scale-95"
+                  className="flex items-center justify-center w-8 h-8 rounded-full glass-card hover:glow-effect disabled:opacity-50 disabled:cursor-not-allowed transition-smooth active:scale-95"
                 >
-                  <Plus className="h-4 w-4 text-foreground" />
+                  <Plus className="h-3 w-3 text-foreground" />
                 </button>
               </div>
             )}
@@ -786,16 +776,13 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
       </div>
 
       {/* Bloc récapitulatif de l'objectif - Design compact et mobile optimisé */}
-      <div className="mb-6 glass-card rounded-2xl p-5 border-primary/20">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 bg-primary/10 rounded-full">
-            <Target className="h-5 w-5 text-primary" />
-          </div>
+      <div className="mb-6 glass-card rounded-2xl p-4 border-primary/20">
+        <div className="mb-4">
           <h3 className="text-lg font-semibold text-foreground">
             Objectif de Course
           </h3>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-4 gap-2">
           <div className="glass-card rounded-xl p-3 text-center">
             <div className="text-xs font-medium text-muted-foreground mb-1">
               Distance
@@ -830,7 +817,7 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
           </div>
         </div>
         {vmaValue && (
-          <div className="mt-4 pt-3 border-t border-border">
+          <div className="mt-3 pt-3 border-t border-border">
             <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
               <span>VMA: <span className="font-semibold text-primary">{vmaValue.toFixed(1)} km/h</span></span>
               <span>•</span>
