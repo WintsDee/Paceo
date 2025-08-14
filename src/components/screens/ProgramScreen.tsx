@@ -706,7 +706,7 @@ export const ProgramScreen = React.memo(({
             </div>
             
             <div className="text-center">
-              <div className="text-base font-bold text-primary mono-numbers">{goalTime}</div>
+              <div className="text-3xl font-bold text-primary mono-numbers">{goalTime}</div>
               <div className="text-xs text-muted-foreground">Temps</div>
             </div>
             
@@ -717,14 +717,14 @@ export const ProgramScreen = React.memo(({
           </div>
           
           {vmaValue && (
-            <div className="grid grid-cols-2 gap-2 text-sm pt-2 border-t border-border/50">
+            <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-border/50">
               <div className="text-center">
-                <div className="text-base font-bold text-foreground mono-numbers">{vmaValue.toFixed(1)} km/h</div>
-                <div className="text-xs text-muted-foreground">VMA</div>
+                <div className="text-sm font-medium text-muted-foreground mono-numbers">{vmaValue.toFixed(1)} km/h</div>
+                <div className="text-xs text-muted-foreground/70">VMA</div>
               </div>
               <div className="text-center">
-                <div className="text-base font-bold text-foreground mono-numbers">{speedValue.toFixed(1)} {isMetric ? 'km/h' : 'mph'}</div>
-                <div className="text-xs text-muted-foreground">Vitesse</div>
+                <div className="text-sm font-medium text-muted-foreground mono-numbers">{speedValue.toFixed(1)} {isMetric ? 'km/h' : 'mph'}</div>
+                <div className="text-xs text-muted-foreground/70">Vitesse</div>
               </div>
             </div>
           )}

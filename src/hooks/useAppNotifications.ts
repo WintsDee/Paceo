@@ -14,7 +14,7 @@ export const useAppNotifications = () => {
   const showSuccess = (title: string, options?: NotificationOptions) => {
     toast.success(title, {
       description: options?.description,
-      duration: options?.duration || 3000,
+      duration: options?.duration || 2000,
       action: options?.action ? {
         label: options.action.label,
         onClick: options.action.onClick,
@@ -26,7 +26,7 @@ export const useAppNotifications = () => {
   const showError = (title: string, options?: NotificationOptions) => {
     toast.error(title, {
       description: options?.description,
-      duration: options?.duration || 4000,
+      duration: options?.duration || 3000,
       className: "glass-card border-destructive/20 bg-destructive/10",
     });
   };
@@ -34,7 +34,7 @@ export const useAppNotifications = () => {
   const showInfo = (title: string, options?: NotificationOptions) => {
     toast.info(title, {
       description: options?.description,
-      duration: options?.duration || 3000,
+      duration: options?.duration || 2000,
       className: "glass-card border-blue-500/20 bg-blue-50/10",
     });
   };
@@ -42,7 +42,7 @@ export const useAppNotifications = () => {
   const showWarning = (title: string, options?: NotificationOptions) => {
     toast.warning(title, {
       description: options?.description,
-      duration: options?.duration || 4000,
+      duration: options?.duration || 3000,
       className: "glass-card border-orange-500/20 bg-orange-50/10",
     });
   };
