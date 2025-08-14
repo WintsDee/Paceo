@@ -12,20 +12,17 @@ import { CalendarIcon, ChevronDown, Plus, Minus, Copy, Share2, Target, Printer }
 import { differenceInWeeks } from "date-fns";
 import { fr, enUS, es, de } from "date-fns/locale";
 import { toast } from "sonner";
-
 interface ProgramScreenProps {
   isMetric: boolean;
   speedValue: number;
   vmaValue?: number;
 }
-
 interface TrainingSession {
   type: "EASY" | "STEADY" | "THR" | "INT" | "RP" | "Longue";
   duration: string;
   pace: string;
   description: string;
 }
-
 interface WeekProgram {
   week: number;
   phase: "BASE" | "BUILD" | "PEAK" | "TAPER";
@@ -34,29 +31,37 @@ interface WeekProgram {
 }
 
 // Constantes pour éviter les recalculs
-const RACE_DISTANCES = [
-  { id: "10k", label: "10 km", distance: 10, distanceMiles: 6.21 },
-  { id: "semi", label: "Semi", distance: 21.0975, distanceMiles: 13.1 },
-  { id: "marathon", label: "Marathon", distance: 42.195, distanceMiles: 26.2 },
-] as const;
-
+const RACE_DISTANCES = [{
+  id: "10k",
+  label: "10 km",
+  distance: 10,
+  distanceMiles: 6.21
+}, {
+  id: "semi",
+  label: "Semi",
+  distance: 21.0975,
+  distanceMiles: 13.1
+}, {
+  id: "marathon",
+  label: "Marathon",
+  distance: 42.195,
+  distanceMiles: 26.2
+}] as const;
 const SESSION_TEMPLATES = {
   2: ["INT", "Longue"] as const,
   3: ["INT", "THR", "Longue"] as const,
-  4: ["INT", "EASY", "THR", "Longue"] as const, 
+  4: ["INT", "EASY", "THR", "Longue"] as const,
   5: ["INT", "EASY", "THR", "STEADY", "Longue"] as const,
   6: ["INT", "EASY", "THR", "STEADY", "Longue", "EASY"] as const
 };
-
 const SESSION_COLORS = {
   EASY: 'bg-green-500/80 text-white hover:bg-green-500/90 border-green-400/30',
   STEADY: 'bg-blue-500/80 text-white hover:bg-blue-500/90 border-blue-400/30',
   THR: 'bg-orange-500/80 text-white hover:bg-orange-500/90 border-orange-400/30',
   INT: 'bg-red-500/80 text-white hover:bg-red-500/90 border-red-400/30',
   RP: 'bg-purple-500/80 text-white hover:bg-purple-500/90 border-purple-400/30',
-  Longue: 'bg-cyan-500/80 text-white hover:bg-cyan-500/90 border-cyan-400/30',
+  Longue: 'bg-cyan-500/80 text-white hover:bg-cyan-500/90 border-cyan-400/30'
 } as const;
-
 const SESSION_EXPLANATIONS = {
   fr: {
     EASY: "Course à allure tranquille pour récupérer et développer l'endurance de base",
@@ -96,37 +101,56 @@ const SESSION_EXPLANATIONS = {
 const calculateVMAPaces = (vma: number) => {
   const vmaAllure = 60 / vma; // min/km selon spec: Allure_VMA = 60 / VMA
   return {
-    EASY: vmaAllure * 1.15,    // 60-70% VMA selon spec: EASY = 1,15 × Allure_VMA
-    STEADY: vmaAllure * 1.08,  // 70-75% VMA selon spec: STEADY = 1,08 × Allure_VMA  
-    THR: vmaAllure * 0.95,     // 80-85% VMA selon spec: THR = 0,95 × Allure_VMA
-    INT: vmaAllure * 0.90,     // 95-105% VMA selon spec: INT = 0,90 × Allure_VMA
-    VMA: vmaAllure             // 100-110% VMA pur
+    EASY: vmaAllure * 1.15,
+    // 60-70% VMA selon spec: EASY = 1,15 × Allure_VMA
+    STEADY: vmaAllure * 1.08,
+    // 70-75% VMA selon spec: STEADY = 1,08 × Allure_VMA  
+    THR: vmaAllure * 0.95,
+    // 80-85% VMA selon spec: THR = 0,95 × Allure_VMA
+    INT: vmaAllure * 0.90,
+    // 95-105% VMA selon spec: INT = 0,90 × Allure_VMA
+    VMA: vmaAllure // 100-110% VMA pur
   };
 };
-
 const calculateWeeklyVolume = (sessionsPerWeek: number, vma: number): number => {
   // Volume S1 selon spec exacte: Base sur Sessions/semaine + VMA
   const multipliers = {
-    2: { min: 1.8, max: 2.2 },  // 2 séances : (VMA × 1,8) à (VMA × 2,2)
-    3: { min: 2.2, max: 2.8 },  // 3 séances : (VMA × 2,2) à (VMA × 2,8)
-    4: { min: 2.8, max: 3.5 },  // 4 séances : (VMA × 2,8) à (VMA × 3,5)
-    5: { min: 3.5, max: 4.2 },  // 5 séances : (VMA × 3,5) à (VMA × 4,2)
-    6: { min: 4.2, max: 5.0 }   // 6 séances : (VMA × 4,2) à (VMA × 5)
+    2: {
+      min: 1.8,
+      max: 2.2
+    },
+    // 2 séances : (VMA × 1,8) à (VMA × 2,2)
+    3: {
+      min: 2.2,
+      max: 2.8
+    },
+    // 3 séances : (VMA × 2,2) à (VMA × 2,8)
+    4: {
+      min: 2.8,
+      max: 3.5
+    },
+    // 4 séances : (VMA × 2,8) à (VMA × 3,5)
+    5: {
+      min: 3.5,
+      max: 4.2
+    },
+    // 5 séances : (VMA × 3,5) à (VMA × 4,2)
+    6: {
+      min: 4.2,
+      max: 5.0
+    } // 6 séances : (VMA × 4,2) à (VMA × 5)
   };
-  
   const mult = multipliers[sessionsPerWeek as keyof typeof multipliers] || multipliers[3];
   return Math.round(vma * ((mult.min + mult.max) / 2)); // arrondir au km le plus proche
 };
-
 const assessObjectiveRealism = (goalSpeed: number, vma: number, distance: string): number => {
-  const goalPercent = (goalSpeed / vma) * 100;
-  
+  const goalPercent = goalSpeed / vma * 100;
+
   // Exigence réaliste selon objectif - spec exacte
   // Si allure cible > 80 % VMA → volume/intensité réduits pour éviter la blessure
   if (goalPercent > 80) return 0.6; // max 1 séance intense/semaine
   // Si allure cible < 75 % VMA → intensité progressive et volume complet
   if (goalPercent < 75) return 1.0;
-  
   return 0.85; // Entre 75-80% VMA
 };
 
@@ -138,7 +162,6 @@ const paceFromSpeed = (speed: number): string => {
   const seconds = Math.round((totalMinutes - minutes) * 60);
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
-
 const addSecondsToMmSs = (mmss: string, seconds: number): string => {
   const [m, s] = mmss.split(":").map(Number);
   const totalSeconds = m * 60 + s + seconds;
@@ -146,7 +169,6 @@ const addSecondsToMmSs = (mmss: string, seconds: number): string => {
   const newSeconds = totalSeconds % 60;
   return `${newMinutes}:${newSeconds.toString().padStart(2, "0")}`;
 };
-
 const formatPace = (pace: string, isMetric: boolean): string => {
   return `${pace}/${isMetric ? 'km' : 'mi'}`;
 };
@@ -155,7 +177,7 @@ const formatPace = (pace: string, isMetric: boolean): string => {
 const useRunnerLevel = (speed: number, distance: string) => {
   return useMemo(() => {
     const pace = 60 / speed; // minutes per km
-    
+
     if (distance === "10k") {
       if (pace > 7) return 'beginner';
       if (pace > 5) return 'intermediate';
@@ -164,7 +186,8 @@ const useRunnerLevel = (speed: number, distance: string) => {
       if (pace > 6.5) return 'beginner';
       if (pace > 4.8) return 'intermediate';
       return 'advanced';
-    } else { // marathon
+    } else {
+      // marathon
       if (pace > 6.5) return 'beginner';
       if (pace > 5) return 'intermediate';
       return 'advanced';
@@ -178,10 +201,10 @@ const usePaceZones = (goalSpeed: number, distance: string, level: string, vma?: 
     if (!vma || vma <= 8) {
       // Fallback ancien système si pas de VMA
       const goalPace = paceFromSpeed(goalSpeed);
-      let easyOffset = 60, steadyOffset = 30;
+      let easyOffset = 60,
+        steadyOffset = 30;
       let thrOffset = distance === "10k" ? -5 : distance === "semi" ? -10 : -20;
       let intOffset = distance === "10k" ? -18 : distance === "semi" ? -25 : -35;
-      
       if (level === 'beginner') {
         easyOffset = 75;
         steadyOffset = 45;
@@ -193,7 +216,6 @@ const usePaceZones = (goalSpeed: number, distance: string, level: string, vma?: 
         thrOffset -= 5;
         intOffset -= 10;
       }
-      
       return {
         EASY: addSecondsToMmSs(goalPace, easyOffset),
         STEADY: addSecondsToMmSs(goalPace, steadyOffset),
@@ -206,25 +228,30 @@ const usePaceZones = (goalSpeed: number, distance: string, level: string, vma?: 
     // Nouveau système basé VMA (2025) - spec exacte
     const vmaPaces = calculateVMAPaces(vma);
     const goalPace = paceFromSpeed(goalSpeed);
-    
+
     // RP = Allure cible GP selon spec exacte
     const rpPace = goalPace;
-    
+
     // Adapter les zones selon distance et l'objectif - spec exacte
     const realismFactor = assessObjectiveRealism(goalSpeed, vma, distance);
-    
     return {
-      EASY: `${Math.floor(vmaPaces.EASY)}:${Math.round((vmaPaces.EASY % 1) * 60).toString().padStart(2, '0')}`,
-      STEADY: `${Math.floor(vmaPaces.STEADY)}:${Math.round((vmaPaces.STEADY % 1) * 60).toString().padStart(2, '0')}`,
-      THR: `${Math.floor(vmaPaces.THR)}:${Math.round((vmaPaces.THR % 1) * 60).toString().padStart(2, '0')}`,
-      INT: `${Math.floor(vmaPaces.INT)}:${Math.round((vmaPaces.INT % 1) * 60).toString().padStart(2, '0')}`,
+      EASY: `${Math.floor(vmaPaces.EASY)}:${Math.round(vmaPaces.EASY % 1 * 60).toString().padStart(2, '0')}`,
+      STEADY: `${Math.floor(vmaPaces.STEADY)}:${Math.round(vmaPaces.STEADY % 1 * 60).toString().padStart(2, '0')}`,
+      THR: `${Math.floor(vmaPaces.THR)}:${Math.round(vmaPaces.THR % 1 * 60).toString().padStart(2, '0')}`,
+      INT: `${Math.floor(vmaPaces.INT)}:${Math.round(vmaPaces.INT % 1 * 60).toString().padStart(2, '0')}`,
       RP: rpPace // RP = Allure cible GP selon spécification exacte
     };
   }, [goalSpeed, distance, level, vma]);
 };
-
-export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: ProgramScreenProps) => {
-  const { t, language } = useLanguage();
+export const ProgramScreen = React.memo(({
+  isMetric,
+  speedValue,
+  vmaValue
+}: ProgramScreenProps) => {
+  const {
+    t,
+    language
+  } = useLanguage();
   const [sessionsPerWeek, setSessionsPerWeek] = useLocalStorage<number>("program-sessions-week", 3);
   const [weeksBeforeRace, setWeeksBeforeRace] = useLocalStorage<number>("program-weeks-before", 12);
   const [raceDate, setRaceDate] = useState<Date>();
@@ -236,18 +263,17 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
   // Mémorisation des données de base
   const dateLocale = useMemo(() => {
     switch (language) {
-      case 'fr': return fr;
-      case 'es': return es;
-      case 'de': return de;
-      default: return enUS;
+      case 'fr':
+        return fr;
+      case 'es':
+        return es;
+      case 'de':
+        return de;
+      default:
+        return enUS;
     }
   }, [language]);
-
-  const race = useMemo(() => 
-    RACE_DISTANCES.find(d => d.id === selectedDistanceId) || RACE_DISTANCES[0], 
-    [selectedDistanceId]
-  );
-  
+  const race = useMemo(() => RACE_DISTANCES.find(d => d.id === selectedDistanceId) || RACE_DISTANCES[0], [selectedDistanceId]);
   const effectiveWeeks = useMemo(() => {
     if (useRaceDate && raceDate) {
       const weeks = differenceInWeeks(raceDate, new Date());
@@ -266,19 +292,73 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
       // Fallback ancien système
       const volumes = {
         beginner: {
-          "10k": { 2: isMetric ? 15 : 9, 3: isMetric ? 20 : 12, 4: isMetric ? 25 : 16, 5: isMetric ? 30 : 19, 6: isMetric ? 35 : 22 },
-          "semi": { 2: isMetric ? 25 : 16, 3: isMetric ? 35 : 22, 4: isMetric ? 45 : 28, 5: isMetric ? 55 : 34, 6: isMetric ? 65 : 40 },
-          "marathon": { 2: isMetric ? 35 : 22, 3: isMetric ? 50 : 31, 4: isMetric ? 65 : 40, 5: isMetric ? 80 : 50, 6: isMetric ? 95 : 59 }
+          "10k": {
+            2: isMetric ? 15 : 9,
+            3: isMetric ? 20 : 12,
+            4: isMetric ? 25 : 16,
+            5: isMetric ? 30 : 19,
+            6: isMetric ? 35 : 22
+          },
+          "semi": {
+            2: isMetric ? 25 : 16,
+            3: isMetric ? 35 : 22,
+            4: isMetric ? 45 : 28,
+            5: isMetric ? 55 : 34,
+            6: isMetric ? 65 : 40
+          },
+          "marathon": {
+            2: isMetric ? 35 : 22,
+            3: isMetric ? 50 : 31,
+            4: isMetric ? 65 : 40,
+            5: isMetric ? 80 : 50,
+            6: isMetric ? 95 : 59
+          }
         },
         intermediate: {
-          "10k": { 2: isMetric ? 25 : 16, 3: isMetric ? 35 : 22, 4: isMetric ? 45 : 28, 5: isMetric ? 55 : 34, 6: isMetric ? 65 : 40 },
-          "semi": { 2: isMetric ? 40 : 25, 3: isMetric ? 55 : 34, 4: isMetric ? 70 : 43, 5: isMetric ? 85 : 53, 6: isMetric ? 100 : 62 },
-          "marathon": { 2: isMetric ? 55 : 34, 3: isMetric ? 75 : 47, 4: isMetric ? 95 : 59, 5: isMetric ? 115 : 71, 6: isMetric ? 135 : 84 }
+          "10k": {
+            2: isMetric ? 25 : 16,
+            3: isMetric ? 35 : 22,
+            4: isMetric ? 45 : 28,
+            5: isMetric ? 55 : 34,
+            6: isMetric ? 65 : 40
+          },
+          "semi": {
+            2: isMetric ? 40 : 25,
+            3: isMetric ? 55 : 34,
+            4: isMetric ? 70 : 43,
+            5: isMetric ? 85 : 53,
+            6: isMetric ? 100 : 62
+          },
+          "marathon": {
+            2: isMetric ? 55 : 34,
+            3: isMetric ? 75 : 47,
+            4: isMetric ? 95 : 59,
+            5: isMetric ? 115 : 71,
+            6: isMetric ? 135 : 84
+          }
         },
         advanced: {
-          "10k": { 2: isMetric ? 35 : 22, 3: isMetric ? 50 : 31, 4: isMetric ? 65 : 40, 5: isMetric ? 80 : 50, 6: isMetric ? 95 : 59 },
-          "semi": { 2: isMetric ? 55 : 34, 3: isMetric ? 75 : 47, 4: isMetric ? 95 : 59, 5: isMetric ? 115 : 71, 6: isMetric ? 135 : 84 },
-          "marathon": { 2: isMetric ? 75 : 47, 3: isMetric ? 105 : 65, 4: isMetric ? 135 : 84, 5: isMetric ? 165 : 102, 6: isMetric ? 195 : 121 }
+          "10k": {
+            2: isMetric ? 35 : 22,
+            3: isMetric ? 50 : 31,
+            4: isMetric ? 65 : 40,
+            5: isMetric ? 80 : 50,
+            6: isMetric ? 95 : 59
+          },
+          "semi": {
+            2: isMetric ? 55 : 34,
+            3: isMetric ? 75 : 47,
+            4: isMetric ? 95 : 59,
+            5: isMetric ? 115 : 71,
+            6: isMetric ? 135 : 84
+          },
+          "marathon": {
+            2: isMetric ? 75 : 47,
+            3: isMetric ? 105 : 65,
+            4: isMetric ? 135 : 84,
+            5: isMetric ? 165 : 102,
+            6: isMetric ? 195 : 121
+          }
         }
       };
       return volumes[runnerLevel as keyof typeof volumes][selectedDistanceId as keyof typeof volumes.beginner][sessionsPerWeek as keyof typeof volumes.beginner["10k"]] || 35;
@@ -286,30 +366,24 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
 
     // Nouveau système basé VMA (2025) - spec exacte
     let baseVolumeKm = calculateWeeklyVolume(sessionsPerWeek, vmaValue);
-    
+
     // Facteur de réalisme selon l'objectif - spec exacte
     const realismFactor = assessObjectiveRealism(speedValue, vmaValue, selectedDistanceId);
     baseVolumeKm = Math.round(baseVolumeKm * realismFactor);
-    
+
     // Conversion unités si nécessaire - convertir en mi si besoin selon spec
     return isMetric ? baseVolumeKm : Math.round(baseVolumeKm * 0.621371);
   }, [runnerLevel, selectedDistanceId, sessionsPerWeek, isMetric, vmaValue, speedValue]);
 
   // Génération gabarits sessions selon spécifications 2025
-  const createSession = useCallback((
-    type: TrainingSession['type'],
-    phase: WeekProgram['phase'],
-    distance: string,
-    volume: number,
-    weekNumber: number
-  ): TrainingSession => {
+  const createSession = useCallback((type: TrainingSession['type'], phase: WeekProgram['phase'], distance: string, volume: number, weekNumber: number): TrainingSession => {
     const isHighIntensityWeek = weekNumber % 4 !== 0; // Deload chaque 4ème semaine
-    
+
     switch (type) {
       case "INT":
         // Séances intensité 95-105% VMA
         if (distance === "10k") {
-          const reps = phase === "PEAK" ? (isHighIntensityWeek ? 8 : 6) : 6;
+          const reps = phase === "PEAK" ? isHighIntensityWeek ? 8 : 6 : 6;
           return {
             type: "INT",
             duration: "40-50 min",
@@ -317,34 +391,33 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
             description: `${reps}×400m @ ${formatPace(paceZones.INT, isMetric)}, récup 200m trot`
           };
         } else if (distance === "semi") {
-          const reps = phase === "PEAK" ? (isHighIntensityWeek ? 6 : 4) : 4;
+          const reps = phase === "PEAK" ? isHighIntensityWeek ? 6 : 4 : 4;
           return {
-            type: "INT", 
+            type: "INT",
             duration: "45-55 min",
             pace: formatPace(paceZones.INT, isMetric),
             description: `${reps}×800m @ ${formatPace(paceZones.INT, isMetric)}, récup 400m trot`
           };
-        } else { // marathon
-          const reps = phase === "PEAK" ? (isHighIntensityWeek ? 5 : 4) : 3;
+        } else {
+          // marathon
+          const reps = phase === "PEAK" ? isHighIntensityWeek ? 5 : 4 : 3;
           return {
             type: "INT",
-            duration: "50-65 min", 
+            duration: "50-65 min",
             pace: formatPace(paceZones.INT, isMetric),
             description: `${reps}×1000m @ ${formatPace(paceZones.INT, isMetric)}, récup 2min trot`
           };
         }
-        
       case "THR":
         // Séances seuil 80-85% VMA
         const thrDuration = distance === "marathon" ? 15 : 10;
         const thrReps = phase === "PEAK" ? 3 : distance === "marathon" ? 2 : 3;
         return {
           type: "THR",
-          duration: "50-70 min", 
+          duration: "50-70 min",
           pace: formatPace(paceZones.THR, isMetric),
           description: `${thrReps}×${thrDuration}min @ ${formatPace(paceZones.THR, isMetric)}, récup 3min`
         };
-        
       case "RP":
         // Allure course spécifique
         const rpDuration = phase === "BUILD" || phase === "PEAK" ? 20 : 15;
@@ -353,11 +426,8 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
           type: "RP",
           duration: "60-80 min",
           pace: formatPace(paceZones.RP, isMetric),
-          description: rpReps > 1 ? 
-                      `${rpReps}×${rpDuration}min @ ${formatPace(paceZones.RP, isMetric)}, récup 5min` :
-                      `${rpDuration}min @ ${formatPace(paceZones.RP, isMetric)}`
+          description: rpReps > 1 ? `${rpReps}×${rpDuration}min @ ${formatPace(paceZones.RP, isMetric)}, récup 5min` : `${rpDuration}min @ ${formatPace(paceZones.RP, isMetric)}`
         };
-        
       case "Longue":
         // Sortie longue adaptée selon phase et distance - spec exacte
         let volumeRatio: number;
@@ -366,28 +436,23 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
         else if (phase === "BUILD") volumeRatio = 0.325; // 30-35% moyenne = 32.5%
         else if (phase === "PEAK") volumeRatio = 0.375; // 35-40% moyenne = 37.5%
         else volumeRatio = 0.25; // TAPER réduit
-        
+
         // Marathon haut niveau : pic à 42–45 % selon spec
         if (distance === "marathon" && vmaValue && vmaValue > 18 && sessionsPerWeek >= 5 && phase === "PEAK") {
           volumeRatio = 0.435; // 42-45% moyenne = 43.5%
         }
-        
         const longDistance = Math.round(volume * volumeRatio);
         const longDuration = Math.round(longDistance * (isMetric ? 6.5 : 10));
-        
+
         // Blocs RP intégrés selon phase - BUILD : avec blocs RP intégrés
         const hasRPSegment = (phase === "BUILD" || phase === "PEAK") && distance !== "10k";
         const rpSegmentDistance = hasRPSegment ? Math.round(longDistance * 0.25) : 0;
-        
         return {
           type: "Longue",
           duration: `${longDuration}-${longDuration + 15} min`,
           pace: formatPace(paceZones.EASY, isMetric),
-          description: hasRPSegment ? 
-                      `${longDistance}${isMetric ? 'km' : 'mi'} EASY @ ${formatPace(paceZones.EASY, isMetric)}, inclus ${rpSegmentDistance}${isMetric ? 'km' : 'mi'} @ ${formatPace(paceZones.RP, isMetric)}` :
-                      `${longDistance}${isMetric ? 'km' : 'mi'} @ ${formatPace(paceZones.EASY, isMetric)}`
+          description: hasRPSegment ? `${longDistance}${isMetric ? 'km' : 'mi'} EASY @ ${formatPace(paceZones.EASY, isMetric)}, inclus ${rpSegmentDistance}${isMetric ? 'km' : 'mi'} @ ${formatPace(paceZones.RP, isMetric)}` : `${longDistance}${isMetric ? 'km' : 'mi'} @ ${formatPace(paceZones.EASY, isMetric)}`
         };
-        
       case "STEADY":
         // Allure confortable 70-75% VMA
         return {
@@ -396,17 +461,15 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
           pace: formatPace(paceZones.STEADY, isMetric),
           description: `45-55min @ ${formatPace(paceZones.STEADY, isMetric)} (tempo confortable)`
         };
-        
-      default: // EASY
+      default:
+        // EASY
         // Course facile 60-70% VMA + strides optionnelles
         const hasStrides = type === "EASY" && (phase === "BUILD" || phase === "PEAK") && Math.random() > 0.5;
         return {
           type: "EASY",
           duration: "30-50 min",
-          pace: formatPace(paceZones.EASY, isMetric), 
-          description: hasStrides ? 
-                      `40-50min @ ${formatPace(paceZones.EASY, isMetric)} + 4×100m strides` :
-                      `40-50min @ ${formatPace(paceZones.EASY, isMetric)}`
+          pace: formatPace(paceZones.EASY, isMetric),
+          description: hasStrides ? `40-50min @ ${formatPace(paceZones.EASY, isMetric)} + 4×100m strides` : `40-50min @ ${formatPace(paceZones.EASY, isMetric)}`
         };
     }
   }, [paceZones, isMetric]);
@@ -414,23 +477,19 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
   // Moteur programme selon spécifications 2025
   const program = useMemo((): WeekProgram[] => {
     const weeks = effectiveWeeks;
-    
+
     // Périodisation moderne
-    const baseWeeks = Math.floor(weeks * 0.45);    // BASE: 45%
-    const buildWeeks = Math.floor(weeks * 0.35);   // BUILD: 35% 
-    const peakWeeks = Math.floor(weeks * 0.15);    // PEAK: 15%
+    const baseWeeks = Math.floor(weeks * 0.45); // BASE: 45%
+    const buildWeeks = Math.floor(weeks * 0.35); // BUILD: 35% 
+    const peakWeeks = Math.floor(weeks * 0.15); // PEAK: 15%
     const taperWeeks = Math.max(1, weeks - baseWeeks - buildWeeks - peakWeeks); // TAPER: 5%
-    
+
     const program: WeekProgram[] = [];
     let currentVolume = baseVolume;
-    
     for (let week = 1; week <= weeks; week++) {
       let phase: WeekProgram['phase'];
-      if (week <= baseWeeks) phase = "BASE";
-      else if (week <= baseWeeks + buildWeeks) phase = "BUILD";
-      else if (week <= baseWeeks + buildWeeks + peakWeeks) phase = "PEAK";
-      else phase = "TAPER";
-      
+      if (week <= baseWeeks) phase = "BASE";else if (week <= baseWeeks + buildWeeks) phase = "BUILD";else if (week <= baseWeeks + buildWeeks + peakWeeks) phase = "PEAK";else phase = "TAPER";
+
       // Progression volumique selon coaching moderne 2025
       if (phase === "BASE") {
         if (week % 4 === 0) {
@@ -458,20 +517,20 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
         const taperReduction = realismFactor > 0.9 ? 0.4 : realismFactor > 0.7 ? 0.5 : 0.6;
         currentVolume *= taperReduction;
       }
-      
       const volume = Math.round(currentVolume);
-      
+
       // Gabarits sessions modernes adaptés au nb de séances
       const sessionTemplate = SESSION_TEMPLATES[sessionsPerWeek as keyof typeof SESSION_TEMPLATES] || SESSION_TEMPLATES[3];
-      
+
       // Utiliser directement le gabarit sans modification complexe
-      const sessions = sessionTemplate.map(type => 
-        createSession(type as TrainingSession['type'], phase, selectedDistanceId, volume, week)
-      );
-      
-      program.push({ week, phase, volume, sessions });
+      const sessions = sessionTemplate.map(type => createSession(type as TrainingSession['type'], phase, selectedDistanceId, volume, week));
+      program.push({
+        week,
+        phase,
+        volume,
+        sessions
+      });
     }
-    
     return program;
   }, [effectiveWeeks, baseVolume, sessionsPerWeek, selectedDistanceId, createSession, vmaValue, speedValue]);
 
@@ -487,22 +546,16 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
       return newSet;
     });
   }, []);
-
   const adjustSessions = useCallback((delta: number) => {
     const newValue = Math.max(2, Math.min(6, sessionsPerWeek + delta));
     setSessionsPerWeek(newValue);
   }, [sessionsPerWeek, setSessionsPerWeek]);
-
   const adjustWeeks = useCallback((delta: number) => {
     const newValue = Math.max(2, Math.min(16, weeksBeforeRace + delta));
     setWeeksBeforeRace(newValue);
   }, [weeksBeforeRace, setWeeksBeforeRace]);
-
   const copyWeekToClipboard = useCallback(async (week: WeekProgram) => {
-    const weekText = `${t("Semaine")} ${week.week} - ${t(week.phase)}\n${t("Volume")}: ${week.volume}${isMetric ? 'km' : 'mi'}\n\n${week.sessions.map((session, index) => 
-      `${index + 1}. ${t(session.type)} - ${session.duration}\n${session.description}`
-    ).join('\n\n')}`;
-    
+    const weekText = `${t("Semaine")} ${week.week} - ${t(week.phase)}\n${t("Volume")}: ${week.volume}${isMetric ? 'km' : 'mi'}\n\n${week.sessions.map((session, index) => `${index + 1}. ${t(session.type)} - ${session.duration}\n${session.description}`).join('\n\n')}`;
     try {
       await navigator.clipboard.writeText(weekText);
       toast.success(`${t("Semaine")} ${week.week} copiée !`);
@@ -510,17 +563,13 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
       toast.error('Erreur lors de la copie');
     }
   }, [t, isMetric]);
-
   const shareWeek = useCallback(async (week: WeekProgram) => {
-    const weekText = `Programme ${t("Semaine")} ${week.week} - Paceo\n\n${t(week.phase)} • ${week.volume}${isMetric ? 'km' : 'mi'}\n\n${week.sessions.map((session, index) => 
-      `${index + 1}. ${t(session.type)} - ${session.duration}\n${session.description}`
-    ).join('\n\n')}`;
-    
+    const weekText = `Programme ${t("Semaine")} ${week.week} - Paceo\n\n${t(week.phase)} • ${week.volume}${isMetric ? 'km' : 'mi'}\n\n${week.sessions.map((session, index) => `${index + 1}. ${t(session.type)} - ${session.duration}\n${session.description}`).join('\n\n')}`;
     if (navigator.share) {
       try {
         await navigator.share({
           title: `Programme ${t("Semaine")} ${week.week}`,
-          text: weekText,
+          text: weekText
         });
       } catch (err) {
         copyWeekToClipboard(week);
@@ -529,19 +578,13 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
       copyWeekToClipboard(week);
     }
   }, [t, isMetric, copyWeekToClipboard]);
-
   const shareFullProgram = useCallback(async () => {
-    const fullText = `Programme d'entraînement - Paceo\n\n${t("Objectif")}: ${race.label} — ${paceFromSpeed(speedValue)} (${formatPace(paceFromSpeed(speedValue), isMetric)})\n${t("Sessions/sem.")}: ${sessionsPerWeek} • ${t("Avant objectif")}: ${effectiveWeeks} semaines\n\n${program.map(week => 
-      `${t("Semaine")} ${week.week} - ${t(week.phase)} (${week.volume}${isMetric ? 'km' : 'mi'})\n${week.sessions.map((session, index) => 
-        `  ${index + 1}. ${t(session.type)} - ${session.duration} - ${session.description}`
-      ).join('\n')}`
-    ).join('\n\n')}`;
-    
+    const fullText = `Programme d'entraînement - Paceo\n\n${t("Objectif")}: ${race.label} — ${paceFromSpeed(speedValue)} (${formatPace(paceFromSpeed(speedValue), isMetric)})\n${t("Sessions/sem.")}: ${sessionsPerWeek} • ${t("Avant objectif")}: ${effectiveWeeks} semaines\n\n${program.map(week => `${t("Semaine")} ${week.week} - ${t(week.phase)} (${week.volume}${isMetric ? 'km' : 'mi'})\n${week.sessions.map((session, index) => `  ${index + 1}. ${t(session.type)} - ${session.duration} - ${session.description}`).join('\n')}`).join('\n\n')}`;
     try {
       if (navigator.share) {
         await navigator.share({
           title: 'Programme d\'entraînement',
-          text: fullText,
+          text: fullText
         });
       } else {
         await navigator.clipboard.writeText(fullText);
@@ -556,7 +599,6 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
       }
     }
   }, [program, t, race.label, speedValue, isMetric, sessionsPerWeek, effectiveWeeks]);
-
   const printProgram = useCallback(() => {
     const printContent = `
       <html>
@@ -591,7 +633,6 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
         </body>
       </html>
     `;
-    
     const printWindow = window.open('', '_blank');
     if (printWindow) {
       printWindow.document.write(printContent);
@@ -599,23 +640,18 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
       printWindow.print();
     }
   }, [program, t, race.label, speedValue, isMetric, sessionsPerWeek, effectiveWeeks]);
-
   const goalTime = useMemo(() => {
     if (!speedValue || speedValue <= 0) return "0:00:00";
-    
     const distanceKm = isMetric ? race.distance : race.distanceMiles;
     const hours = distanceKm / speedValue;
     const totalMinutes = hours * 60;
     const h = Math.floor(totalMinutes / 60);
     const m = Math.floor(totalMinutes % 60);
-    const s = Math.round((totalMinutes % 1) * 60);
-    
+    const s = Math.round(totalMinutes % 1 * 60);
     if (h > 0) return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
     return `${m}:${s.toString().padStart(2, "0")}`;
   }, [speedValue, race, isMetric]);
-
   const goalPace = useMemo(() => paceFromSpeed(speedValue), [speedValue]);
-
   const saveProgramToFavorites = useCallback(() => {
     const currentGoal = {
       id: Date.now().toString(),
@@ -635,14 +671,11 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
         weeks: program
       }
     };
-    
     setFavorites([currentGoal, ...favorites]);
     toast.success('Programme enregistré dans les favoris !');
   }, [race, selectedDistanceId, goalTime, goalPace, speedValue, isMetric, vmaValue, sessionsPerWeek, effectiveWeeks, program, setFavorites, favorites]);
-
   if (!speedValue || speedValue <= 0) {
-    return (
-      <div className="space-y-6 pb-20 animate-fade-in-up">
+    return <div className="space-y-6 pb-20 animate-fade-in-up">
         <div className="text-center py-8">
           <div className="text-muted-foreground mb-4">
             {t("Définis ton objectif pour générer ton programme.")}
@@ -652,12 +685,9 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
             {t("Définir l'objectif")}
           </Button>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="space-y-6 pb-20 animate-fade-in-up">
+  return <div className="space-y-6 pb-20 animate-fade-in-up">
       {/* Header */}
       <div className="relative text-center py-2">
         <h2 className="text-xl font-semibold">{t("Programme")}</h2>
@@ -669,100 +699,55 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
         <div className="flex items-center justify-between gap-4">
           {/* Sessions per week */}
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8 btn-glass"
-              onClick={() => adjustSessions(-1)}
-              disabled={sessionsPerWeek <= 2}
-            >
+            <Button variant="outline" size="icon" className="h-8 w-8 btn-glass" onClick={() => adjustSessions(-1)} disabled={sessionsPerWeek <= 2}>
               <Minus className="h-4 w-4" />
             </Button>
             <div className="text-center min-w-[80px]">
               <div className="text-sm font-medium">{sessionsPerWeek}</div>
               <div className="text-xs text-muted-foreground">{t("Sessions/sem.")}</div>
             </div>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8 btn-glass"
-              onClick={() => adjustSessions(1)}
-              disabled={sessionsPerWeek >= 6}
-            >
+            <Button variant="outline" size="icon" className="h-8 w-8 btn-glass" onClick={() => adjustSessions(1)} disabled={sessionsPerWeek >= 6}>
               <Plus className="h-4 w-4" />
             </Button>
           </div>
 
           {/* Weeks before race / Date picker */}
           <div className="flex items-center gap-2">
-            {!useRaceDate ? (
-              <>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 btn-glass"
-                  onClick={() => adjustWeeks(-1)}
-                  disabled={weeksBeforeRace <= 2}
-                >
+            {!useRaceDate ? <>
+                <Button variant="outline" size="icon" className="h-8 w-8 btn-glass" onClick={() => adjustWeeks(-1)} disabled={weeksBeforeRace <= 2}>
                   <Minus className="h-4 w-4" />
                 </Button>
                 <div className="text-center min-w-[80px]">
                   <div className="text-sm font-medium">{effectiveWeeks}</div>
                   <div className="text-xs text-muted-foreground">{t("Avant objectif")} (sem.)</div>
                 </div>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 btn-glass"
-                  onClick={() => adjustWeeks(1)}
-                  disabled={weeksBeforeRace >= 16}
-                >
+                <Button variant="outline" size="icon" className="h-8 w-8 btn-glass" onClick={() => adjustWeeks(1)} disabled={weeksBeforeRace >= 16}>
                   <Plus className="h-4 w-4" />
                 </Button>
-              </>
-            ) : (
-              <div className="text-center min-w-[80px]">
+              </> : <div className="text-center min-w-[80px]">
                 <div className="text-sm font-medium">{effectiveWeeks}</div>
                 <div className="text-xs text-muted-foreground">sem. calculées</div>
-              </div>
-            )}
+              </div>}
             
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="btn-glass ml-2 px-2">
-                  <CalendarIcon className="h-4 w-4" />
-                </Button>
+                
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="end">
-                <Calendar
-                  mode="single"
-                  selected={raceDate}
-                  onSelect={(date) => {
-                    setRaceDate(date);
-                    if (date) {
-                      setUseRaceDate(true);
-                    }
-                  }}
-                  disabled={(date) => date < new Date()}
-                  initialFocus
-                  locale={dateLocale}
-                  className="pointer-events-auto"
-                />
-                {useRaceDate && (
-                  <div className="p-2 border-t">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full"
-                      onClick={() => {
-                        setUseRaceDate(false);
-                        setRaceDate(undefined);
-                      }}
-                    >
+                <Calendar mode="single" selected={raceDate} onSelect={date => {
+                setRaceDate(date);
+                if (date) {
+                  setUseRaceDate(true);
+                }
+              }} disabled={date => date < new Date()} initialFocus locale={dateLocale} className="pointer-events-auto" />
+                {useRaceDate && <div className="p-2 border-t">
+                    <Button variant="outline" size="sm" className="w-full" onClick={() => {
+                  setUseRaceDate(false);
+                  setRaceDate(undefined);
+                }}>
                       Utiliser nombre de semaines
                     </Button>
-                  </div>
-                )}
+                  </div>}
               </PopoverContent>
             </Popover>
           </div>
@@ -794,8 +779,7 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
             </div>
           </div>
           
-          {vmaValue && (
-            <div className="pt-3 border-t border-border/50">
+          {vmaValue && <div className="pt-3 border-t border-border/50">
               <div className="flex items-center justify-center gap-4 text-sm">
                 <span className="text-muted-foreground">VMA:</span>
                 <span className="font-semibold mono-numbers">{vmaValue.toFixed(1)} km/h</span>
@@ -803,19 +787,13 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
                 <span className="text-muted-foreground">Vitesse:</span>
                 <span className="font-semibold mono-numbers">{speedValue.toFixed(2)} {isMetric ? 'km/h' : 'mph'}</span>
               </div>
-            </div>
-          )}
+            </div>}
         </div>
       </Card>
 
       {/* Weekly Program */}
       <div className="space-y-3">
-        {program.map((week) => (
-          <Collapsible
-            key={week.week}
-            open={expandedWeeks.has(week.week)}
-            onOpenChange={() => toggleWeekExpansion(week.week)}
-          >
+        {program.map(week => <Collapsible key={week.week} open={expandedWeeks.has(week.week)} onOpenChange={() => toggleWeekExpansion(week.week)}>
             <Card className="glass-card">
               <CollapsibleTrigger className="w-full p-4 text-left">
                 <div className="flex items-center justify-between">
@@ -840,25 +818,20 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
               </CollapsibleTrigger>
               
               <CollapsibleContent className="space-y-3 pt-4">
-                {week.sessions.map((session, sessionIndex) => (
-                  <div key={sessionIndex} className="glass-card p-3 rounded-lg">
+                {week.sessions.map((session, sessionIndex) => <div key={sessionIndex} className="glass-card p-3 rounded-lg">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <Badge 
-                                  variant="secondary" 
-                                  className={`${SESSION_COLORS[session.type]} text-xs font-medium cursor-help transition-colors`}
-                                >
+                                <Badge variant="secondary" className={`${SESSION_COLORS[session.type]} text-xs font-medium cursor-help transition-colors`}>
                                   {t(session.type)}
                                 </Badge>
                               </TooltipTrigger>
                                <TooltipContent>
                                  <p className="max-w-xs text-sm">
-                                   {SESSION_EXPLANATIONS[language as keyof typeof SESSION_EXPLANATIONS]?.[session.type] || 
-                                    SESSION_EXPLANATIONS.fr[session.type]}
+                                   {SESSION_EXPLANATIONS[language as keyof typeof SESSION_EXPLANATIONS]?.[session.type] || SESSION_EXPLANATIONS.fr[session.type]}
                                  </p>
                                </TooltipContent>
                             </Tooltip>
@@ -869,39 +842,27 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
                         <div className="text-sm text-muted-foreground">{session.description}</div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  </div>)}
                 
                 <div className="flex gap-2 pt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="btn-glass"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      copyWeekToClipboard(week);
-                    }}
-                  >
+                  <Button variant="outline" size="sm" className="btn-glass" onClick={e => {
+                e.stopPropagation();
+                copyWeekToClipboard(week);
+              }}>
                     <Copy className="h-3 w-3 mr-2" />
                     {t("Copier")}
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="btn-glass"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      shareWeek(week);
-                    }}
-                  >
+                  <Button variant="outline" size="sm" className="btn-glass" onClick={e => {
+                e.stopPropagation();
+                shareWeek(week);
+              }}>
                     <Share2 className="h-3 w-3 mr-2" />
                     {t("Partager")}
                   </Button>
                 </div>
               </CollapsibleContent>
             </Card>
-          </Collapsible>
-        ))}
+          </Collapsible>)}
       </div>
       
       {/* Save Program Button */}
@@ -911,26 +872,16 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
         </Button>
         
         <div className="flex gap-3 mt-4">
-          <Button
-            variant="outline"
-            onClick={shareFullProgram}
-            className="flex-1 btn-glass h-10"
-          >
+          <Button variant="outline" onClick={shareFullProgram} className="flex-1 btn-glass h-10">
             <Share2 className="h-4 w-4 mr-2" />
             Partager
           </Button>
-          <Button
-            variant="outline"
-            onClick={printProgram}
-            className="flex-1 btn-glass h-10"
-          >
+          <Button variant="outline" onClick={printProgram} className="flex-1 btn-glass h-10">
             <Printer className="h-4 w-4 mr-2" />
             Imprimer
           </Button>
         </div>
       </Card>
-    </div>
-  );
+    </div>;
 });
-
 ProgramScreen.displayName = "ProgramScreen";
