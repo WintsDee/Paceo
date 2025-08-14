@@ -676,13 +676,13 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
         {/* Contrôles sessions et semaines - Layout responsive */}
         <div className="flex flex-col sm:flex-row gap-4">
           {/* Sessions par semaine */}
-          <div className="flex-1 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-5 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+          <div className="flex-1 glass-card rounded-2xl p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-primary/10 rounded-full">
                   <Target className="h-4 w-4 text-primary" />
                 </div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <span className="text-sm font-medium text-foreground">
                   Sessions/semaine
                 </span>
               </div>
@@ -691,9 +691,9 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
               <button
                 onClick={() => setSessionsPerWeek(Math.max(2, sessionsPerWeek - 1))}
                 disabled={sessionsPerWeek <= 2}
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95"
+                className="flex items-center justify-center w-10 h-10 rounded-full glass-card hover:glow-effect disabled:opacity-50 disabled:cursor-not-allowed transition-smooth active:scale-95"
               >
-                <Minus className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                <Minus className="h-4 w-4 text-foreground" />
               </button>
               <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 border-2 border-primary/20">
                 <span className="text-2xl font-bold text-primary">
@@ -703,21 +703,21 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
               <button
                 onClick={() => setSessionsPerWeek(Math.min(6, sessionsPerWeek + 1))}
                 disabled={sessionsPerWeek >= 6}
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95"
+                className="flex items-center justify-center w-10 h-10 rounded-full glass-card hover:glow-effect disabled:opacity-50 disabled:cursor-not-allowed transition-smooth active:scale-95"
               >
-                <Plus className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                <Plus className="h-4 w-4 text-foreground" />
               </button>
             </div>
           </div>
 
           {/* Configuration date/semaines */}
-          <div className="flex-1 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-5 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+          <div className="flex-1 glass-card rounded-2xl p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-primary/10 rounded-full">
                   <CalendarIcon className="h-4 w-4 text-primary" />
                 </div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <span className="text-sm font-medium text-foreground">
                   {useRaceDate ? "Date de course" : "Durée programme"}
                 </span>
               </div>
@@ -726,7 +726,7 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
             {useRaceDate ? (
               <Popover>
                 <PopoverTrigger asChild>
-                  <button className="w-full p-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-left hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200">
+                  <button className="w-full p-3 rounded-xl glass-card text-left hover:glow-effect transition-smooth">
                     <div className="flex items-center justify-center gap-2 text-sm">
                       <CalendarIcon className="h-4 w-4" />
                       {raceDate ? 
@@ -744,7 +744,7 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
                     disabled={(date) => date < new Date()}
                     initialFocus
                     locale={dateLocale}
-                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl"
+                    className="glass-card rounded-xl"
                   />
                 </PopoverContent>
               </Popover>
@@ -753,9 +753,9 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
                 <button
                   onClick={() => setWeeksBeforeRace(Math.max(2, weeksBeforeRace - 1))}
                   disabled={weeksBeforeRace <= 2}
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95"
+                  className="flex items-center justify-center w-10 h-10 rounded-full glass-card hover:glow-effect disabled:opacity-50 disabled:cursor-not-allowed transition-smooth active:scale-95"
                 >
-                  <Minus className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                  <Minus className="h-4 w-4 text-foreground" />
                 </button>
                 <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 border-2 border-primary/20">
                   <span className="text-2xl font-bold text-primary">
@@ -765,9 +765,9 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
                 <button
                   onClick={() => setWeeksBeforeRace(Math.min(16, weeksBeforeRace + 1))}
                   disabled={weeksBeforeRace >= 16}
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95"
+                  className="flex items-center justify-center w-10 h-10 rounded-full glass-card hover:glow-effect disabled:opacity-50 disabled:cursor-not-allowed transition-smooth active:scale-95"
                 >
-                  <Plus className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                  <Plus className="h-4 w-4 text-foreground" />
                 </button>
               </div>
             )}
@@ -786,52 +786,52 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
       </div>
 
       {/* Bloc récapitulatif de l'objectif - Design compact et mobile optimisé */}
-      <div className="mb-6 bg-gradient-to-r from-primary/5 via-primary/8 to-primary/5 dark:from-primary/10 dark:via-primary/15 dark:to-primary/10 rounded-2xl p-5 border border-primary/20 shadow-sm">
+      <div className="mb-6 glass-card rounded-2xl p-5 border-primary/20">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 bg-primary/10 rounded-full">
             <Target className="h-5 w-5 text-primary" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+          <h3 className="text-lg font-semibold text-foreground">
             Objectif de Course
           </h3>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-3 text-center border border-white/40 dark:border-gray-700/40">
-            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+          <div className="glass-card rounded-xl p-3 text-center">
+            <div className="text-xs font-medium text-muted-foreground mb-1">
               Distance
             </div>
-            <div className="text-sm font-bold text-gray-800 dark:text-gray-100">
+            <div className="text-sm font-bold text-primary">
               {race.label}
             </div>
           </div>
-          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-3 text-center border border-white/40 dark:border-gray-700/40">
-            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+          <div className="glass-card rounded-xl p-3 text-center">
+            <div className="text-xs font-medium text-muted-foreground mb-1">
               Temps
             </div>
-            <div className="text-sm font-bold text-gray-800 dark:text-gray-100">
+            <div className="text-sm font-bold text-primary mono-numbers">
               {goalTime}
             </div>
           </div>
-          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-3 text-center border border-white/40 dark:border-gray-700/40">
-            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+          <div className="glass-card rounded-xl p-3 text-center">
+            <div className="text-xs font-medium text-muted-foreground mb-1">
               Allure
             </div>
-            <div className="text-sm font-bold text-gray-800 dark:text-gray-100">
+            <div className="text-sm font-bold text-primary mono-numbers">
               {formatPace(goalPace, isMetric)}
             </div>
           </div>
-          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-3 text-center border border-white/40 dark:border-gray-700/40">
-            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+          <div className="glass-card rounded-xl p-3 text-center">
+            <div className="text-xs font-medium text-muted-foreground mb-1">
               Semaines
             </div>
-            <div className="text-sm font-bold text-gray-800 dark:text-gray-100">
+            <div className="text-sm font-bold text-primary">
               {effectiveWeeks}
             </div>
           </div>
         </div>
         {vmaValue && (
-          <div className="mt-4 pt-3 border-t border-primary/20">
-            <div className="flex items-center justify-center gap-4 text-xs text-gray-600 dark:text-gray-400">
+          <div className="mt-4 pt-3 border-t border-border">
+            <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
               <span>VMA: <span className="font-semibold text-primary">{vmaValue.toFixed(1)} km/h</span></span>
               <span>•</span>
               <span>Vitesse: <span className="font-semibold text-primary">{speedValue.toFixed(2)} {isMetric ? 'km/h' : 'mph'}</span></span>
