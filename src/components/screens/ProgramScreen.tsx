@@ -15,9 +15,11 @@ import { fr, enUS, es, de } from "date-fns/locale";
 import { useAppNotifications } from "@/hooks/useAppNotifications";
 interface ProgramScreenProps {
   isMetric: boolean;
+  onToggleUnits: () => void;
   speedValue: number;
   vmaValue?: number;
   isLoading?: boolean;
+  onSaveGoal?: (goal: any) => void;
 }
 interface TrainingSession {
   type: "EASY" | "STEADY" | "THR" | "INT" | "RP" | "Longue";
@@ -247,9 +249,11 @@ const usePaceZones = (goalSpeed: number, distance: string, level: string, vma?: 
 };
 export const ProgramScreen = React.memo(({
   isMetric,
+  onToggleUnits,
   speedValue,
   vmaValue,
-  isLoading = false
+  isLoading = false,
+  onSaveGoal
 }: ProgramScreenProps) => {
   const { t, language } = useLanguage();
   const { notifications } = useAppNotifications();
@@ -259,7 +263,7 @@ export const ProgramScreen = React.memo(({
   const [useRaceDate, setUseRaceDate] = useState(false);
   const [selectedDistanceId] = useLocalStorage<string>("pace-calc-goal-distance", "10k");
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set());
-  const [favorites, setFavorites] = useLocalStorage<any[]>("pace-calc-favorites", []);
+  
 
   // Mémorisation des données de base
   const dateLocale = useMemo(() => {
@@ -651,6 +655,8 @@ export const ProgramScreen = React.memo(({
   }, [program, t, race.label, speedValue, isMetric, sessionsPerWeek, effectiveWeeks]);
   const goalPace = useMemo(() => paceFromSpeed(speedValue), [speedValue]);
   const saveProgramToFavorites = useCallback(() => {
+    if (!onSaveGoal) return;
+    
     const currentGoal = {
       id: Date.now().toString(),
       distance: race.label,
@@ -669,9 +675,8 @@ export const ProgramScreen = React.memo(({
         weeks: program
       }
     };
-    setFavorites([currentGoal, ...favorites]);
-    notifications.favoriteAdded(`Programme ${race.label}`);
-  }, [race, selectedDistanceId, goalTime, goalPace, speedValue, isMetric, vmaValue, sessionsPerWeek, effectiveWeeks, program, setFavorites, favorites]);
+    onSaveGoal(currentGoal);
+  }, [race, selectedDistanceId, goalTime, goalPace, speedValue, isMetric, vmaValue, sessionsPerWeek, effectiveWeeks, program, onSaveGoal]);
   if (!speedValue || speedValue <= 0) {
     return <div className="space-y-6 pb-20 animate-fade-in-up">
         <div className="text-center py-8">

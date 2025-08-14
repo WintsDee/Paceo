@@ -107,9 +107,11 @@ const Index = () => {
         return (
           <ProgramScreen
             isMetric={isMetric}
+            onToggleUnits={handleToggleUnits}
             speedValue={speedValue}
             vmaValue={vmaValue}
             isLoading={isLoading}
+            onSaveGoal={handleSaveGoal}
           />
         );
       case "distances":
