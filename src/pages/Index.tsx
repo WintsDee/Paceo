@@ -36,24 +36,44 @@ const Index = () => {
   }, [favorites, setFavorites]);
 
   const handleUseFavorite = React.useCallback((goal: RaceGoal) => {
-    // Load units and speed + persist goal-specific settings for global sync
-    setIsMetric(goal.isMetric);
-    const s = parseFloat(goal.speed);
-    if (!Number.isNaN(s)) setSpeedValue(s);
+    // RESET COMPLET - Effacer tout l'état actuel
     try {
-      if (goal.selectedDistanceId) {
-        window.localStorage.setItem("pace-calc-goal-distance", JSON.stringify(goal.selectedDistanceId));
-      }
-      if (goal.vmaKmh != null) {
-        window.localStorage.setItem("pace-calc-vma", JSON.stringify(goal.vmaKmh));
-      }
-      // Load program parameters if they exist
-      if (goal.program) {
-        window.localStorage.setItem("program-sessions-week", JSON.stringify(goal.program.sessionsPerWeek));
-        window.localStorage.setItem("program-weeks-before", JSON.stringify(goal.program.weeksBeforeRace));
-      }
-    } catch {}
-    setActiveTab("program");
+      // Clear all program-related data first
+      window.localStorage.removeItem("program-sessions-week");
+      window.localStorage.removeItem("program-weeks-before");
+      window.localStorage.removeItem("pace-calc-goal-distance");
+      window.localStorage.removeItem("pace-calc-vma");
+      
+      // Wait a frame to ensure cleanup is complete
+      setTimeout(() => {
+        // Load units and speed + persist goal-specific settings for global sync
+        setIsMetric(goal.isMetric);
+        const s = parseFloat(goal.speed);
+        if (!Number.isNaN(s)) setSpeedValue(s);
+        
+        // Load goal-specific settings
+        if (goal.selectedDistanceId) {
+          window.localStorage.setItem("pace-calc-goal-distance", JSON.stringify(goal.selectedDistanceId));
+        }
+        if (goal.vmaKmh != null) {
+          window.localStorage.setItem("pace-calc-vma", JSON.stringify(goal.vmaKmh));
+        }
+        // Load program parameters if they exist
+        if (goal.program) {
+          window.localStorage.setItem("program-sessions-week", JSON.stringify(goal.program.sessionsPerWeek));
+          window.localStorage.setItem("program-weeks-before", JSON.stringify(goal.program.weeksBeforeRace));
+        }
+        
+        // Navigate to program tab
+        setActiveTab("program");
+        
+        // Force a page refresh to ensure clean state
+        window.location.reload();
+      }, 50);
+    } catch (error) {
+      console.warn("Error loading favorite:", error);
+      setActiveTab("program");
+    }
   }, [setIsMetric, setSpeedValue, setActiveTab]);
 
   const renderScreen = React.useCallback(() => {

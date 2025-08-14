@@ -112,6 +112,9 @@ export default {
 				'fade-in-up': 'fade-in-up 0.4s ease-out',
 				'scale-in': 'scale-in 0.3s ease-out'
 			},
+			screens: {
+				'xs': '475px',
+			},
 			fontFamily: {
 				'mono': ['SF Mono', 'Consolas', 'Liberation Mono', 'Menlo', 'monospace']
 			}
