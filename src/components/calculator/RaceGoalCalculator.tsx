@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
+import { useAppNotifications } from "@/hooks/useAppNotifications";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -85,9 +85,7 @@ export const RaceGoalCalculator = ({
 }: RaceGoalCalculatorProps) => {
   const [selectedDistance, setSelectedDistance] = useLocalStorage<string>("pace-calc-goal-distance", "10k");
   const [targetTime, setTargetTime] = useState("00:45:00");
-  const {
-    toast
-  } = useToast();
+  const { notifications } = useAppNotifications();
   const lastUpdate = useRef<"speed" | "time" | null>(null);
   const [vmaKmh, setVmaKmh] = useLocalStorage<number>("pace-calc-vma", 0);
   const race = useMemo(() => raceDistances.find(d => d.id === selectedDistance)!, [selectedDistance]);
@@ -176,10 +174,7 @@ export const RaceGoalCalculator = ({
       savedAt: new Date()
     };
     onSaveGoal(goal);
-    toast({
-      title: "Objectif enregistré",
-      description: `${race.label} en ${targetTime} sauvegardé dans vos favoris`
-    });
+    notifications.favoriteAdded(`${race.label} en ${targetTime}`);
   };
   return <Card className="glass-card p-6 animate-fade-in-up">
       <h2 className="text-xl font-semibold mb-6">Objectif de course</h2>

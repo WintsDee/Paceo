@@ -11,11 +11,12 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { CalendarIcon, ChevronDown, Plus, Minus, Copy, Share2, Printer, Target } from "lucide-react";
 import { differenceInWeeks } from "date-fns";
 import { fr, enUS, es, de } from "date-fns/locale";
-import { toast } from "sonner";
+import { useAppNotifications } from "@/hooks/useAppNotifications";
 interface ProgramScreenProps {
   isMetric: boolean;
   speedValue: number;
   vmaValue?: number;
+  isLoading?: boolean;
 }
 interface TrainingSession {
   type: "EASY" | "STEADY" | "THR" | "INT" | "RP" | "Longue";
@@ -246,12 +247,11 @@ const usePaceZones = (goalSpeed: number, distance: string, level: string, vma?: 
 export const ProgramScreen = React.memo(({
   isMetric,
   speedValue,
-  vmaValue
+  vmaValue,
+  isLoading = false
 }: ProgramScreenProps) => {
-  const {
-    t,
-    language
-  } = useLanguage();
+  const { t, language } = useLanguage();
+  const { notifications } = useAppNotifications();
   const [sessionsPerWeek, setSessionsPerWeek] = useLocalStorage<number>("program-sessions-week", 3);
   const [weeksBeforeRace, setWeeksBeforeRace] = useLocalStorage<number>("program-weeks-before", 12);
   const [raceDate, setRaceDate] = useState<Date>();
@@ -558,9 +558,9 @@ export const ProgramScreen = React.memo(({
     const weekText = `${t("Semaine")} ${week.week} - ${t(week.phase)}\n${t("Volume")}: ${week.volume}${isMetric ? 'km' : 'mi'}\n\n${week.sessions.map((session, index) => `${index + 1}. ${t(session.type)} - ${session.duration}\n${session.description}`).join('\n\n')}`;
     try {
       await navigator.clipboard.writeText(weekText);
-      toast.success(`${t("Semaine")} ${week.week} copiée !`);
+      notifications.programCopied();
     } catch (err) {
-      toast.error('Erreur lors de la copie');
+      notifications.loadingError('copier la semaine');
     }
   }, [t, isMetric]);
   const shareWeek = useCallback(async (week: WeekProgram) => {
@@ -588,14 +588,14 @@ export const ProgramScreen = React.memo(({
         });
       } else {
         await navigator.clipboard.writeText(fullText);
-        toast.success('Programme copié dans le presse-papiers !');
+        notifications.programShared();
       }
     } catch (err) {
       try {
         await navigator.clipboard.writeText(fullText);
-        toast.success('Programme copié dans le presse-papiers !');
+        notifications.programShared();
       } catch (clipErr) {
-        toast.error('Erreur lors du partage');
+        notifications.loadingError('partager le programme');
       }
     }
   }, [program, t, race.label, speedValue, isMetric, sessionsPerWeek, effectiveWeeks]);
@@ -672,7 +672,7 @@ export const ProgramScreen = React.memo(({
       }
     };
     setFavorites([currentGoal, ...favorites]);
-    toast.success('Programme enregistré dans les favoris !');
+    notifications.favoriteAdded(`Programme ${race.label}`);
   }, [race, selectedDistanceId, goalTime, goalPace, speedValue, isMetric, vmaValue, sessionsPerWeek, effectiveWeeks, program, setFavorites, favorites]);
   if (!speedValue || speedValue <= 0) {
     return <div className="space-y-6 pb-20 animate-fade-in-up">

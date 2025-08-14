@@ -2,8 +2,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RaceGoal } from "@/components/calculator/RaceGoalCalculator";
-import { Heart, Trash2, Play, Eye } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Heart, Trash2, Play, Eye, Copy, Share2, Printer } from "lucide-react";
+import { useAppNotifications } from "@/hooks/useAppNotifications";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
@@ -14,23 +14,121 @@ interface FavoritesScreenProps {
 }
 
 export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: FavoritesScreenProps) => {
-  const { toast } = useToast();
+  const { notifications } = useAppNotifications();
   const { t } = useLanguage();
 
   const handleDelete = (id: string, distance: string) => {
     onDeleteFavorite(id);
-    toast({
-      title: "Favori supprimé",
-      description: `Objectif ${distance} retiré de vos favoris`,
-    });
+    notifications.favoriteDeleted(distance);
   };
 
   const handleUse = (goal: RaceGoal) => {
     onUseFavorite(goal);
-    toast({
-      title: "Objectif chargé",
-      description: `Objectif ${goal.distance} et son programme chargés`,
-    });
+    notifications.favoriteLoaded(goal.distance);
+  };
+
+  const handleCopyProgram = async (goal: RaceGoal) => {
+    if (!goal.program) return;
+    
+    try {
+      const programText = `Programme ${goal.distance} - ${goal.targetTime}\n\n` +
+        `Objectif: ${goal.distance} en ${goal.targetTime}\n` +
+        `Allure: ${goal.pace}/${goal.isMetric ? 'km' : 'mi'}\n` +
+        `Vitesse: ${goal.speed} ${goal.isMetric ? 'km/h' : 'mph'}\n` +
+        `VMA: ${goal.vmaKmh?.toFixed(1)} km/h\n\n` +
+        `Programme: ${goal.program.sessionsPerWeek} sessions/semaine sur ${goal.program.weeksBeforeRace} semaines\n\n` +
+        goal.program.weeks.map(week => 
+          `Semaine ${week.week} (${week.phase}) - ${week.volume}km\n` +
+          week.sessions.map(session => `  • ${session.type}: ${session.description}`).join('\n')
+        ).join('\n\n');
+      
+      await navigator.clipboard.writeText(programText);
+      notifications.programCopied();
+    } catch (error) {
+      notifications.loadingError("copier le programme");
+    }
+  };
+
+  const handleShareProgram = async (goal: RaceGoal) => {
+    if (!goal.program) return;
+    
+    try {
+      const shareData = {
+        title: `Programme ${goal.distance} - ${goal.targetTime}`,
+        text: `Mon programme d'entraînement ${goal.distance} pour courir en ${goal.targetTime}`,
+        url: window.location.href
+      };
+      
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(`${shareData.title}\n${shareData.text}\n${shareData.url}`);
+      }
+      notifications.programShared();
+    } catch (error) {
+      notifications.loadingError("partager le programme");
+    }
+  };
+
+  const handlePrintProgram = (goal: RaceGoal) => {
+    if (!goal.program) return;
+    
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+    
+    const programHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Programme ${goal.distance} - ${goal.targetTime}</title>
+          <style>
+            body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+            .goal-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+            .week { margin-bottom: 20px; border: 1px solid #ddd; padding: 15px; border-radius: 8px; }
+            .week-header { font-weight: bold; margin-bottom: 10px; background: #f5f5f5; padding: 10px; margin: -15px -15px 15px -15px; }
+            .session { margin-left: 20px; margin-bottom: 8px; }
+            .session-type { font-weight: bold; color: #666; }
+            @media print { body { font-size: 12px; } }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>Programme d'Entraînement</h1>
+            <h2>${goal.distance} - Objectif: ${goal.targetTime}</h2>
+          </div>
+          
+          <div class="goal-info">
+            <div><strong>Allure:</strong> ${goal.pace}/${goal.isMetric ? 'km' : 'mi'}</div>
+            <div><strong>Vitesse:</strong> ${goal.speed} ${goal.isMetric ? 'km/h' : 'mph'}</div>
+            <div><strong>Distance:</strong> ${goal.distanceKm} km</div>
+            <div><strong>VMA:</strong> ${goal.vmaKmh?.toFixed(1)} km/h</div>
+          </div>
+
+          <h3>Programme: ${goal.program.sessionsPerWeek} sessions/semaine sur ${goal.program.weeksBeforeRace} semaines</h3>
+          
+          ${goal.program.weeks.map(week => `
+            <div class="week">
+              <div class="week-header">
+                Semaine ${week.week} - ${week.phase} (${week.volume}km)
+              </div>
+              ${week.sessions.map(session => `
+                <div class="session">
+                  <span class="session-type">${session.type}:</span> ${session.description}
+                </div>
+              `).join('')}
+            </div>
+          `).join('')}
+        </body>
+      </html>
+    `;
+    
+    printWindow.document.write(programHtml);
+    printWindow.document.close();
+    setTimeout(() => {
+      printWindow.print();
+      notifications.programPrinted();
+    }, 500);
   };
 
   const renderProgramPreview = (program: any) => {
@@ -154,43 +252,99 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
                 )}
               </div>
               
-              <div className="flex gap-2 ml-4">
+              <div className="flex flex-col gap-2 ml-4">
                 {goal.program && (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="btn-glass p-2"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden">
-                      <DialogHeader>
-                        <DialogTitle>Programme - {goal.distance} en {goal.targetTime}</DialogTitle>
-                      </DialogHeader>
-                      {renderProgramPreview(goal.program)}
-                    </DialogContent>
-                  </Dialog>
+                  <div className="flex gap-2">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="btn-glass p-2"
+                          title="Voir le programme détaillé"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+                        <DialogHeader>
+                          <DialogTitle>Programme - {goal.distance} en {goal.targetTime}</DialogTitle>
+                        </DialogHeader>
+                        <div className="flex gap-2 mb-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleCopyProgram(goal)}
+                            className="btn-glass"
+                          >
+                            <Copy className="h-4 w-4 mr-2" />
+                            Copier
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleShareProgram(goal)}
+                            className="btn-glass"
+                          >
+                            <Share2 className="h-4 w-4 mr-2" />
+                            Partager
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePrintProgram(goal)}
+                            className="btn-glass"
+                          >
+                            <Printer className="h-4 w-4 mr-2" />
+                            Imprimer
+                          </Button>
+                        </div>
+                        {renderProgramPreview(goal.program)}
+                      </DialogContent>
+                    </Dialog>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleCopyProgram(goal)}
+                      className="btn-glass p-2"
+                      title="Copier le programme"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleShareProgram(goal)}
+                      className="btn-glass p-2"
+                      title="Partager le programme"
+                    >
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 )}
                 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleUse(goal)}
-                  className="btn-glass p-2"
-                >
-                  <Play className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleDelete(goal.id, goal.distance)}
-                  className="btn-glass p-2 hover:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleUse(goal)}
+                    className="btn-glass p-2"
+                    title="Charger cet objectif"
+                  >
+                    <Play className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDelete(goal.id, goal.distance)}
+                    className="btn-glass p-2 hover:text-destructive"
+                    title="Supprimer ce favori"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           </Card>
