@@ -671,142 +671,174 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
         <p className="text-muted-foreground text-sm">{t("Plan d'entraînement automatique")}</p>
       </div>
 
-      {/* Controls - Mobile Optimized */}
-      <div className="space-y-4 mb-6">
-        {/* Sessions per week - Full width on mobile */}
-        <div className="glass-card p-4 rounded-lg">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-muted-foreground">Sessions/semaine</span>
-            <span className="text-xl font-bold mono-numbers text-primary">{sessionsPerWeek}</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSessionsPerWeek(Math.max(2, sessionsPerWeek - 1))}
-              disabled={sessionsPerWeek <= 2}
-              className="btn-glass h-10 w-10 p-0 shrink-0"
-            >
-              <Minus className="h-4 w-4" />
-            </Button>
-            <div className="flex-1 text-center text-sm text-muted-foreground">
-              {sessionsPerWeek} sessions par semaine
+      {/* Section configuration du programme - Design iOS natif moderne */}
+      <div className="mb-6 space-y-6">
+        {/* Contrôles sessions et semaines - Layout responsive */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          {/* Sessions par semaine */}
+          <div className="flex-1 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-5 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-full">
+                  <Target className="h-4 w-4 text-primary" />
+                </div>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Sessions/semaine
+                </span>
+              </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSessionsPerWeek(Math.min(6, sessionsPerWeek + 1))}
-              disabled={sessionsPerWeek >= 6}
-              className="btn-glass h-10 w-10 p-0 shrink-0"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center justify-center gap-4">
+              <button
+                onClick={() => setSessionsPerWeek(Math.max(2, sessionsPerWeek - 1))}
+                disabled={sessionsPerWeek <= 2}
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95"
+              >
+                <Minus className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+              </button>
+              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 border-2 border-primary/20">
+                <span className="text-2xl font-bold text-primary">
+                  {sessionsPerWeek}
+                </span>
+              </div>
+              <button
+                onClick={() => setSessionsPerWeek(Math.min(6, sessionsPerWeek + 1))}
+                disabled={sessionsPerWeek >= 6}
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95"
+              >
+                <Plus className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+              </button>
+            </div>
+          </div>
+
+          {/* Configuration date/semaines */}
+          <div className="flex-1 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-5 border border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-full">
+                  <CalendarIcon className="h-4 w-4 text-primary" />
+                </div>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {useRaceDate ? "Date de course" : "Durée programme"}
+                </span>
+              </div>
+            </div>
+            
+            {useRaceDate ? (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="w-full p-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-left hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200">
+                    <div className="flex items-center justify-center gap-2 text-sm">
+                      <CalendarIcon className="h-4 w-4" />
+                      {raceDate ? 
+                        raceDate.toLocaleDateString(language === 'fr' ? 'fr-FR' : language === 'de' ? 'de-DE' : language === 'es' ? 'es-ES' : 'en-US') :
+                        "Choisir une date"
+                      }
+                    </div>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={raceDate}
+                    onSelect={setRaceDate}
+                    disabled={(date) => date < new Date()}
+                    initialFocus
+                    locale={dateLocale}
+                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl"
+                  />
+                </PopoverContent>
+              </Popover>
+            ) : (
+              <div className="flex items-center justify-center gap-4">
+                <button
+                  onClick={() => setWeeksBeforeRace(Math.max(2, weeksBeforeRace - 1))}
+                  disabled={weeksBeforeRace <= 2}
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95"
+                >
+                  <Minus className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                </button>
+                <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 border-2 border-primary/20">
+                  <span className="text-2xl font-bold text-primary">
+                    {weeksBeforeRace}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setWeeksBeforeRace(Math.min(16, weeksBeforeRace + 1))}
+                  disabled={weeksBeforeRace >= 16}
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95"
+                >
+                  <Plus className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Race date / weeks - Full width on mobile */}
-        <div className="glass-card p-4 rounded-lg">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-muted-foreground">
-              {useRaceDate ? "Date de course" : "Durée programme"}
-            </span>
-            <span className="text-xl font-bold mono-numbers text-primary">{effectiveWeeks} sem</span>
-          </div>
-          
-          {useRaceDate ? (
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="btn-glass w-full justify-start text-left font-normal h-12"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
-                  <span className="truncate">
-                    {raceDate ? raceDate.toLocaleDateString(language, { 
-                      day: 'numeric', 
-                      month: 'long',
-                      year: 'numeric'
-                    }) : "Choisir une date de course"}
-                  </span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 glass-card border-0" align="start">
-                <Calendar
-                  mode="single"
-                  locale={dateLocale}
-                  selected={raceDate}
-                  onSelect={setRaceDate}
-                  disabled={(date) => date < new Date()}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          ) : (
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setWeeksBeforeRace(Math.max(2, weeksBeforeRace - 1))}
-                disabled={weeksBeforeRace <= 2}
-                className="btn-glass h-10 w-10 p-0 shrink-0"
-              >
-                <Minus className="h-4 w-4" />
-              </Button>
-              <div className="flex-1 text-center text-sm text-muted-foreground">
-                Programme de {weeksBeforeRace} semaines
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setWeeksBeforeRace(Math.min(16, weeksBeforeRace + 1))}
-                disabled={weeksBeforeRace >= 16}
-                className="btn-glass h-10 w-10 p-0 shrink-0"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
+        {/* Toggle date/semaines */}
+        <div className="flex justify-center">
+          <button
+            onClick={() => setUseRaceDate(!useRaceDate)}
+            className="px-4 py-2 text-sm text-primary font-medium hover:text-primary/80 transition-colors duration-200"
+          >
+            {useRaceDate ? "Utiliser durée fixe" : "Utiliser date de course"}
+          </button>
         </div>
       </div>
 
-      {/* Goal summary - Enhanced Mobile */}
-      <Card className="glass-card p-6 mb-6 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-        <div className="text-center space-y-3">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Target className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-semibold text-primary">Objectif de Course</h3>
+      {/* Bloc récapitulatif de l'objectif - Design compact et mobile optimisé */}
+      <div className="mb-6 bg-gradient-to-r from-primary/5 via-primary/8 to-primary/5 dark:from-primary/10 dark:via-primary/15 dark:to-primary/10 rounded-2xl p-5 border border-primary/20 shadow-sm">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 bg-primary/10 rounded-full">
+            <Target className="h-5 w-5 text-primary" />
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <div className="space-y-1">
-              <div className="text-2xl font-bold text-foreground">{race.label}</div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wider">Distance</div>
-            </div>
-            
-            <div className="space-y-1">
-              <div className="text-2xl font-bold text-primary mono-numbers">{goalTime}</div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wider">Temps Objectif</div>
-            </div>
-            
-            <div className="space-y-1">
-              <div className="text-2xl font-bold text-foreground mono-numbers">{formatPace(goalPace, isMetric)}</div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wider">Allure Cible</div>
-            </div>
-          </div>
-          
-          {vmaValue && (
-            <div className="pt-3 border-t border-border/50">
-              <div className="flex items-center justify-center gap-4 text-sm">
-                <span className="text-muted-foreground">VMA:</span>
-                <span className="font-semibold mono-numbers">{vmaValue.toFixed(1)} km/h</span>
-                <span className="text-muted-foreground">•</span>
-                <span className="text-muted-foreground">Vitesse:</span>
-                <span className="font-semibold mono-numbers">{speedValue.toFixed(2)} {isMetric ? 'km/h' : 'mph'}</span>
-              </div>
-            </div>
-          )}
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+            Objectif de Course
+          </h3>
         </div>
-      </Card>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-3 text-center border border-white/40 dark:border-gray-700/40">
+            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+              Distance
+            </div>
+            <div className="text-sm font-bold text-gray-800 dark:text-gray-100">
+              {race.label}
+            </div>
+          </div>
+          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-3 text-center border border-white/40 dark:border-gray-700/40">
+            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+              Temps
+            </div>
+            <div className="text-sm font-bold text-gray-800 dark:text-gray-100">
+              {goalTime}
+            </div>
+          </div>
+          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-3 text-center border border-white/40 dark:border-gray-700/40">
+            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+              Allure
+            </div>
+            <div className="text-sm font-bold text-gray-800 dark:text-gray-100">
+              {formatPace(goalPace, isMetric)}
+            </div>
+          </div>
+          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-3 text-center border border-white/40 dark:border-gray-700/40">
+            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+              Semaines
+            </div>
+            <div className="text-sm font-bold text-gray-800 dark:text-gray-100">
+              {effectiveWeeks}
+            </div>
+          </div>
+        </div>
+        {vmaValue && (
+          <div className="mt-4 pt-3 border-t border-primary/20">
+            <div className="flex items-center justify-center gap-4 text-xs text-gray-600 dark:text-gray-400">
+              <span>VMA: <span className="font-semibold text-primary">{vmaValue.toFixed(1)} km/h</span></span>
+              <span>•</span>
+              <span>Vitesse: <span className="font-semibold text-primary">{speedValue.toFixed(2)} {isMetric ? 'km/h' : 'mph'}</span></span>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Weekly Program */}
       <div className="space-y-3">
