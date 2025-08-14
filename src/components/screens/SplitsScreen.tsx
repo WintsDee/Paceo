@@ -49,10 +49,6 @@ export const SplitsScreen = React.memo(({ isMetric, speedValue }: SplitsScreenPr
 
   return (
     <div className="space-y-3 animate-fade-in-up">
-      <div className="text-center py-2">
-        <h3 className="text-lg font-semibold">{t("Splits simples")}</h3>
-        <p className="text-muted-foreground text-sm">{t("Basé sur votre allure actuelle")}</p>
-      </div>
 
       <Tabs value={profile} onValueChange={(v) => setProfile(v as '5k' | '10k' | 'semi' | 'marathon')}>
         <TabsList className="w-full flex justify-center gap-2">

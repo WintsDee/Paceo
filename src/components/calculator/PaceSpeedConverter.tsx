@@ -76,14 +76,14 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
             Allure ({isMetric ? 'min/km' : 'min/mi'})
           </Label>
           <div className="glass-card rounded-lg p-4 flex items-center justify-between">
-            <Button onClick={() => stepPace(-1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-10 w-10 rounded-full p-0">
-              <Minus className="h-5 w-5" />
+            <Button onClick={() => stepPace(-1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0">
+              <Minus className="h-4 w-4" />
             </Button>
             <div className="text-3xl font-semibold mono-numbers select-none">
               {paceString}
             </div>
-            <Button onClick={() => stepPace(+1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-10 w-10 rounded-full p-0">
-              <Plus className="h-5 w-5" />
+            <Button onClick={() => stepPace(+1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0">
+              <Plus className="h-4 w-4" />
             </Button>
           </div>
         </div>
@@ -94,14 +94,14 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
             Vitesse ({isMetric ? 'km/h' : 'mph'})
           </Label>
           <div className="glass-card rounded-lg p-4 flex items-center justify-between">
-            <Button onClick={() => stepSpeed(-0.1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-10 w-10 rounded-full p-0">
-              <Minus className="h-5 w-5" />
+            <Button onClick={() => stepSpeed(-0.1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0">
+              <Minus className="h-4 w-4" />
             </Button>
             <div className="text-3xl font-semibold mono-numbers select-none">
               {speedValue.toFixed(2)}
             </div>
-            <Button onClick={() => stepSpeed(+0.1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-10 w-10 rounded-full p-0">
-              <Plus className="h-5 w-5" />
+            <Button onClick={() => stepSpeed(+0.1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0">
+              <Plus className="h-4 w-4" />
             </Button>
           </div>
         </div>

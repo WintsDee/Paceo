@@ -10,7 +10,7 @@ import { FavoritesScreen } from "@/components/screens/FavoritesScreen";
 import { BottomNavigation } from "@/components/layout/BottomNavigation";
 import { AppInfoButton } from "@/components/layout/AppInfoButton";
 import { RaceGoal } from "@/components/calculator/RaceGoalCalculator";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("calculator");
@@ -135,7 +135,6 @@ const Index = () => {
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
-      <Sonner />
     </div>
   );
 };
