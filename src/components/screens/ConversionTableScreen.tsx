@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ConversionTableScreenProps {
   isMetric: boolean;
@@ -20,6 +21,7 @@ function formatPace(mins: number) {
 }
 
 export const ConversionTableScreen = ({ isMetric, onSpeedChange }: ConversionTableScreenProps) => {
+  const { t } = useLanguage();
   const rows: { pace: string; speed: string; speedValue: number }[] = [];
   // 3:00 to 8:00 with 5s steps
   for (let sec = 180; sec <= 480; sec += 5) {
@@ -35,16 +37,16 @@ export const ConversionTableScreen = ({ isMetric, onSpeedChange }: ConversionTab
   return (
     <div className="space-y-3 pb-20">
       <div className="text-center py-2">
-        <h2 className="text-xl font-semibold">Table de conversion</h2>
-        <p className="text-muted-foreground text-sm">Cliquez une ligne pour régler la vitesse</p>
+        <h2 className="text-xl font-semibold">{t("Table de conversion")}</h2>
+        <p className="text-muted-foreground text-sm">{t("Cliquez une ligne pour régler la vitesse")}</p>
       </div>
       <Card className="p-0">
         <ScrollArea className="max-h-[60vh]">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-muted-foreground">
-                <th className="text-left px-4 py-2">Allure ({isMetric ? 'min/km' : 'min/mi'})</th>
-                <th className="text-right px-4 py-2">Vitesse</th>
+                <th className="text-left px-4 py-2">{t("Allure")} ({isMetric ? t('min/km') : t('min/mi')})</th>
+                <th className="text-right px-4 py-2">{t("Vitesse")}</th>
               </tr>
             </thead>
             <tbody>

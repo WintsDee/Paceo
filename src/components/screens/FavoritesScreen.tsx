@@ -138,10 +138,10 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
       <div className="space-y-3 max-h-80 overflow-y-auto">
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div>
-            <span className="font-medium">Sessions/semaine:</span> {program.sessionsPerWeek}
+            <span className="font-medium">{t("Sessions/sem.")}:</span> {program.sessionsPerWeek}
           </div>
           <div>
-            <span className="font-medium">Durée:</span> {program.weeksBeforeRace} semaines
+            <span className="font-medium">{t("Durée")}:</span> {program.weeksBeforeRace} {t("semaines")}
           </div>
         </div>
         
@@ -179,9 +179,9 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
         <Heart className="h-16 w-16 text-muted-foreground mb-4" />
-        <h2 className="text-xl font-semibold mb-2">Aucun favori</h2>
+        <h2 className="text-xl font-semibold mb-2">{t("Aucun favori")}</h2>
         <p className="text-muted-foreground max-w-sm">
-          Enregistrez vos objectifs de course depuis le calculateur pour les retrouver ici.
+          {t("Enregistrez vos objectifs de course depuis le calculateur pour les retrouver ici.")}
         </p>
       </div>
     );
@@ -189,11 +189,9 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
 
   return (
     <div className="space-y-6 pb-20">
-      <div className="text-center py-6">
-        <h1 className="text-3xl font-bold text-foreground">Favoris</h1>
-        <p className="text-muted-foreground mt-2">
-          Vos objectifs sauvegardés
-        </p>
+      <div className="text-center py-2">
+        <h2 className="text-xl font-semibold">{t("Favoris")}</h2>
+        <p className="text-muted-foreground text-sm">{t("Vos objectifs sauvegardés")}</p>
       </div>
 
       <div className="space-y-4">

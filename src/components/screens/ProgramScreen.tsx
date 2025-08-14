@@ -734,7 +734,7 @@ export const ProgramScreen = React.memo(({
         <div className="grid grid-cols-2 gap-3">
           {/* Sessions per week */}
           <div className="text-center">
-            <div className="text-sm font-medium text-foreground mb-2">Sessions/semaine</div>
+            <div className="text-sm font-medium text-foreground mb-2">{t("Sessions/sem.")}</div>
             <div className="flex items-center justify-center gap-2">
               <Button variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0" onClick={() => adjustSessions(-1)} disabled={sessionsPerWeek <= 2}>
                 <Minus className="h-4 w-4" />
@@ -750,7 +750,7 @@ export const ProgramScreen = React.memo(({
 
           {/* Weeks before race */}
           <div className="text-center">
-            <div className="text-sm font-medium text-foreground mb-2">Durée programme</div>
+            <div className="text-sm font-medium text-foreground mb-2">{t("Durée programme")}</div>
             <div className="flex items-center justify-center gap-2">
               {!useRaceDate ? (
                 <>
@@ -770,7 +770,7 @@ export const ProgramScreen = React.memo(({
                 </span>
               )}
             </div>
-            <div className="text-xs text-muted-foreground mt-1">semaines</div>
+            <div className="text-xs text-muted-foreground mt-1">{t("semaines")}</div>
           </div>
         </div>
       </Card>
@@ -791,7 +791,7 @@ export const ProgramScreen = React.memo(({
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="text-sm text-muted-foreground">
-                      {week.sessions.length} séances
+                      {week.sessions.length} {t("séances")}
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <span>{week.volume}{isMetric ? 'km' : 'mi'}</span>

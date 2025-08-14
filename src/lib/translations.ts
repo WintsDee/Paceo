@@ -58,11 +58,12 @@ export const translations = {
     "日本語": "日本語",
     "中文": "中文",
     
-    // Favorites
-    "Aucun favori": "Aucun favori",
-    "Sauvegardez vos objectifs": "Sauvegardez vos objectifs",
-    "Supprimer": "Supprimer",
-    "Utiliser": "Utiliser",
+     // Favorites
+     "Aucun favori": "Aucun favori",
+     "Enregistrez vos objectifs de course depuis le calculateur pour les retrouver ici.": "Enregistrez vos objectifs de course depuis le calculateur pour les retrouver ici.",
+     "Vos objectifs sauvegardés": "Vos objectifs sauvegardés",
+     "Supprimer": "Supprimer",
+     "Utiliser": "Utiliser",
     
     // Program Screen
     "Plan d'entraînement automatique": "Plan d'entraînement automatique",
@@ -92,11 +93,25 @@ export const translations = {
     "INT": "INT", 
     "RP": "RP",
     "Longue": "Longue",
-    "Strides": "Strides",
-    "récup": "récup",
-    "min": "min",
-    "s": "s",
-    "dont": "dont"
+     "Strides": "Strides",
+     "récup": "récup",
+     "min": "min",
+     "s": "s",
+     "dont": "dont",
+     "Imprimer": "Imprimer",
+     "Enregistrer le programme": "Enregistrer le programme",
+     "Programme enregistré": "Programme enregistré",
+     "Semaines": "Semaines",
+     "semaines": "semaines",
+     "Temps cible": "Temps cible",
+     
+     // Conversion Table
+     "Table de conversion": "Table de conversion",
+     "Cliquez une ligne pour régler la vitesse": "Cliquez une ligne pour régler la vitesse",
+     
+     // Program screen additional
+     "Durée programme": "Durée programme",
+     "Durée": "Durée"
   },
   en: {
     // Navigation
@@ -157,11 +172,12 @@ export const translations = {
     "日本語": "Japanese",
     "中文": "Chinese",
     
-    // Favorites
-    "Aucun favori": "No favorites",
-    "Sauvegardez vos objectifs": "Save your goals",
-    "Supprimer": "Delete",
-    "Utiliser": "Use",
+     // Favorites
+     "Aucun favori": "No favorites",
+     "Enregistrez vos objectifs de course depuis le calculateur pour les retrouver ici.": "Save your race goals from the calculator to find them here.",
+     "Vos objectifs sauvegardés": "Your saved goals",
+     "Supprimer": "Delete",
+     "Utiliser": "Use",
     
     // Program Screen
     "Plan d'entraînement automatique": "Automatic training plan",
@@ -195,13 +211,21 @@ export const translations = {
     "récup": "recovery",
     "min": "min",
     "s": "s",
-    "dont": "with",
-    "Imprimer": "Print",
-    "Enregistrer le programme": "Save program",
-    "Programme enregistré": "Program saved",
-    "Semaines": "Weeks",
-    "semaines": "weeks",
-    "Temps cible": "Target time"
+     "dont": "with",
+     "Imprimer": "Print",
+     "Enregistrer le programme": "Save program",
+     "Programme enregistré": "Program saved",
+     "Semaines": "Weeks",
+     "semaines": "weeks",
+     "Temps cible": "Target time",
+     
+     // Conversion Table
+     "Table de conversion": "Conversion Table",
+     "Cliquez une ligne pour régler la vitesse": "Click a row to set the speed",
+     
+     // Program screen additional
+     "Durée programme": "Program duration",
+     "Durée": "Duration"
   },
   es: {
     // Navigation
@@ -262,11 +286,12 @@ export const translations = {
     "日本語": "Japonés",
     "中文": "Chino",
     
-    // Favorites
-    "Aucun favori": "Sin favoritos",
-    "Sauvegardez vos objectifs": "Guarda tus objetivos",
-    "Supprimer": "Eliminar",
-    "Utiliser": "Usar",
+     // Favorites
+     "Aucun favori": "Sin favoritos",
+     "Enregistrez vos objectifs de course depuis le calculateur pour les retrouver ici.": "Guarda tus objetivos de carrera desde la calculadora para encontrarlos aquí.",
+     "Vos objectifs sauvegardés": "Tus objetivos guardados",
+     "Supprimer": "Eliminar",
+     "Utiliser": "Usar",
     
     // Program Screen
     "Plan d'entraînement automatique": "Plan de entrenamiento automático",
@@ -300,13 +325,21 @@ export const translations = {
     "récup": "recuperación",
     "min": "min",
     "s": "s",
-    "dont": "con",
-    "Imprimer": "Imprimir",
-    "Enregistrer le programme": "Guardar programa",
-    "Programme enregistré": "Programa guardado",
-    "Semaines": "Semanas",
-    "semaines": "semanas",
-    "Temps cible": "Tiempo objetivo"
+     "dont": "con",
+     "Imprimer": "Imprimir",
+     "Enregistrer le programme": "Guardar programa",
+     "Programme enregistré": "Programa guardado",
+     "Semaines": "Semanas",
+     "semaines": "semanas",
+     "Temps cible": "Tiempo objetivo",
+     
+     // Conversion Table
+     "Table de conversion": "Tabla de Conversión",
+     "Cliquez une ligne pour régler la vitesse": "Haz clic en una fila para ajustar la velocidad",
+     
+     // Program screen additional
+     "Durée programme": "Duración programa",
+     "Durée": "Duración"
   },
   de: {
     // Navigation
@@ -367,11 +400,12 @@ export const translations = {
     "日本語": "Japanisch",
     "中文": "Chinesisch",
     
-    // Favorites
-    "Aucun favori": "Keine Favoriten",
-    "Sauvegardez vos objectifs": "Speichere deine Ziele",
-    "Supprimer": "Löschen",
-    "Utiliser": "Verwenden",
+     // Favorites
+     "Aucun favori": "Keine Favoriten",
+     "Enregistrez vos objectifs de course depuis le calculateur pour les retrouver ici.": "Speichere deine Laufziele vom Rechner um sie hier zu finden.",
+     "Vos objectifs sauvegardés": "Deine gespeicherten Ziele",
+     "Supprimer": "Löschen",
+     "Utiliser": "Verwenden",
     
     // Program Screen
     "Plan d'entraînement automatique": "Automatischer Trainingsplan",
@@ -405,13 +439,21 @@ export const translations = {
     "récup": "Erholung",
     "min": "min",
     "s": "s",
-    "dont": "davon",
-    "Imprimer": "Drucken",
-    "Enregistrer le programme": "Programm speichern",
-    "Programme enregistré": "Programm gespeichert",
-    "Semaines": "Wochen",
-    "semaines": "wochen",
-    "Temps cible": "Zielzeit"
+     "dont": "davon",
+     "Imprimer": "Drucken",
+     "Enregistrer le programme": "Programm speichern",
+     "Programme enregistré": "Programm gespeichert",
+     "Semaines": "Wochen",
+     "semaines": "wochen",
+     "Temps cible": "Zielzeit",
+     
+     // Conversion Table
+     "Table de conversion": "Umrechnungstabelle",
+     "Cliquez une ligne pour régler la vitesse": "Klicke eine Zeile um die Geschwindigkeit zu setzen",
+     
+     // Program screen additional
+     "Durée programme": "Programmdauer",
+     "Durée": "Dauer"
   }
 };
 
