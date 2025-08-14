@@ -6,6 +6,7 @@ import { Heart, Trash2, Play, Eye, Copy, Share2, Printer } from "lucide-react";
 import { useAppNotifications } from "@/hooks/useAppNotifications";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { shareProgram, shareWeek } from "@/utils/programSharing";
 
 interface FavoritesScreenProps {
   favorites: RaceGoal[];
@@ -53,18 +54,34 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
     if (!goal.program) return;
     
     try {
-      const shareData = {
-        title: `Programme ${goal.distance} - ${goal.targetTime}`,
-        text: `Mon programme d'entraînement ${goal.distance} pour courir en ${goal.targetTime}`,
-        url: window.location.href
+      // Convert RaceGoal to ProgramData format
+      const programData = {
+        race: goal.distance,
+        goalTime: goal.targetTime,
+        goalPace: goal.pace,
+        sessionsPerWeek: goal.program.sessionsPerWeek,
+        effectiveWeeks: goal.program.weeksBeforeRace,
+        program: goal.program.weeks.map(week => ({
+          week: week.week,
+          phase: week.phase,
+          volume: week.volume,
+          sessions: week.sessions.map(session => ({
+            type: session.type,
+            duration: session.duration || "",
+            pace: session.pace || "",
+            description: session.description
+          }))
+        })),
+        isMetric: goal.isMetric,
+        speedValue: parseFloat(goal.speed)
       };
       
-      if (navigator.share) {
-        await navigator.share(shareData);
+      const success = await shareProgram(programData);
+      if (success) {
+        notifications.programShared();
       } else {
-        await navigator.clipboard.writeText(`${shareData.title}\n${shareData.text}\n${shareData.url}`);
+        notifications.loadingError("partager le programme");
       }
-      notifications.programShared();
     } catch (error) {
       notifications.loadingError("partager le programme");
     }
@@ -146,7 +163,7 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
         </div>
         
         <div className="space-y-2">
-          {program.weeks.slice(0, 5).map((week: any, index: number) => (
+          {program.weeks.map((week: any, index: number) => (
             <div key={index} className="border border-border/50 rounded-lg p-3">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium">Semaine {week.week}</span>
@@ -165,11 +182,6 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
               </div>
             </div>
           ))}
-          {program.weeks.length > 5 && (
-            <div className="text-center text-sm text-muted-foreground">
-              ... et {program.weeks.length - 5} semaines supplémentaires
-            </div>
-          )}
         </div>
       </div>
     );
