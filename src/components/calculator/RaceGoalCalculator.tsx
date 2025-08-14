@@ -223,23 +223,17 @@ export const RaceGoalCalculator = ({
             
           </div>}
 
-        {/* Results display - Enhanced mobile visibility */}
-        <div className="space-y-4">
-          {/* Temps objectif mis en avant */}
-          
-          
-          {/* Allure et vitesse */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="glass-card p-4 rounded-lg">
-              <div className="text-sm text-muted-foreground mb-1">Allure cible</div>
-              <div className="text-xl font-semibold mono-numbers text-primary">{pace}</div>
-              <div className="text-xs text-muted-foreground">{isMetric ? 'min/km' : 'min/mi'}</div>
-            </div>
-            <div className="glass-card p-4 rounded-lg">
-              <div className="text-sm text-muted-foreground mb-1">Vitesse</div>
-              <div className="text-xl font-semibold mono-numbers text-primary">{speedDisplay}</div>
-              <div className="text-xs text-muted-foreground">{isMetric ? 'km/h' : 'mph'}</div>
-            </div>
+        {/* Results display - always derived from global speed */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="glass-card p-4 rounded-lg">
+            <div className="text-sm text-muted-foreground mb-1">Allure cible</div>
+            <div className="text-xl font-semibold mono-numbers text-primary">{pace}</div>
+            <div className="text-xs text-muted-foreground">{isMetric ? 'min/km' : 'min/mi'}</div>
+          </div>
+          <div className="glass-card p-4 rounded-lg">
+            <div className="text-sm text-muted-foreground mb-1">Vitesse</div>
+            <div className="text-xl font-semibold mono-numbers text-primary">{speedDisplay}</div>
+            <div className="text-xs text-muted-foreground">{isMetric ? 'km/h' : 'mph'}</div>
           </div>
         </div>
 

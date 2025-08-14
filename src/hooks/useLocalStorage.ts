@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 export function useLocalStorage<T>(key: string, defaultValue: T): [T, (value: T) => void] {
   const [value, setValue] = useState<T>(() => {
@@ -11,30 +11,14 @@ export function useLocalStorage<T>(key: string, defaultValue: T): [T, (value: T)
     }
   });
 
-  const setStoredValue = useCallback((newValue: T) => {
+  const setStoredValue = (newValue: T) => {
     try {
       setValue(newValue);
       window.localStorage.setItem(key, JSON.stringify(newValue));
     } catch (error) {
       console.warn(`Error setting localStorage key "${key}":`, error);
     }
-  }, [key]);
-
-  // Listen to localStorage changes from other tabs/windows
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === key && e.newValue !== null) {
-        try {
-          setValue(JSON.parse(e.newValue));
-        } catch (error) {
-          console.warn(`Error parsing localStorage change for key "${key}":`, error);
-        }
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [key]);
+  };
 
   return [value, setStoredValue];
 }

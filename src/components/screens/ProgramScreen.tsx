@@ -93,48 +93,41 @@ const SESSION_EXPLANATIONS = {
 } as const;
 
 // Moteur de programme d'entraînement selon spécifications exactes 2025
-// Moteur 2025 : Calculs VMA précis selon nouvelles spécifications 
 const calculateVMAPaces = (vma: number) => {
   const vmaAllure = 60 / vma; // min/km selon spec: Allure_VMA = 60 / VMA
   return {
-    EASY: vmaAllure * 1.18,    // 60-65% VMA optimisé: EASY = 1,18 × Allure_VMA
-    STEADY: vmaAllure * 1.10,  // 70-75% VMA optimisé: STEADY = 1,10 × Allure_VMA  
-    THR: vmaAllure * 0.96,     // 82-87% VMA optimisé: THR = 0,96 × Allure_VMA
-    INT: vmaAllure * 0.89,     // 100-110% VMA optimisé: INT = 0,89 × Allure_VMA
+    EASY: vmaAllure * 1.15,    // 60-70% VMA selon spec: EASY = 1,15 × Allure_VMA
+    STEADY: vmaAllure * 1.08,  // 70-75% VMA selon spec: STEADY = 1,08 × Allure_VMA  
+    THR: vmaAllure * 0.95,     // 80-85% VMA selon spec: THR = 0,95 × Allure_VMA
+    INT: vmaAllure * 0.90,     // 95-105% VMA selon spec: INT = 0,90 × Allure_VMA
     VMA: vmaAllure             // 100-110% VMA pur
   };
 };
 
-// Moteur 2025 : Volume hebdomadaire optimisé selon nouvelles recommandations
 const calculateWeeklyVolume = (sessionsPerWeek: number, vma: number): number => {
-  // Volume S1 optimisé 2025: Nouvelles formules validées par physiologistes
+  // Volume S1 selon spec exacte: Base sur Sessions/semaine + VMA
   const multipliers = {
-    2: { min: 2.0, max: 2.4 },  // 2 séances : (VMA × 2,0) à (VMA × 2,4) - augmenté
-    3: { min: 2.4, max: 3.0 },  // 3 séances : (VMA × 2,4) à (VMA × 3,0) - augmenté  
-    4: { min: 3.0, max: 3.7 },  // 4 séances : (VMA × 3,0) à (VMA × 3,7) - augmenté
-    5: { min: 3.7, max: 4.5 },  // 5 séances : (VMA × 3,7) à (VMA × 4,5) - augmenté
-    6: { min: 4.5, max: 5.3 }   // 6 séances : (VMA × 4,5) à (VMA × 5,3) - augmenté
+    2: { min: 1.8, max: 2.2 },  // 2 séances : (VMA × 1,8) à (VMA × 2,2)
+    3: { min: 2.2, max: 2.8 },  // 3 séances : (VMA × 2,2) à (VMA × 2,8)
+    4: { min: 2.8, max: 3.5 },  // 4 séances : (VMA × 2,8) à (VMA × 3,5)
+    5: { min: 3.5, max: 4.2 },  // 5 séances : (VMA × 3,5) à (VMA × 4,2)
+    6: { min: 4.2, max: 5.0 }   // 6 séances : (VMA × 4,2) à (VMA × 5)
   };
   
   const mult = multipliers[sessionsPerWeek as keyof typeof multipliers] || multipliers[3];
   return Math.round(vma * ((mult.min + mult.max) / 2)); // arrondir au km le plus proche
 };
 
-// Moteur 2025 : Évaluation réalisme objectif selon nouvelles données
 const assessObjectiveRealism = (goalSpeed: number, vma: number, distance: string): number => {
   const goalPercent = (goalSpeed / vma) * 100;
   
-  // Nouvelles grilles de réalisme 2025 validées par études récentes
-  // 10K : objectifs plus ambitieux possibles
-  if (distance === "10k") {
-    if (goalPercent > 88) return 0.7; // Très ambitieux mais possible
-    if (goalPercent < 78) return 1.0; // Conservateur
-    return 0.9; // Équilibré
-  }
-  // Semi/Marathon : exigences adaptées aux distances longues  
-  if (goalPercent > 82) return 0.65; // Très ambitieux
-  if (goalPercent < 75) return 1.0; // Conservateur
-  return 0.85; // Équilibré
+  // Exigence réaliste selon objectif - spec exacte
+  // Si allure cible > 80 % VMA → volume/intensité réduits pour éviter la blessure
+  if (goalPercent > 80) return 0.6; // max 1 séance intense/semaine
+  // Si allure cible < 75 % VMA → intensité progressive et volume complet
+  if (goalPercent < 75) return 1.0;
+  
+  return 0.85; // Entre 75-80% VMA
 };
 
 // Fonctions utilitaires memoized
@@ -671,161 +664,149 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
         <p className="text-muted-foreground text-sm">{t("Plan d'entraînement automatique")}</p>
       </div>
 
-      {/* Section configuration du programme - Design iOS natif moderne */}
-      <div className="mb-6 space-y-6">
-        {/* Contrôles sessions et semaines - Layout mobile compact */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {/* Sessions par semaine */}
-          <div className="glass-card rounded-2xl p-4">
-            <div className="mb-3">
-              <span className="text-sm font-medium text-foreground">
-                Sessions/semaine
-              </span>
+      {/* Sticky Controls Header */}
+      <Card className="glass-card p-4 sticky top-0 z-10">
+        <div className="flex items-center justify-between gap-4">
+          {/* Sessions per week */}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 btn-glass"
+              onClick={() => adjustSessions(-1)}
+              disabled={sessionsPerWeek <= 2}
+            >
+              <Minus className="h-4 w-4" />
+            </Button>
+            <div className="text-center min-w-[80px]">
+              <div className="text-sm font-medium">{sessionsPerWeek}</div>
+              <div className="text-xs text-muted-foreground">{t("Sessions/sem.")}</div>
             </div>
-            <div className="flex items-center justify-center gap-3">
-              <button
-                onClick={() => setSessionsPerWeek(Math.max(2, sessionsPerWeek - 1))}
-                disabled={sessionsPerWeek <= 2}
-                className="flex items-center justify-center w-8 h-8 rounded-full glass-card hover:glow-effect disabled:opacity-50 disabled:cursor-not-allowed transition-smooth active:scale-95"
-              >
-                <Minus className="h-3 w-3 text-foreground" />
-              </button>
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 border-2 border-primary/20">
-                <span className="text-xl font-bold text-primary">
-                  {sessionsPerWeek}
-                </span>
-              </div>
-              <button
-                onClick={() => setSessionsPerWeek(Math.min(6, sessionsPerWeek + 1))}
-                disabled={sessionsPerWeek >= 6}
-                className="flex items-center justify-center w-8 h-8 rounded-full glass-card hover:glow-effect disabled:opacity-50 disabled:cursor-not-allowed transition-smooth active:scale-95"
-              >
-                <Plus className="h-3 w-3 text-foreground" />
-              </button>
-            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 btn-glass"
+              onClick={() => adjustSessions(1)}
+              disabled={sessionsPerWeek >= 6}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
           </div>
 
-          {/* Configuration date/semaines */}
-          <div className="glass-card rounded-2xl p-4">
-            <div className="mb-3">
-              <span className="text-sm font-medium text-foreground">
-                {useRaceDate ? "Date de course" : "Durée programme"}
-              </span>
-            </div>
-            
-            {useRaceDate ? (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button className="w-full p-2 rounded-xl glass-card text-center hover:glow-effect transition-smooth">
-                    <div className="flex items-center justify-center gap-2 text-sm">
-                      <CalendarIcon className="h-4 w-4" />
-                      {raceDate ? 
-                        raceDate.toLocaleDateString(language === 'fr' ? 'fr-FR' : language === 'de' ? 'de-DE' : language === 'es' ? 'es-ES' : 'en-US') :
-                        "Choisir"
-                      }
-                    </div>
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={raceDate}
-                    onSelect={setRaceDate}
-                    disabled={(date) => date < new Date()}
-                    initialFocus
-                    locale={dateLocale}
-                    className="glass-card rounded-xl"
-                  />
-                </PopoverContent>
-              </Popover>
-            ) : (
-              <div className="flex items-center justify-center gap-3">
-                <button
-                  onClick={() => setWeeksBeforeRace(Math.max(2, weeksBeforeRace - 1))}
+          {/* Weeks before race / Date picker */}
+          <div className="flex items-center gap-2">
+            {!useRaceDate ? (
+              <>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 btn-glass"
+                  onClick={() => adjustWeeks(-1)}
                   disabled={weeksBeforeRace <= 2}
-                  className="flex items-center justify-center w-8 h-8 rounded-full glass-card hover:glow-effect disabled:opacity-50 disabled:cursor-not-allowed transition-smooth active:scale-95"
                 >
-                  <Minus className="h-3 w-3 text-foreground" />
-                </button>
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 border-2 border-primary/20">
-                  <span className="text-xl font-bold text-primary">
-                    {weeksBeforeRace}
-                  </span>
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <div className="text-center min-w-[80px]">
+                  <div className="text-sm font-medium">{effectiveWeeks}</div>
+                  <div className="text-xs text-muted-foreground">{t("Avant objectif")} (sem.)</div>
                 </div>
-                <button
-                  onClick={() => setWeeksBeforeRace(Math.min(16, weeksBeforeRace + 1))}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 btn-glass"
+                  onClick={() => adjustWeeks(1)}
                   disabled={weeksBeforeRace >= 16}
-                  className="flex items-center justify-center w-8 h-8 rounded-full glass-card hover:glow-effect disabled:opacity-50 disabled:cursor-not-allowed transition-smooth active:scale-95"
                 >
-                  <Plus className="h-3 w-3 text-foreground" />
-                </button>
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </>
+            ) : (
+              <div className="text-center min-w-[80px]">
+                <div className="text-sm font-medium">{effectiveWeeks}</div>
+                <div className="text-xs text-muted-foreground">sem. calculées</div>
               </div>
             )}
+            
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="btn-glass ml-2 px-2">
+                  <CalendarIcon className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <Calendar
+                  mode="single"
+                  selected={raceDate}
+                  onSelect={(date) => {
+                    setRaceDate(date);
+                    if (date) {
+                      setUseRaceDate(true);
+                    }
+                  }}
+                  disabled={(date) => date < new Date()}
+                  initialFocus
+                  locale={dateLocale}
+                  className="pointer-events-auto"
+                />
+                {useRaceDate && (
+                  <div className="p-2 border-t">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => {
+                        setUseRaceDate(false);
+                        setRaceDate(undefined);
+                      }}
+                    >
+                      Utiliser nombre de semaines
+                    </Button>
+                  </div>
+                )}
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
+      </Card>
 
-        {/* Toggle date/semaines */}
-        <div className="flex justify-center">
-          <button
-            onClick={() => setUseRaceDate(!useRaceDate)}
-            className="px-4 py-2 text-sm text-primary font-medium hover:text-primary/80 transition-colors duration-200"
-          >
-            {useRaceDate ? "Utiliser durée fixe" : "Utiliser date de course"}
-          </button>
+      {/* Cadre Objectif Élégant */}
+      <Card className="glass-card p-6 border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+        <div className="text-center space-y-3">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Target className="w-5 h-5 text-primary" />
+            <h3 className="text-lg font-semibold text-primary">Objectif de Course</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            <div className="space-y-1">
+              <div className="text-2xl font-bold text-foreground">{race.label}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider">Distance</div>
+            </div>
+            
+            <div className="space-y-1">
+              <div className="text-2xl font-bold text-primary mono-numbers">{goalTime}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider">Temps Objectif</div>
+            </div>
+            
+            <div className="space-y-1">
+              <div className="text-2xl font-bold text-foreground mono-numbers">{formatPace(goalPace, isMetric)}</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider">Allure Cible</div>
+            </div>
+          </div>
+          
+          {vmaValue && (
+            <div className="pt-3 border-t border-border/50">
+              <div className="flex items-center justify-center gap-4 text-sm">
+                <span className="text-muted-foreground">VMA:</span>
+                <span className="font-semibold mono-numbers">{vmaValue.toFixed(1)} km/h</span>
+                <span className="text-muted-foreground">•</span>
+                <span className="text-muted-foreground">Vitesse:</span>
+                <span className="font-semibold mono-numbers">{speedValue.toFixed(2)} {isMetric ? 'km/h' : 'mph'}</span>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
-
-      {/* Bloc récapitulatif de l'objectif - Design compact et mobile optimisé */}
-      <div className="mb-6 glass-card rounded-2xl p-4 border-primary/20">
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-foreground">
-            Objectif de Course
-          </h3>
-        </div>
-        <div className="grid grid-cols-4 gap-2">
-          <div className="glass-card rounded-xl p-3 text-center">
-            <div className="text-xs font-medium text-muted-foreground mb-1">
-              Distance
-            </div>
-            <div className="text-sm font-bold text-primary">
-              {race.label}
-            </div>
-          </div>
-          <div className="glass-card rounded-xl p-3 text-center">
-            <div className="text-xs font-medium text-muted-foreground mb-1">
-              Temps
-            </div>
-            <div className="text-sm font-bold text-primary mono-numbers">
-              {goalTime}
-            </div>
-          </div>
-          <div className="glass-card rounded-xl p-3 text-center">
-            <div className="text-xs font-medium text-muted-foreground mb-1">
-              Allure
-            </div>
-            <div className="text-sm font-bold text-primary mono-numbers">
-              {formatPace(goalPace, isMetric)}
-            </div>
-          </div>
-          <div className="glass-card rounded-xl p-3 text-center">
-            <div className="text-xs font-medium text-muted-foreground mb-1">
-              Semaines
-            </div>
-            <div className="text-sm font-bold text-primary">
-              {effectiveWeeks}
-            </div>
-          </div>
-        </div>
-        {vmaValue && (
-          <div className="mt-3 pt-3 border-t border-border">
-            <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
-              <span>VMA: <span className="font-semibold text-primary">{vmaValue.toFixed(1)} km/h</span></span>
-              <span>•</span>
-              <span>Vitesse: <span className="font-semibold text-primary">{speedValue.toFixed(2)} {isMetric ? 'km/h' : 'mph'}</span></span>
-            </div>
-          </div>
-        )}
-      </div>
+      </Card>
 
       {/* Weekly Program */}
       <div className="space-y-3">

@@ -146,20 +146,6 @@
   .transition-spring {
     transition: var(--transition-spring);
   }
-
-  /* Mobile optimizations */
-  @media (max-width: 768px) {
-    .glass-card {
-      backdrop-filter: blur(8px);
-    }
-    
-    /* Enhanced contrast for mobile */
-    :root {
-      --glass-bg: 215 25% 14% / 0.9;
-      --glass-border: 215 25% 30% / 0.4;
-      --shadow-card: 0 6px 25px hsl(215 25% 5% / 0.4);
-    }
-  }
 }
 
 @layer components {
