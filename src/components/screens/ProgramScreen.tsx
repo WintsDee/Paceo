@@ -671,142 +671,157 @@ export const ProgramScreen = React.memo(({ isMetric, speedValue, vmaValue }: Pro
         <p className="text-muted-foreground text-sm">{t("Plan d'entraînement automatique")}</p>
       </div>
 
-      {/* Controls - Mobile Optimized */}
-      <div className="space-y-4 mb-6">
-        {/* Sessions per week - Full width on mobile */}
-        <div className="glass-card p-4 rounded-lg">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-muted-foreground">Sessions/semaine</span>
-            <span className="text-xl font-bold mono-numbers text-primary">{sessionsPerWeek}</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSessionsPerWeek(Math.max(2, sessionsPerWeek - 1))}
-              disabled={sessionsPerWeek <= 2}
-              className="btn-glass h-10 w-10 p-0 shrink-0"
-            >
-              <Minus className="h-4 w-4" />
-            </Button>
-            <div className="flex-1 text-center text-sm text-muted-foreground">
-              {sessionsPerWeek} sessions par semaine
+      {/* Controls - iOS Native Style */}
+      <div className="space-y-3 mb-6">
+        {/* Sessions per week - iOS style */}
+        <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/30 overflow-hidden">
+          <div className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
+                  <Calendar className="w-4 h-4 text-primary" />
+                </div>
+                <span className="text-sm font-medium text-foreground">Sessions/semaine</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSessionsPerWeek(Math.max(2, sessionsPerWeek - 1))}
+                  disabled={sessionsPerWeek <= 2}
+                  className="h-8 w-8 rounded-xl bg-muted/30 hover:bg-muted/50 disabled:opacity-30"
+                >
+                  <Minus className="h-3 w-3" />
+                </Button>
+                <div className="w-12 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
+                  <span className="font-semibold text-primary text-sm">{sessionsPerWeek}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSessionsPerWeek(Math.min(6, sessionsPerWeek + 1))}
+                  disabled={sessionsPerWeek >= 6}
+                  className="h-8 w-8 rounded-xl bg-muted/30 hover:bg-muted/50 disabled:opacity-30"
+                >
+                  <Plus className="h-3 w-3" />
+                </Button>
+              </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSessionsPerWeek(Math.min(6, sessionsPerWeek + 1))}
-              disabled={sessionsPerWeek >= 6}
-              className="btn-glass h-10 w-10 p-0 shrink-0"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
+            <div className="text-xs text-muted-foreground mt-2">
+              Volume: {baseVolume} {isMetric ? 'km' : 'mi'}/semaine
+            </div>
           </div>
         </div>
 
-        {/* Race date / weeks - Full width on mobile */}
-        <div className="glass-card p-4 rounded-lg">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-muted-foreground">
-              {useRaceDate ? "Date de course" : "Durée programme"}
-            </span>
-            <span className="text-xl font-bold mono-numbers text-primary">{effectiveWeeks} sem</span>
-          </div>
-          
-          {useRaceDate ? (
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="btn-glass w-full justify-start text-left font-normal h-12"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
-                  <span className="truncate">
-                    {raceDate ? raceDate.toLocaleDateString(language, { 
-                      day: 'numeric', 
-                      month: 'long',
-                      year: 'numeric'
-                    }) : "Choisir une date de course"}
-                  </span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 glass-card border-0" align="start">
-                <Calendar
-                  mode="single"
-                  locale={dateLocale}
-                  selected={raceDate}
-                  onSelect={setRaceDate}
-                  disabled={(date) => date < new Date()}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          ) : (
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setWeeksBeforeRace(Math.max(2, weeksBeforeRace - 1))}
-                disabled={weeksBeforeRace <= 2}
-                className="btn-glass h-10 w-10 p-0 shrink-0"
-              >
-                <Minus className="h-4 w-4" />
-              </Button>
-              <div className="flex-1 text-center text-sm text-muted-foreground">
-                Programme de {weeksBeforeRace} semaines
+        {/* Duration / Race date - iOS style */}
+        <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/30 overflow-hidden">
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-foreground">
+                {useRaceDate ? "Date de course" : "Durée programme"}
+              </span>
+              <div className="w-12 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
+                <span className="font-semibold text-primary text-sm">{effectiveWeeks}s</span>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setWeeksBeforeRace(Math.min(16, weeksBeforeRace + 1))}
-                disabled={weeksBeforeRace >= 16}
-                className="btn-glass h-10 w-10 p-0 shrink-0"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
             </div>
-          )}
+            
+            {useRaceDate ? (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start rounded-xl bg-muted/20 hover:bg-muted/30 text-sm h-10 px-3"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                    <span className="truncate">
+                      {raceDate ? raceDate.toLocaleDateString(language, { 
+                        day: 'numeric', 
+                        month: 'short'
+                      }) : "Choisir une date"}
+                    </span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    locale={dateLocale}
+                    selected={raceDate}
+                    onSelect={setRaceDate}
+                    disabled={(date) => date < new Date()}
+                    initialFocus
+                  />
+                </PopoverContent>
+                </Popover>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setWeeksBeforeRace(Math.max(2, weeksBeforeRace - 1))}
+                  disabled={weeksBeforeRace <= 2}
+                  className="h-8 w-8 rounded-xl bg-muted/30 hover:bg-muted/50 disabled:opacity-30"
+                >
+                  <Minus className="h-3 w-3" />
+                </Button>
+                <div className="flex-1 text-center">
+                  <div className="text-xs text-muted-foreground">
+                    Programme de {weeksBeforeRace} semaines
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setWeeksBeforeRace(Math.min(16, weeksBeforeRace + 1))}
+                  disabled={weeksBeforeRace >= 16}
+                  className="h-8 w-8 rounded-xl bg-muted/30 hover:bg-muted/50 disabled:opacity-30"
+                >
+                  <Plus className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Goal summary - Enhanced Mobile */}
-      <Card className="glass-card p-6 mb-6 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-        <div className="text-center space-y-3">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Target className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-semibold text-primary">Objectif de Course</h3>
+      {/* Goal summary - Compact iOS Style */}
+      <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/30 overflow-hidden">
+        <div className="p-4">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center">
+              <Target className="w-4 h-4 text-primary" />
+            </div>
+            <span className="text-sm font-medium text-foreground">Objectif de Course</span>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <div className="space-y-1">
-              <div className="text-2xl font-bold text-foreground">{race.label}</div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wider">Distance</div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Distance</span>
+              <span className="font-semibold text-foreground">{race.label}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Temps objectif</span>
+              <span className="font-semibold text-primary mono-numbers">{goalTime}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Allure cible</span>
+              <span className="font-semibold text-foreground mono-numbers">{formatPace(goalPace, isMetric)}</span>
             </div>
             
-            <div className="space-y-1">
-              <div className="text-2xl font-bold text-primary mono-numbers">{goalTime}</div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wider">Temps Objectif</div>
-            </div>
-            
-            <div className="space-y-1">
-              <div className="text-2xl font-bold text-foreground mono-numbers">{formatPace(goalPace, isMetric)}</div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wider">Allure Cible</div>
-            </div>
+            {vmaValue && (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">VMA</span>
+                  <span className="font-semibold text-foreground mono-numbers">{vmaValue.toFixed(1)} km/h</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Vitesse</span>
+                  <span className="font-semibold text-foreground mono-numbers">{speedValue.toFixed(1)} {isMetric ? 'km/h' : 'mph'}</span>
+                </div>
+              </>
+            )}
           </div>
-          
-          {vmaValue && (
-            <div className="pt-3 border-t border-border/50">
-              <div className="flex items-center justify-center gap-4 text-sm">
-                <span className="text-muted-foreground">VMA:</span>
-                <span className="font-semibold mono-numbers">{vmaValue.toFixed(1)} km/h</span>
-                <span className="text-muted-foreground">•</span>
-                <span className="text-muted-foreground">Vitesse:</span>
-                <span className="font-semibold mono-numbers">{speedValue.toFixed(2)} {isMetric ? 'km/h' : 'mph'}</span>
-              </div>
-            </div>
-          )}
         </div>
-      </Card>
+      </div>
 
       {/* Weekly Program */}
       <div className="space-y-3">
