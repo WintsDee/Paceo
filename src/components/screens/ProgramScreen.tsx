@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { CalendarIcon, ChevronDown, Plus, Minus, Copy, Share2, Printer, Target } from "lucide-react";
+import { shareProgram, shareWeek as shareWeekUtil } from "@/utils/programSharing";
 import { differenceInWeeks } from "date-fns";
 import { fr, enUS, es, de } from "date-fns/locale";
 import { useAppNotifications } from "@/hooks/useAppNotifications";
@@ -564,41 +565,49 @@ export const ProgramScreen = React.memo(({
     }
   }, [t, isMetric]);
   const shareWeek = useCallback(async (week: WeekProgram) => {
-    const weekText = `Programme ${t("Semaine")} ${week.week} - Paceo\n\n${t(week.phase)} • ${week.volume}${isMetric ? 'km' : 'mi'}\n\n${week.sessions.map((session, index) => `${index + 1}. ${t(session.type)} - ${session.duration}\n${session.description}`).join('\n\n')}`;
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Programme ${t("Semaine")} ${week.week}`,
-          text: weekText
-        });
-      } catch (err) {
-        copyWeekToClipboard(week);
-      }
+    const success = await shareWeekUtil(week, {
+      race: race.label,
+      goalPace: paceFromSpeed(speedValue),
+      isMetric
+    });
+    
+    if (success) {
+      notifications.programShared();
     } else {
-      copyWeekToClipboard(week);
+      notifications.loadingError('partager la semaine');
     }
-  }, [t, isMetric, copyWeekToClipboard]);
+  }, [race.label, speedValue, isMetric, notifications]);
+  const goalTime = useMemo(() => {
+    if (!speedValue || speedValue <= 0) return "0:00:00";
+    const distanceKm = isMetric ? race.distance : race.distanceMiles;
+    const hours = distanceKm / speedValue;
+    const totalMinutes = hours * 60;
+    const h = Math.floor(totalMinutes / 60);
+    const m = Math.floor(totalMinutes % 60);
+    const s = Math.round(totalMinutes % 1 * 60);
+    if (h > 0) return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  }, [speedValue, race, isMetric]);
+
   const shareFullProgram = useCallback(async () => {
-    const fullText = `Programme d'entraînement - Paceo\n\n${t("Objectif")}: ${race.label} — ${paceFromSpeed(speedValue)} (${formatPace(paceFromSpeed(speedValue), isMetric)})\n${t("Sessions/sem.")}: ${sessionsPerWeek} • ${t("Avant objectif")}: ${effectiveWeeks} semaines\n\n${program.map(week => `${t("Semaine")} ${week.week} - ${t(week.phase)} (${week.volume}${isMetric ? 'km' : 'mi'})\n${week.sessions.map((session, index) => `  ${index + 1}. ${t(session.type)} - ${session.duration} - ${session.description}`).join('\n')}`).join('\n\n')}`;
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: 'Programme d\'entraînement',
-          text: fullText
-        });
-      } else {
-        await navigator.clipboard.writeText(fullText);
-        notifications.programShared();
-      }
-    } catch (err) {
-      try {
-        await navigator.clipboard.writeText(fullText);
-        notifications.programShared();
-      } catch (clipErr) {
-        notifications.loadingError('partager le programme');
-      }
+    const programData = {
+      race: race.label,
+      goalTime: goalTime,
+      goalPace: paceFromSpeed(speedValue),
+      sessionsPerWeek,
+      effectiveWeeks,
+      program,
+      isMetric,
+      speedValue
+    };
+
+    const success = await shareProgram(programData);
+    if (success) {
+      notifications.programShared();
+    } else {
+      notifications.loadingError('partager le programme');
     }
-  }, [program, t, race.label, speedValue, isMetric, sessionsPerWeek, effectiveWeeks]);
+  }, [program, race.label, goalTime, speedValue, isMetric, sessionsPerWeek, effectiveWeeks, notifications]);
   const printProgram = useCallback(() => {
     const printContent = `
       <html>
@@ -640,17 +649,6 @@ export const ProgramScreen = React.memo(({
       printWindow.print();
     }
   }, [program, t, race.label, speedValue, isMetric, sessionsPerWeek, effectiveWeeks]);
-  const goalTime = useMemo(() => {
-    if (!speedValue || speedValue <= 0) return "0:00:00";
-    const distanceKm = isMetric ? race.distance : race.distanceMiles;
-    const hours = distanceKm / speedValue;
-    const totalMinutes = hours * 60;
-    const h = Math.floor(totalMinutes / 60);
-    const m = Math.floor(totalMinutes % 60);
-    const s = Math.round(totalMinutes % 1 * 60);
-    if (h > 0) return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
-    return `${m}:${s.toString().padStart(2, "0")}`;
-  }, [speedValue, race, isMetric]);
   const goalPace = useMemo(() => paceFromSpeed(speedValue), [speedValue]);
   const saveProgramToFavorites = useCallback(() => {
     const currentGoal = {
@@ -738,13 +736,13 @@ export const ProgramScreen = React.memo(({
           <div className="text-center">
             <div className="text-sm font-medium text-foreground mb-2">Sessions/semaine</div>
             <div className="flex items-center justify-center gap-2">
-              <Button variant="outline" size="icon" className="h-8 w-8 btn-glass" onClick={() => adjustSessions(-1)} disabled={sessionsPerWeek <= 2}>
+              <Button variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0" onClick={() => adjustSessions(-1)} disabled={sessionsPerWeek <= 2}>
                 <Minus className="h-4 w-4" />
               </Button>
               <span className="font-mono text-lg font-bold text-primary min-w-[2ch] text-center">
                 {sessionsPerWeek}
               </span>
-              <Button variant="outline" size="icon" className="h-8 w-8 btn-glass" onClick={() => adjustSessions(1)} disabled={sessionsPerWeek >= 6}>
+              <Button variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0" onClick={() => adjustSessions(1)} disabled={sessionsPerWeek >= 6}>
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
@@ -756,13 +754,13 @@ export const ProgramScreen = React.memo(({
             <div className="flex items-center justify-center gap-2">
               {!useRaceDate ? (
                 <>
-                  <Button variant="outline" size="icon" className="h-8 w-8 btn-glass" onClick={() => adjustWeeks(-1)} disabled={weeksBeforeRace <= 2}>
+                  <Button variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0" onClick={() => adjustWeeks(-1)} disabled={weeksBeforeRace <= 2}>
                     <Minus className="h-4 w-4" />
                   </Button>
                   <span className="font-mono text-lg font-bold text-primary min-w-[2ch] text-center">
                     {effectiveWeeks}
                   </span>
-                  <Button variant="outline" size="icon" className="h-8 w-8 btn-glass" onClick={() => adjustWeeks(1)} disabled={weeksBeforeRace >= 16}>
+                  <Button variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0" onClick={() => adjustWeeks(1)} disabled={weeksBeforeRace >= 16}>
                     <Plus className="h-4 w-4" />
                   </Button>
                 </>
