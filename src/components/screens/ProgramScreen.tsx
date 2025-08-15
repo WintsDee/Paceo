@@ -8,8 +8,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { CalendarIcon, ChevronDown, Plus, Minus, Copy, Share2, Printer, Target } from "lucide-react";
-import { shareProgram, shareWeek as shareWeekUtil } from "@/utils/programSharing";
+import { CalendarIcon, ChevronDown, Plus, Minus, Copy, Printer, Target } from "lucide-react";
 import { differenceInWeeks } from "date-fns";
 import { fr, enUS, es, de } from "date-fns/locale";
 import { useAppNotifications } from "@/hooks/useAppNotifications";
@@ -568,19 +567,6 @@ export const ProgramScreen = React.memo(({
       notifications.loadingError('copier la semaine');
     }
   }, [t, isMetric]);
-  const shareWeek = useCallback(async (week: WeekProgram) => {
-    const success = await shareWeekUtil(week, {
-      race: race.label,
-      goalPace: paceFromSpeed(speedValue),
-      isMetric
-    });
-    
-    if (success) {
-      notifications.programShared();
-    } else {
-      notifications.loadingError('partager la semaine');
-    }
-  }, [race.label, speedValue, isMetric, notifications]);
   const goalTime = useMemo(() => {
     if (!speedValue || speedValue <= 0) return "0:00:00";
     const distanceKm = isMetric ? race.distance : race.distanceMiles;
@@ -593,25 +579,6 @@ export const ProgramScreen = React.memo(({
     return `${m}:${s.toString().padStart(2, "0")}`;
   }, [speedValue, race, isMetric]);
 
-  const shareFullProgram = useCallback(async () => {
-    const programData = {
-      race: race.label,
-      goalTime: goalTime,
-      goalPace: paceFromSpeed(speedValue),
-      sessionsPerWeek,
-      effectiveWeeks,
-      program,
-      isMetric,
-      speedValue
-    };
-
-    const success = await shareProgram(programData);
-    if (success) {
-      notifications.programShared();
-    } else {
-      notifications.loadingError('partager le programme');
-    }
-  }, [program, race.label, goalTime, speedValue, isMetric, sessionsPerWeek, effectiveWeeks, notifications]);
   const printProgram = useCallback(() => {
     const printContent = `
       <html>
@@ -650,7 +617,12 @@ export const ProgramScreen = React.memo(({
     if (printWindow) {
       printWindow.document.write(printContent);
       printWindow.document.close();
-      printWindow.print();
+      setTimeout(() => {
+        printWindow.print();
+        setTimeout(() => {
+          printWindow.close();
+        }, 1000);
+      }, 500);
     }
   }, [program, t, race.label, speedValue, isMetric, sessionsPerWeek, effectiveWeeks]);
   const goalPace = useMemo(() => paceFromSpeed(speedValue), [speedValue]);
@@ -841,13 +813,6 @@ export const ProgramScreen = React.memo(({
                     <Copy className="h-3 w-3 mr-2" />
                     {t("Copier")}
                   </Button>
-                  <Button variant="outline" size="sm" className="btn-glass" onClick={e => {
-                e.stopPropagation();
-                shareWeek(week);
-              }}>
-                    <Share2 className="h-3 w-3 mr-2" />
-                    {t("Partager")}
-                  </Button>
                 </div>
               </CollapsibleContent>
             </Card>
@@ -861,11 +826,7 @@ export const ProgramScreen = React.memo(({
         </Button>
         
         <div className="flex gap-3 mt-4">
-          <Button variant="outline" onClick={shareFullProgram} className="flex-1 btn-glass h-10">
-            <Share2 className="h-4 w-4 mr-2" />
-            Partager
-          </Button>
-          <Button variant="outline" onClick={printProgram} className="flex-1 btn-glass h-10">
+          <Button variant="outline" onClick={printProgram} className="w-full btn-glass h-10">
             <Printer className="h-4 w-4 mr-2" />
             Imprimer
           </Button>

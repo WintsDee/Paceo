@@ -2,11 +2,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RaceGoal } from "@/components/calculator/RaceGoalCalculator";
-import { Heart, Trash2, Play, Eye, Copy, Share2, Printer } from "lucide-react";
+import { Heart, Trash2, Play, Eye, Copy, Printer } from "lucide-react";
 import { useAppNotifications } from "@/hooks/useAppNotifications";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { shareProgram, shareWeek } from "@/utils/programSharing";
 
 interface FavoritesScreenProps {
   favorites: RaceGoal[];
@@ -50,42 +49,6 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
     }
   };
 
-  const handleShareProgram = async (goal: RaceGoal) => {
-    if (!goal.program) return;
-    
-    try {
-      // Convert RaceGoal to ProgramData format
-      const programData = {
-        race: goal.distance,
-        goalTime: goal.targetTime,
-        goalPace: goal.pace,
-        sessionsPerWeek: goal.program.sessionsPerWeek,
-        effectiveWeeks: goal.program.weeksBeforeRace,
-        program: goal.program.weeks.map(week => ({
-          week: week.week,
-          phase: week.phase,
-          volume: week.volume,
-          sessions: week.sessions.map(session => ({
-            type: session.type,
-            duration: session.duration || "",
-            pace: session.pace || "",
-            description: session.description
-          }))
-        })),
-        isMetric: goal.isMetric,
-        speedValue: parseFloat(goal.speed)
-      };
-      
-      const success = await shareProgram(programData);
-      if (success) {
-        notifications.programShared();
-      } else {
-        notifications.loadingError("partager le programme");
-      }
-    } catch (error) {
-      notifications.loadingError("partager le programme");
-    }
-  };
 
   const handlePrintProgram = (goal: RaceGoal) => {
     if (!goal.program) return;
@@ -144,7 +107,10 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
     printWindow.document.close();
     setTimeout(() => {
       printWindow.print();
-      notifications.programPrinted();
+      setTimeout(() => {
+        printWindow.close();
+        notifications.programPrinted();
+      }, 1000);
     }, 500);
   };
 
@@ -293,15 +259,6 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleShareProgram(goal)}
-                            className="btn-glass"
-                          >
-                            <Share2 className="h-4 w-4 mr-2" />
-                            Partager
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
                             onClick={() => handlePrintProgram(goal)}
                             className="btn-glass"
                           >
@@ -326,11 +283,11 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleShareProgram(goal)}
+                      onClick={() => handlePrintProgram(goal)}
                       className="btn-glass p-2"
-                      title="Partager le programme"
+                      title="Imprimer le programme"
                     >
-                      <Share2 className="h-4 w-4" />
+                      <Printer className="h-4 w-4" />
                     </Button>
                   </div>
                 )}
