@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Minus, Plus } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export interface PaceSpeedConverterProps {
   isMetric: boolean;
@@ -31,6 +32,7 @@ function paceSecondsFromSpeed(speed: number) {
 }
 
 export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpeedChange }: PaceSpeedConverterProps) => {
+  const { t } = useLanguage();
   const paceString = useMemo(() => formatPaceFromSpeed(speedValue), [speedValue]);
   const paceSeconds = useMemo(() => paceSecondsFromSpeed(speedValue), [speedValue]);
 
@@ -53,10 +55,10 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
   return (
     <Card className="glass-card p-6 animate-fade-in-up">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold">Convertisseur</h2>
+        <h2 className="text-xl font-semibold">{t("Convertisseur")}</h2>
         <div className="flex items-center gap-3">
           <span className={`text-sm ${isMetric ? 'text-foreground' : 'text-muted-foreground'}`}>
-            km/km/h
+            {t("km/km/h")}
           </span>
           <Switch
             checked={!isMetric}
@@ -64,7 +66,7 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
             className="data-[state=checked]:bg-primary"
           />
           <span className={`text-sm ${!isMetric ? 'text-foreground' : 'text-muted-foreground'}`}>
-            mi/mph
+            {t("mi/mph")}
           </span>
         </div>
       </div>
@@ -73,7 +75,7 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
         {/* Pace control */}
         <div className="space-y-3">
           <Label className="text-sm font-medium text-muted-foreground">
-            Allure ({isMetric ? 'min/km' : 'min/mi'})
+            {t("Allure")} ({isMetric ? t('min/km') : t('min/mi')})
           </Label>
           <div className="glass-card rounded-lg p-4 flex items-center justify-between">
             <Button onClick={() => stepPace(-1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0">
@@ -91,7 +93,7 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
         {/* Speed control */}
         <div className="space-y-3">
           <Label className="text-sm font-medium text-muted-foreground">
-            Vitesse ({isMetric ? 'km/h' : 'mph'})
+            {t("Vitesse")} ({isMetric ? t('km/h') : t('mph')})
           </Label>
           <div className="glass-card rounded-lg p-4 flex items-center justify-between">
             <Button onClick={() => stepSpeed(-0.1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0">
@@ -111,7 +113,7 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
       <div className="mt-6 grid gap-5">
         {/* Pace slider */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium text-muted-foreground">Ajuster finement l'allure</Label>
+          <Label className="text-sm font-medium text-muted-foreground">{t("Ajuster finement l'allure")}</Label>
           <Slider
             min={paceSecMin}
             max={paceSecMax}
@@ -127,7 +129,7 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
         </div>
         {/* Speed slider */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium text-muted-foreground">Ajuster finement la vitesse</Label>
+          <Label className="text-sm font-medium text-muted-foreground">{t("Ajuster finement la vitesse")}</Label>
           <Slider
             min={speedMin}
             max={speedMax}

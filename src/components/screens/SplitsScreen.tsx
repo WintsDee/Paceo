@@ -64,10 +64,10 @@ export const SplitsScreen = React.memo(({ isMetric, speedValue }: SplitsScreenPr
         <table className="w-full text-sm">
           <thead>
             <tr className="text-muted-foreground">
-              <th className="text-left px-4 py-2">#</th>
-              <th className="text-left px-4 py-2">Longueur</th>
-              <th className="text-right px-4 py-2">Split</th>
-              <th className="text-right px-4 py-2">Cumul</th>
+              <th className="text-left px-4 py-2">{t("#")}</th>
+              <th className="text-left px-4 py-2">{t("Longueur")}</th>
+              <th className="text-right px-4 py-2">{t("Split")}</th>
+              <th className="text-right px-4 py-2">{t("Cumul")}</th>
             </tr>
           </thead>
           <tbody>

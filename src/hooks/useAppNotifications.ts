@@ -1,5 +1,6 @@
 import { toast } from "sonner";
 import { CheckCircle, XCircle, Info, AlertTriangle, Copy, Share2, Printer, Heart, Play, Target } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface NotificationOptions {
   description?: string;
@@ -11,6 +12,7 @@ interface NotificationOptions {
 }
 
 export const useAppNotifications = () => {
+  const { t } = useLanguage();
   const showSuccess = (title: string, options?: NotificationOptions) => {
     toast.success(title, {
       description: options?.description,
@@ -50,10 +52,10 @@ export const useAppNotifications = () => {
   // Notifications spécialisées pour l'app de course
   const notifications = {
     favoriteAdded: (distance: string) => {
-      showSuccess("Objectif sauvegardé", {
-        description: `Objectif ${distance} ajouté à vos favoris`,
+      showSuccess(t("Objectif sauvegardé"), {
+        description: t("Objectif % ajouté à vos favoris").replace('%s', distance),
         action: {
-          label: "Voir favoris",
+          label: t("Voir favoris"),
           onClick: () => {
             // This will be handled by the parent component
             window.dispatchEvent(new CustomEvent('navigate-to-favorites'));
@@ -63,17 +65,17 @@ export const useAppNotifications = () => {
     },
 
     favoriteDeleted: (distance: string) => {
-      showSuccess("Favori supprimé", {
-        description: `Objectif ${distance} retiré de vos favoris`,
+      showSuccess(t("Favori supprimé"), {
+        description: t("Objectif % retiré de vos favoris").replace('%s', distance),
         duration: 2000
       });
     },
 
     favoriteLoaded: (distance: string) => {
-      showSuccess("Objectif chargé", {
-        description: `Objectif ${distance} et son programme sont maintenant actifs`,
+      showSuccess(t("Objectif chargé"), {
+        description: t("Objectif % et son programme sont maintenant actifs").replace('%s', distance),
         action: {
-          label: "Voir programme",
+          label: t("Voir programme"),
           onClick: () => {
             window.dispatchEvent(new CustomEvent('navigate-to-program'));
           }
@@ -82,36 +84,36 @@ export const useAppNotifications = () => {
     },
 
     programCopied: () => {
-      showSuccess("Programme copié", {
-        description: "Le programme a été copié dans le presse-papiers",
+      showSuccess(t("Programme copié"), {
+        description: t("Le programme a été copié dans le presse-papiers"),
         duration: 2000
       });
     },
 
     programShared: () => {
-      showSuccess("Programme partagé", {
-        description: "Le lien de partage a été généré",
+      showSuccess(t("Programme partagé"), {
+        description: t("Le lien de partage a été généré"),
         duration: 2000
       });
     },
 
     programPrinted: () => {
-      showInfo("Impression lancée", {
-        description: "Le programme va s'ouvrir pour impression",
+      showInfo(t("Impression lancée"), {
+        description: t("Le programme va s'ouvrir pour impression"),
         duration: 2000
       });
     },
 
     loadingError: (action: string) => {
-      showError("Erreur de chargement", {
-        description: `Impossible de ${action}. Veuillez réessayer.`,
+      showError(t("Erreur de chargement"), {
+        description: t("Impossible de %. Veuillez réessayer.").replace('%s', action),
         duration: 4000
       });
     },
 
     saveError: () => {
-      showError("Erreur de sauvegarde", {
-        description: "Impossible de sauvegarder l'objectif. Vérifiez vos données.",
+      showError(t("Erreur de sauvegarde"), {
+        description: t("Impossible de sauvegarder l'objectif. Vérifiez vos données."),
         duration: 4000
       });
     }

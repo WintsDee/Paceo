@@ -10,6 +10,7 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ChevronDown, HelpCircle } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 export interface RaceGoalCalculatorProps {
   isMetric: boolean;
   speedValue: number; // global speed in current units (km/h or mph)
@@ -83,6 +84,7 @@ export const RaceGoalCalculator = ({
   onSaveGoal,
   showTimeSlider
 }: RaceGoalCalculatorProps) => {
+  const { t } = useLanguage();
   const [selectedDistance, setSelectedDistance] = useLocalStorage<string>("pace-calc-goal-distance", "10k");
   const [targetTime, setTargetTime] = useState("00:45:00");
   const { notifications } = useAppNotifications();
@@ -177,12 +179,12 @@ export const RaceGoalCalculator = ({
     notifications.favoriteAdded(`${race.label} en ${targetTime}`);
   };
   return <Card className="glass-card p-6 animate-fade-in-up">
-      <h2 className="text-xl font-semibold mb-6">Objectif de course</h2>
+      <h2 className="text-xl font-semibold mb-6">{t("Objectif de course")}</h2>
       
       <div className="space-y-6">
         {/* Distance selector */}
         <div className="space-y-3">
-          <Label className="text-sm font-medium text-muted-foreground">Distance</Label>
+          <Label className="text-sm font-medium text-muted-foreground">{t("Distance")}</Label>
           <div className="flex gap-2">
             {raceDistances.map(r => <Button key={r.id} variant={selectedDistance === r.id ? "default" : "outline"} onClick={() => setSelectedDistance(r.id)} className={selectedDistance === r.id ? "btn-primary-glass flex-1" : "btn-glass flex-1"}>
                 {r.label}
@@ -193,14 +195,14 @@ export const RaceGoalCalculator = ({
         {/* Target time input (syncs with global speed) */}
         <div className="space-y-3">
           <Label className="text-sm font-medium text-muted-foreground">
-            Temps objectif (hh:mm:ss)
+            {t("Temps objectif (hh:mm:ss)")}
           </Label>
           <Input value={targetTime} onChange={e => handleTimeChange(e.target.value)} placeholder="00:45:00" className="glass-card border-0 text-lg mono-numbers text-center h-14 text-foreground focus:glow-effect transition-smooth" />
         </div>
 
         {/* Optional time slider */}
         {showTimeSlider && <div className="space-y-2">
-            <Label className="text-sm font-medium text-muted-foreground">Ajuster le temps objectif</Label>
+            <Label className="text-sm font-medium text-muted-foreground">{t("Ajuster le temps objectif")}</Label>
             {(() => {
           const paceSecMin = 150; // 2:30
           const paceSecMax = 900; // 15:00
@@ -221,14 +223,14 @@ export const RaceGoalCalculator = ({
         {/* Results display - always derived from global speed */}
         <div className="grid grid-cols-2 gap-4">
           <div className="glass-card p-4 rounded-lg">
-            <div className="text-sm text-muted-foreground mb-1">Allure cible</div>
+            <div className="text-sm text-muted-foreground mb-1">{t("Allure cible")}</div>
             <div className="text-xl font-semibold mono-numbers text-primary">{pace}</div>
-            <div className="text-xs text-muted-foreground">{isMetric ? 'min/km' : 'min/mi'}</div>
+            <div className="text-xs text-muted-foreground">{isMetric ? t('min/km') : t('min/mi')}</div>
           </div>
           <div className="glass-card p-4 rounded-lg">
-            <div className="text-sm text-muted-foreground mb-1">Vitesse</div>
+            <div className="text-sm text-muted-foreground mb-1">{t("Vitesse")}</div>
             <div className="text-xl font-semibold mono-numbers text-primary">{speedDisplay}</div>
-            <div className="text-xs text-muted-foreground">{isMetric ? 'km/h' : 'mph'}</div>
+            <div className="text-xs text-muted-foreground">{isMetric ? t('km/h') : t('mph')}</div>
           </div>
         </div>
 
@@ -238,7 +240,7 @@ export const RaceGoalCalculator = ({
             <div className="glass-card p-4 rounded-lg">
               <CollapsibleTrigger className="flex w-full items-center gap-2 py-1.5 text-sm font-medium text-muted-foreground transition-all [&[data-state=open]>svg]:rotate-180">
                 <div className="flex items-center gap-2">
-                  <span>VMA (km/h)</span>
+                  <span>{t("VMA (km/h)")}</span>
                    <TooltipProvider>
                      <Tooltip>
                        <TooltipTrigger asChild>
@@ -246,10 +248,10 @@ export const RaceGoalCalculator = ({
                        </TooltipTrigger>
                       <TooltipContent className="max-w-xs">
                         <div className="space-y-2 text-sm">
-                          <p><strong>VMA (Vitesse Maximale Aérobie)</strong></p>
-                          <p>Intensité maximale que vous pouvez maintenir pendant 6-8 minutes.</p>
-                          <p><strong>Test demi-Cooper :</strong> Courez le plus loin possible en 6 minutes, puis VMA = distance(m) ÷ 100</p>
-                          <p>Exemple : 1200m en 6min → VMA = 12 km/h</p>
+                          <p><strong>{t("VMA (Vitesse Maximale Aérobie)")}</strong></p>
+                          <p>{t("Intensité maximale que vous pouvez maintenir pendant 6-8 minutes.")}</p>
+                          <p><strong>{t("Test demi-Cooper :")}</strong> {t("Courez le plus loin possible en 6 minutes, puis VMA = distance(m) ÷ 100")}</p>
+                          <p>{t("Exemple : 1200m en 6min → VMA = 12 km/h")}</p>
                         </div>
                       </TooltipContent>
                     </Tooltip>
@@ -302,10 +304,10 @@ export const RaceGoalCalculator = ({
                     const variant = status === "Cohérent" ? "secondary" : status === "Ambitieux" ? "default" : "outline";
                     return <div className="flex items-center justify-between gap-3">
                             <div className="flex-1 min-w-0">
-                              <div className="text-sm text-muted-foreground mb-1">Cohérence vs VMA</div>
-                              <div className="text-sm break-words">{pct.toFixed(1)}% de votre VMA — attendu {low}-{high}%</div>
+                              <div className="text-sm text-muted-foreground mb-1">{t("Cohérence vs VMA")}</div>
+                              <div className="text-sm break-words">{pct.toFixed(1)}{t("% de votre VMA — attendu")} {low}-{high}%</div>
                             </div>
-                             <Badge variant={variant} className={`shrink-0 ${status === "Cohérent" ? "bg-green-500/80 text-white border-green-400/30" : status === "Ambitieux" ? "bg-red-500/80 text-white border-red-400/30" : "bg-orange-500/80 text-white border-orange-400/30"}`}>{status}</Badge>
+                             <Badge variant={variant} className={`shrink-0 ${status === "Cohérent" ? "bg-green-500/80 text-white border-green-400/30" : status === "Ambitieux" ? "bg-red-500/80 text-white border-red-400/30" : "bg-orange-500/80 text-white border-orange-400/30"}`}>{t(status)}</Badge>
                           </div>;
                   })()}
                     </div>}

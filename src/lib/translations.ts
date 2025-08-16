@@ -58,17 +58,16 @@ export const translations = {
     "日本語": "日本語",
     "中文": "中文",
     
-     // Favorites
-     "Aucun favori": "Aucun favori",
-     "Enregistrez vos objectifs de course depuis le calculateur pour les retrouver ici.": "Enregistrez vos objectifs de course depuis le calculateur pour les retrouver ici.",
-     "Vos objectifs sauvegardés": "Vos objectifs sauvegardés",
-     "Supprimer": "Supprimer",
-     "Utiliser": "Utiliser",
+    // Favorites
+    "Aucun favori": "Aucun favori",
+    "Enregistrez vos objectifs de course depuis le calculateur pour les retrouver ici.": "Enregistrez vos objectifs de course depuis le calculateur pour les retrouver ici.",
+    "Vos objectifs sauvegardés": "Vos objectifs sauvegardés",
+    "Supprimer": "Supprimer",
+    "Utiliser": "Utiliser",
     
     // Program Screen
     "Plan d'entraînement automatique": "Plan d'entraînement automatique",
     "Sessions/sem.": "Sessions/sem.",
-    
     "Avant objectif": "Avant objectif",
     "Date": "Date",
     "Objectif :": "Objectif :",
@@ -93,25 +92,76 @@ export const translations = {
     "INT": "INT", 
     "RP": "RP",
     "Longue": "Longue",
-     "Strides": "Strides",
-     "récup": "récup",
-     "min": "min",
-     "s": "s",
-     "dont": "dont",
-     "Imprimer": "Imprimer",
-     "Enregistrer le programme": "Enregistrer le programme",
-     "Programme enregistré": "Programme enregistré",
-     "Semaines": "Semaines",
-     "semaines": "semaines",
-     "Temps cible": "Temps cible",
-     
-     // Conversion Table
-     "Table de conversion": "Table de conversion",
-     "Cliquez une ligne pour régler la vitesse": "Cliquez une ligne pour régler la vitesse",
-     
-     // Program screen additional
-     "Durée programme": "Durée programme",
-     "Durée": "Durée"
+    "Strides": "Strides",
+    "récup": "récup",
+    "min": "min",
+    "s": "s",
+    "dont": "dont",
+    "Imprimer": "Imprimer",
+    "Enregistrer le programme": "Enregistrer le programme",
+    "Programme enregistré": "Programme enregistré",
+    "Semaines": "Semaines",
+    "semaines": "semaines",
+    "Temps cible": "Temps cible",
+    
+    // Conversion Table
+    "Table de conversion": "Table de conversion",
+    "Cliquez une ligne pour régler la vitesse": "Cliquez une ligne pour régler la vitesse",
+    
+    // Program screen additional
+    "Durée programme": "Durée programme",
+    "Durée": "Durée",
+    
+    // Pace Speed Converter
+    "Convertisseur": "Convertisseur",
+    "km/km/h": "km/km/h",
+    "mi/mph": "mi/mph",
+    "Ajuster finement l'allure": "Ajuster finement l'allure",
+    "Ajuster finement la vitesse": "Ajuster finement la vitesse",
+    
+    // Race Goal Calculator
+    "Objectif de course": "Objectif de course",
+    "Distance": "Distance",
+    "Temps objectif (hh:mm:ss)": "Temps objectif (hh:mm:ss)",
+    "Ajuster le temps objectif": "Ajuster le temps objectif",
+    "VMA (km/h)": "VMA (km/h)",
+    "VMA (Vitesse Maximale Aérobie)": "VMA (Vitesse Maximale Aérobie)",
+    "Intensité maximale que vous pouvez maintenir pendant 6-8 minutes.": "Intensité maximale que vous pouvez maintenir pendant 6-8 minutes.",
+    "Test demi-Cooper :": "Test demi-Cooper :",
+    "Courez le plus loin possible en 6 minutes, puis VMA = distance(m) ÷ 100": "Courez le plus loin possible en 6 minutes, puis VMA = distance(m) ÷ 100",
+    "Exemple : 1200m en 6min → VMA = 12 km/h": "Exemple : 1200m en 6min → VMA = 12 km/h",
+    "Cohérence vs VMA": "Cohérence vs VMA",
+    "% de votre VMA — attendu": "% de votre VMA — attendu",
+    "Enregistrer l'objectif": "Enregistrer l'objectif",
+    "Sous-estimé": "Sous-estimé",
+    "Ambitieux": "Ambitieux",
+    "Cohérent": "Cohérent",
+    
+    // Splits Screen
+    "#": "#",
+    "Longueur": "Longueur",
+    "Split": "Split",
+    "Cumul": "Cumul",
+    
+    // Notifications
+    "Objectif sauvegardé": "Objectif sauvegardé",
+    "Objectif % ajouté à vos favoris": "Objectif %s ajouté à vos favoris",
+    "Voir favoris": "Voir favoris",
+    "Favori supprimé": "Favori supprimé",
+    "Objectif % retiré de vos favoris": "Objectif %s retiré de vos favoris",
+    "Objectif chargé": "Objectif chargé",
+    "Objectif % et son programme sont maintenant actifs": "Objectif %s et son programme sont maintenant actifs",
+    "Voir programme": "Voir programme",
+    "Programme copié": "Programme copié",
+    "Le programme a été copié dans le presse-papiers": "Le programme a été copié dans le presse-papiers",
+    "Programme partagé": "Programme partagé",
+    "Le lien de partage a été généré": "Le lien de partage a été généré",
+    "Impression lancée": "Impression lancée",
+    "Le programme va s'ouvrir pour impression": "Le programme va s'ouvrir pour impression",
+    "Erreur de chargement": "Erreur de chargement",
+    "Impossible de %. Veuillez réessayer.": "Impossible de %s. Veuillez réessayer.",
+    "Erreur de sauvegarde": "Erreur de sauvegarde",
+    "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "Impossible de sauvegarder l'objectif. Vérifiez vos données."
   },
   en: {
     // Navigation
@@ -225,7 +275,58 @@ export const translations = {
      
      // Program screen additional
      "Durée programme": "Program duration",
-     "Durée": "Duration"
+     "Durée": "Duration",
+     
+     // Pace Speed Converter
+     "Convertisseur": "Converter",
+     "km/km/h": "km/km/h",
+     "mi/mph": "mi/mph",
+     "Ajuster finement l'allure": "Fine-tune pace",
+     "Ajuster finement la vitesse": "Fine-tune speed",
+     
+     // Race Goal Calculator
+     "Objectif de course": "Race Goal",
+     "Distance": "Distance",
+     "Temps objectif (hh:mm:ss)": "Target time (hh:mm:ss)",
+     "Ajuster le temps objectif": "Adjust target time",
+     "VMA (km/h)": "VO2 Max (km/h)",
+     "VMA (Vitesse Maximale Aérobie)": "VO2 Max (Maximum Aerobic Speed)",
+     "Intensité maximale que vous pouvez maintenir pendant 6-8 minutes.": "Maximum intensity you can maintain for 6-8 minutes.",
+     "Test demi-Cooper :": "Half-Cooper test:",
+     "Courez le plus loin possible en 6 minutes, puis VMA = distance(m) ÷ 100": "Run as far as possible in 6 minutes, then VO2 Max = distance(m) ÷ 100",
+     "Exemple : 1200m en 6min → VMA = 12 km/h": "Example: 1200m in 6min → VO2 Max = 12 km/h",
+     "Cohérence vs VMA": "Consistency vs VO2 Max",
+     "% de votre VMA — attendu": "% of your VO2 Max — expected",
+     "Enregistrer l'objectif": "Save goal",
+     "Sous-estimé": "Underestimated",
+     "Ambitieux": "Ambitious",
+     "Cohérent": "Consistent",
+     
+     // Splits Screen
+     "#": "#",
+     "Longueur": "Length",
+     "Split": "Split",
+     "Cumul": "Total",
+     
+     // Notifications
+     "Objectif sauvegardé": "Goal saved",
+     "Objectif % ajouté à vos favoris": "Goal %s added to favorites",
+     "Voir favoris": "View favorites",
+     "Favori supprimé": "Favorite deleted",
+     "Objectif % retiré de vos favoris": "Goal %s removed from favorites",
+     "Objectif chargé": "Goal loaded",
+     "Objectif % et son programme sont maintenant actifs": "Goal %s and its program are now active",
+     "Voir programme": "View program",
+     "Programme copié": "Program copied",
+     "Le programme a été copié dans le presse-papiers": "Program copied to clipboard",
+     "Programme partagé": "Program shared",
+     "Le lien de partage a été généré": "Share link generated",
+     "Impression lancée": "Print started",
+     "Le programme va s'ouvrir pour impression": "Program will open for printing",
+     "Erreur de chargement": "Loading error",
+     "Impossible de %. Veuillez réessayer.": "Unable to %s. Please try again.",
+     "Erreur de sauvegarde": "Save error",
+     "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "Unable to save goal. Check your data."
   },
   es: {
     // Navigation
@@ -339,7 +440,58 @@ export const translations = {
      
      // Program screen additional
      "Durée programme": "Duración programa",
-     "Durée": "Duración"
+     "Durée": "Duración",
+     
+     // Pace Speed Converter
+     "Convertisseur": "Convertidor",
+     "km/km/h": "km/km/h",
+     "mi/mph": "mi/mph",
+     "Ajuster finement l'allure": "Ajustar ritmo finamente",
+     "Ajuster finement la vitesse": "Ajustar velocidad finamente",
+     
+     // Race Goal Calculator
+     "Objectif de course": "Objetivo de Carrera",
+     "Distance": "Distancia",
+     "Temps objectif (hh:mm:ss)": "Tiempo objetivo (hh:mm:ss)",
+     "Ajuster le temps objectif": "Ajustar tiempo objetivo",
+     "VMA (km/h)": "VMA (km/h)",
+     "VMA (Vitesse Maximale Aérobie)": "VMA (Velocidad Máxima Aeróbica)",
+     "Intensité maximale que vous pouvez maintenir pendant 6-8 minutes.": "Intensidad máxima que puedes mantener durante 6-8 minutos.",
+     "Test demi-Cooper :": "Test semi-Cooper:",
+     "Courez le plus loin possible en 6 minutes, puis VMA = distance(m) ÷ 100": "Corre lo más lejos posible en 6 minutos, luego VMA = distancia(m) ÷ 100",
+     "Exemple : 1200m en 6min → VMA = 12 km/h": "Ejemplo: 1200m en 6min → VMA = 12 km/h",
+     "Cohérence vs VMA": "Coherencia vs VMA",
+     "% de votre VMA — attendu": "% de tu VMA — esperado",
+     "Enregistrer l'objectif": "Guardar objetivo",
+     "Sous-estimé": "Subestimado",
+     "Ambitieux": "Ambicioso",
+     "Cohérent": "Coherente",
+     
+     // Splits Screen
+     "#": "#",
+     "Longueur": "Longitud",
+     "Split": "Parcial",
+     "Cumul": "Acumulado",
+     
+     // Notifications
+     "Objectif sauvegardé": "Objetivo guardado",
+     "Objectif % ajouté à vos favoris": "Objetivo %s añadido a favoritos",
+     "Voir favoris": "Ver favoritos",
+     "Favori supprimé": "Favorito eliminado",
+     "Objectif % retiré de vos favoris": "Objetivo %s eliminado de favoritos",
+     "Objectif chargé": "Objetivo cargado",
+     "Objectif % et son programme sont maintenant actifs": "Objetivo %s y su programa están ahora activos",
+     "Voir programme": "Ver programa",
+     "Programme copié": "Programa copiado",
+     "Le programme a été copié dans le presse-papiers": "Programa copiado al portapapeles",
+     "Programme partagé": "Programa compartido",
+     "Le lien de partage a été généré": "Enlace de compartir generado",
+     "Impression lancée": "Impresión iniciada",
+     "Le programme va s'ouvrir pour impression": "El programa se abrirá para imprimir",
+     "Erreur de chargement": "Error de carga",
+     "Impossible de %. Veuillez réessayer.": "No se puede %s. Inténtalo de nuevo.",
+     "Erreur de sauvegarde": "Error de guardado",
+     "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "No se puede guardar el objetivo. Verifica tus datos."
   },
   de: {
     // Navigation
@@ -453,7 +605,556 @@ export const translations = {
      
      // Program screen additional
      "Durée programme": "Programmdauer",
-     "Durée": "Dauer"
+     "Durée": "Dauer",
+     
+     // Pace Speed Converter
+     "Convertisseur": "Konverter",
+     "km/km/h": "km/km/h",
+     "mi/mph": "mi/mph",
+     "Ajuster finement l'allure": "Tempo fein einstellen",
+     "Ajuster finement la vitesse": "Geschwindigkeit fein einstellen",
+     
+     // Race Goal Calculator
+     "Objectif de course": "Laufziel",
+     "Distance": "Distanz",
+     "Temps objectif (hh:mm:ss)": "Zielzeit (hh:mm:ss)",
+     "Ajuster le temps objectif": "Zielzeit anpassen",
+     "VMA (km/h)": "VMA (km/h)",
+     "VMA (Vitesse Maximale Aérobie)": "VMA (Maximale Aerobe Geschwindigkeit)",
+     "Intensité maximale que vous pouvez maintenir pendant 6-8 minutes.": "Maximale Intensität, die du 6-8 Minuten halten kannst.",
+     "Test demi-Cooper :": "Halb-Cooper-Test:",
+     "Courez le plus loin possible en 6 minutes, puis VMA = distance(m) ÷ 100": "Laufe so weit wie möglich in 6 Minuten, dann VMA = Distanz(m) ÷ 100",
+     "Exemple : 1200m en 6min → VMA = 12 km/h": "Beispiel: 1200m in 6min → VMA = 12 km/h",
+     "Cohérence vs VMA": "Kohärenz vs VMA",
+     "% de votre VMA — attendu": "% deiner VMA — erwartet",
+     "Enregistrer l'objectif": "Ziel speichern",
+     "Sous-estimé": "Unterschätzt",
+     "Ambitieux": "Ehrgeizig",
+     "Cohérent": "Kohärent",
+     
+     // Splits Screen
+     "#": "#",
+     "Longueur": "Länge",
+     "Split": "Split",
+     "Cumul": "Gesamt",
+     
+     // Notifications
+     "Objectif sauvegardé": "Ziel gespeichert",
+     "Objectif % ajouté à vos favoris": "Ziel %s zu Favoriten hinzugefügt",
+     "Voir favoris": "Favoriten anzeigen",
+     "Favori supprimé": "Favorit gelöscht",
+     "Objectif % retiré de vos favoris": "Ziel %s aus Favoriten entfernt",
+     "Objectif chargé": "Ziel geladen",
+     "Objectif % et son programme sont maintenant actifs": "Ziel %s und sein Programm sind jetzt aktiv",
+     "Voir programme": "Programm anzeigen",
+     "Programme copié": "Programm kopiert",
+     "Le programme a été copié dans le presse-papiers": "Programm in Zwischenablage kopiert",
+     "Programme partagé": "Programm geteilt",
+     "Le lien de partage a été généré": "Freigabe-Link generiert",
+     "Impression lancée": "Druck gestartet",
+     "Le programme va s'ouvrir pour impression": "Programm wird zum Drucken geöffnet",
+     "Erreur de chargement": "Ladefehler",
+     "Impossible de %. Veuillez réessayer.": "Kann %s nicht durchführen. Bitte versuche es erneut.",
+     "Erreur de sauvegarde": "Speicherfehler",
+     "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "Ziel kann nicht gespeichert werden. Überprüfe deine Daten."
+  },
+  
+  // Chinese (Simplified)
+  zh: {
+    // Navigation
+    "Allure & Vitesse": "配速与速度",
+    "Objectif": "目标",
+    "Splits": "分段",
+    "Favoris": "收藏",
+    "Programme": "训练计划",
+    
+    // Calculator Screen
+    "Calculateur d'allure": "配速计算器",
+    "Convertissez entre allure et vitesse": "配速和速度转换",
+    "Allure": "配速",
+    "Vitesse": "速度",
+    "min/km": "分钟/公里",
+    "min/mi": "分钟/英里",
+    "km/h": "公里/小时",
+    "mph": "英里/小时",
+    
+    // Goal Screen
+    "Réglez finement votre temps cible": "精调目标时间",
+    "Temps": "时间",
+    "VMA": "最大有氧速度",
+    "Effort": "强度",
+    "Enregistrer": "保存",
+    
+    // Distances Screen
+    "Distances rapides": "快速距离",
+    "Basé sur votre allure actuelle": "基于当前配速",
+    "Splits simples": "简单分段",
+    "Calculez vos temps intermédiaires": "计算分段时间",
+    "Splits & Distances": "分段与距离",
+    "Calculez vos temps et allures": "计算时间和配速",
+    "Distances": "距离",
+    
+    // Races
+    "Semi-marathon": "半程马拉松",
+    "Marathon": "马拉松",
+    "Ultra": "超马",
+    "Trail": "越野跑",
+    
+    // Settings
+    "Réglages": "设置",
+    "Produit par Aenean — Paceo": "由 Aenean — Paceo 制作",
+    "Unités": "单位",
+    "Métrique (km/h)": "公制（公里/小时）",
+    "Impérial (mph)": "英制（英里/小时）",
+    "Langue": "语言",
+    "Français": "法语",
+    "English": "英语",
+    "Español": "西班牙语",
+    "Deutsch": "德语",
+    "Italiano": "意大利语",
+    "Português": "葡萄牙语",
+    "Nederlands": "荷兰语",
+    "Polski": "波兰语",
+    "Русский": "俄语",
+    "日本語": "日语",
+    "中文": "中文",
+    
+    // Favorites
+    "Aucun favori": "无收藏",
+    "Enregistrez vos objectifs de course depuis le calculateur pour les retrouver ici.": "从计算器保存跑步目标，在此查看。",
+    "Vos objectifs sauvegardés": "已保存的目标",
+    "Supprimer": "删除",
+    "Utiliser": "使用",
+    
+    // Program Screen
+    "Plan d'entraînement automatique": "自动训练计划",
+    "Sessions/sem.": "每周训练",
+    "Avant objectif": "目标前",
+    "Date": "日期",
+    "Objectif :": "目标：",
+    "Allure cible": "目标配速",
+    "Semaine": "周",
+    "Volume": "训练量",
+    "séances": "训练课",
+    "Détails": "详情",
+    "Copier": "复制",
+    "Partager": "分享",
+    "Définis ton objectif pour générer ton programme.": "设定目标以生成训练计划。",
+    "Définir l'objectif": "设定目标",
+    "Programme d'entraînement": "训练计划",
+    "Phase": "阶段",
+    "BASE": "基础",
+    "BUILD": "建立",
+    "PEAK": "高峰",
+    "TAPER": "减量",
+    "EASY": "轻松",
+    "STEADY": "稳定",
+    "THR": "门槛",
+    "INT": "间歇",
+    "RP": "比赛配速",
+    "Longue": "长跑",
+    "Strides": "步幅跑",
+    "récup": "恢复",
+    "min": "分钟",
+    "s": "秒",
+    "dont": "其中",
+    "Imprimer": "打印",
+    "Enregistrer le programme": "保存计划",
+    "Programme enregistré": "计划已保存",
+    "Semaines": "周",
+    "semaines": "周",
+    "Temps cible": "目标时间",
+    
+    // Conversion Table
+    "Table de conversion": "转换表",
+    "Cliquez une ligne pour régler la vitesse": "点击行设置速度",
+    
+    // Program screen additional
+    "Durée programme": "计划时长",
+    "Durée": "时长",
+    
+    // Pace Speed Converter
+    "Convertisseur": "转换器",
+    "km/km/h": "公里/公里每小时",
+    "mi/mph": "英里/英里每小时",
+    "Ajuster finement l'allure": "精调配速",
+    "Ajuster finement la vitesse": "精调速度",
+    
+    // Race Goal Calculator
+    "Objectif de course": "跑步目标",
+    "Distance": "距离",
+    "Temps objectif (hh:mm:ss)": "目标时间（时:分:秒）",
+    "Ajuster le temps objectif": "调整目标时间",
+    "VMA (km/h)": "最大有氧速度（公里/小时）",
+    "VMA (Vitesse Maximale Aérobie)": "最大有氧速度",
+    "Intensité maximale que vous pouvez maintenir pendant 6-8 minutes.": "可维持6-8分钟的最大强度。",
+    "Test demi-Cooper :": "半库珀测试：",
+    "Courez le plus loin possible en 6 minutes, puis VMA = distance(m) ÷ 100": "6分钟内跑得尽可能远，然后最大有氧速度=距离(米)÷100",
+    "Exemple : 1200m en 6min → VMA = 12 km/h": "例：6分钟跑1200米→最大有氧速度=12公里/小时",
+    "Cohérence vs VMA": "与最大有氧速度的一致性",
+    "% de votre VMA — attendu": "%的最大有氧速度—预期",
+    "Enregistrer l'objectif": "保存目标",
+    "Sous-estimé": "低估",
+    "Ambitieux": "雄心勃勃",
+    "Cohérent": "一致",
+    
+    // Splits Screen
+    "#": "#",
+    "Longueur": "长度",
+    "Split": "分段",
+    "Cumul": "累计",
+    
+    // Notifications
+    "Objectif sauvegardé": "目标已保存",
+    "Objectif % ajouté à vos favoris": "目标%s已添加到收藏",
+    "Voir favoris": "查看收藏",
+    "Favori supprimé": "收藏已删除",
+    "Objectif % retiré de vos favoris": "目标%s已从收藏中移除",
+    "Objectif chargé": "目标已加载",
+    "Objectif % et son programme sont maintenant actifs": "目标%s及其计划现已激活",
+    "Voir programme": "查看计划",
+    "Programme copié": "计划已复制",
+    "Le programme a été copié dans le presse-papiers": "计划已复制到剪贴板",
+    "Programme partagé": "计划已分享",
+    "Le lien de partage a été généré": "分享链接已生成",
+    "Impression lancée": "开始打印",
+    "Le programme va s'ouvrir pour impression": "计划将打开以供打印",
+    "Erreur de chargement": "加载错误",
+    "Impossible de %. Veuillez réessayer.": "无法%s。请重试。",
+    "Erreur de sauvegarde": "保存错误",
+    "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "无法保存目标。请检查数据。"
+  },
+  
+  // Japanese
+  ja: {
+    // Navigation
+    "Allure & Vitesse": "ペース＆スピード",
+    "Objectif": "目標",
+    "Splits": "スプリット",
+    "Favoris": "お気に入り",
+    "Programme": "トレーニング",
+    
+    // Calculator Screen
+    "Calculateur d'allure": "ペース計算機",
+    "Convertissez entre allure et vitesse": "ペースとスピードを変換",
+    "Allure": "ペース",
+    "Vitesse": "スピード",
+    "min/km": "分/km",
+    "min/mi": "分/マイル",
+    "km/h": "km/h",
+    "mph": "mph",
+    
+    // Goal Screen
+    "Réglez finement votre temps cible": "目標タイムを細かく調整",
+    "Temps": "タイム",
+    "VMA": "最大有酸素速度",
+    "Effort": "強度",
+    "Enregistrer": "保存",
+    
+    // Distances Screen
+    "Distances rapides": "クイック距離",
+    "Basé sur votre allure actuelle": "現在のペースに基づく",
+    "Splits simples": "シンプルスプリット",
+    "Calculez vos temps intermédiaires": "区間タイムを計算",
+    "Splits & Distances": "スプリット＆距離",
+    "Calculez vos temps et allures": "タイムとペースを計算",
+    "Distances": "距離",
+    
+    // Races
+    "Semi-marathon": "ハーフマラソン",
+    "Marathon": "マラソン",
+    "Ultra": "ウルトラ",
+    "Trail": "トレイル",
+    
+    // Settings
+    "Réglages": "設定",
+    "Produit par Aenean — Paceo": "Aenean — Paceo 製",
+    "Unités": "単位",
+    "Métrique (km/h)": "メートル法（km/h）",
+    "Impérial (mph)": "ヤード・ポンド法（mph）",
+    "Langue": "言語",
+    "Français": "フランス語",
+    "English": "英語",
+    "Español": "スペイン語",
+    "Deutsch": "ドイツ語",
+    "Italiano": "イタリア語",
+    "Português": "ポルトガル語",
+    "Nederlands": "オランダ語",
+    "Polski": "ポーランド語",
+    "Русский": "ロシア語",
+    "日本語": "日本語",
+    "中文": "中国語",
+    
+    // Favorites
+    "Aucun favori": "お気に入りなし",
+    "Enregistrez vos objectifs de course depuis le calculateur pour les retrouver ici.": "計算機からランニング目標を保存してここで確認。",
+    "Vos objectifs sauvegardés": "保存された目標",
+    "Supprimer": "削除",
+    "Utiliser": "使用",
+    
+    // Program Screen
+    "Plan d'entraînement automatique": "自動トレーニングプラン",
+    "Sessions/sem.": "週間セッション",
+    "Avant objectif": "目標前",
+    "Date": "日付",
+    "Objectif :": "目標：",
+    "Allure cible": "目標ペース",
+    "Semaine": "週",
+    "Volume": "ボリューム",
+    "séances": "セッション",
+    "Détails": "詳細",
+    "Copier": "コピー",
+    "Partager": "共有",
+    "Définis ton objectif pour générer ton programme.": "目標を設定してプランを生成。",
+    "Définir l'objectif": "目標設定",
+    "Programme d'entraînement": "トレーニングプログラム",
+    "Phase": "フェーズ",
+    "BASE": "ベース",
+    "BUILD": "ビルド",
+    "PEAK": "ピーク",
+    "TAPER": "テーパー",
+    "EASY": "イージー",
+    "STEADY": "ステディ",
+    "THR": "閾値",
+    "INT": "インターバル",
+    "RP": "レースペース",
+    "Longue": "ロング走",
+    "Strides": "ストライド",
+    "récup": "リカバリー",
+    "min": "分",
+    "s": "秒",
+    "dont": "うち",
+    "Imprimer": "印刷",
+    "Enregistrer le programme": "プログラム保存",
+    "Programme enregistré": "プログラム保存済み",
+    "Semaines": "週間",
+    "semaines": "週間",
+    "Temps cible": "目標タイム",
+    
+    // Conversion Table
+    "Table de conversion": "変換表",
+    "Cliquez une ligne pour régler la vitesse": "行をクリックして速度設定",
+    
+    // Program screen additional
+    "Durée programme": "プログラム期間",
+    "Durée": "期間",
+    
+    // Pace Speed Converter
+    "Convertisseur": "コンバーター",
+    "km/km/h": "km/km毎時",
+    "mi/mph": "マイル/mph",
+    "Ajuster finement l'allure": "ペース微調整",
+    "Ajuster finement la vitesse": "スピード微調整",
+    
+    // Race Goal Calculator
+    "Objectif de course": "ランニング目標",
+    "Distance": "距離",
+    "Temps objectif (hh:mm:ss)": "目標タイム（時:分:秒）",
+    "Ajuster le temps objectif": "目標タイム調整",
+    "VMA (km/h)": "最大有酸素速度（km/h）",
+    "VMA (Vitesse Maximale Aérobie)": "最大有酸素速度",
+    "Intensité maximale que vous pouvez maintenir pendant 6-8 minutes.": "6-8分間維持できる最大強度。",
+    "Test demi-Cooper :": "ハーフクーパーテスト：",
+    "Courez le plus loin possible en 6 minutes, puis VMA = distance(m) ÷ 100": "6分間でできるだけ遠くを走り、最大有酸素速度=距離(m)÷100",
+    "Exemple : 1200m en 6min → VMA = 12 km/h": "例：6分で1200m→最大有酸素速度=12km/h",
+    "Cohérence vs VMA": "最大有酸素速度との整合性",
+    "% de votre VMA — attendu": "%の最大有酸素速度—予想",
+    "Enregistrer l'objectif": "目標保存",
+    "Sous-estimé": "過小評価",
+    "Ambitieux": "野心的",
+    "Cohérent": "一貫性",
+    
+    // Splits Screen
+    "#": "#",
+    "Longueur": "長さ",
+    "Split": "スプリット",
+    "Cumul": "累計",
+    
+    // Notifications
+    "Objectif sauvegardé": "目標保存済み",
+    "Objectif % ajouté à vos favoris": "目標%sをお気に入りに追加",
+    "Voir favoris": "お気に入り表示",
+    "Favori supprimé": "お気に入り削除済み",
+    "Objectif % retiré de vos favoris": "目標%sをお気に入りから削除",
+    "Objectif chargé": "目標読み込み済み",
+    "Objectif % et son programme sont maintenant actifs": "目標%sとそのプログラムがアクティブ",
+    "Voir programme": "プログラム表示",
+    "Programme copié": "プログラムコピー済み",
+    "Le programme a été copié dans le presse-papiers": "プログラムをクリップボードにコピー",
+    "Programme partagé": "プログラム共有済み",
+    "Le lien de partage a été généré": "共有リンクを生成",
+    "Impression lancée": "印刷開始",
+    "Le programme va s'ouvrir pour impression": "プログラムが印刷用に開きます",
+    "Erreur de chargement": "読み込みエラー",
+    "Impossible de %. Veuillez réessayer.": "%sできません。再試行してください。",
+    "Erreur de sauvegarde": "保存エラー",
+    "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "目標を保存できません。データを確認してください。"
+  },
+  
+  // Portuguese
+  pt: {
+    // Navigation
+    "Allure & Vitesse": "Ritmo e Velocidade",
+    "Objectif": "Objetivo",
+    "Splits": "Parciais",
+    "Favoris": "Favoritos",
+    "Programme": "Programa",
+    
+    // Calculator Screen
+    "Calculateur d'allure": "Calculadora de Ritmo",
+    "Convertissez entre allure et vitesse": "Converta entre ritmo e velocidade",
+    "Allure": "Ritmo",
+    "Vitesse": "Velocidade",
+    "min/km": "min/km",
+    "min/mi": "min/mi",
+    "km/h": "km/h",
+    "mph": "mph",
+    
+    // Goal Screen
+    "Réglez finement votre temps cible": "Ajuste fino do tempo objetivo",
+    "Temps": "Tempo",
+    "VMA": "VMA",
+    "Effort": "Esforço",
+    "Enregistrer": "Salvar",
+    
+    // Distances Screen
+    "Distances rapides": "Distâncias Rápidas",
+    "Basé sur votre allure actuelle": "Baseado no seu ritmo atual",
+    "Splits simples": "Parciais Simples",
+    "Calculez vos temps intermédiaires": "Calcule seus tempos parciais",
+    "Splits & Distances": "Parciais e Distâncias",
+    "Calculez vos temps et allures": "Calcule seus tempos e ritmos",
+    "Distances": "Distâncias",
+    
+    // Races
+    "Semi-marathon": "Meia Maratona",
+    "Marathon": "Maratona",
+    "Ultra": "Ultra",
+    "Trail": "Trail",
+    
+    // Settings
+    "Réglages": "Configurações",
+    "Produit par Aenean — Paceo": "Feito por Aenean — Paceo",
+    "Unités": "Unidades",
+    "Métrique (km/h)": "Métrico (km/h)",
+    "Impérial (mph)": "Imperial (mph)",
+    "Langue": "Idioma",
+    "Français": "Francês",
+    "English": "Inglês",
+    "Español": "Espanhol",
+    "Deutsch": "Alemão",
+    "Italiano": "Italiano",
+    "Português": "Português",
+    "Nederlands": "Holandês",
+    "Polski": "Polonês",
+    "Русский": "Russo",
+    "日本語": "Japonês",
+    "中文": "Chinês",
+    
+    // Favorites
+    "Aucun favori": "Nenhum favorito",
+    "Enregistrez vos objectifs de course depuis le calculateur pour les retrouver ici.": "Salve seus objetivos de corrida da calculadora para encontrá-los aqui.",
+    "Vos objectifs sauvegardés": "Seus objetivos salvos",
+    "Supprimer": "Excluir",
+    "Utiliser": "Usar",
+    
+    // Program Screen
+    "Plan d'entraînement automatique": "Plano de treino automático",
+    "Sessions/sem.": "Sessões/sem.",
+    "Avant objectif": "Antes do objetivo",
+    "Date": "Data",
+    "Objectif :": "Objetivo:",
+    "Allure cible": "Ritmo objetivo",
+    "Semaine": "Semana",
+    "Volume": "Volume",
+    "séances": "sessões",
+    "Détails": "Detalhes",
+    "Copier": "Copiar",
+    "Partager": "Compartilhar",
+    "Définis ton objectif pour générer ton programme.": "Defina seu objetivo para gerar seu programa.",
+    "Définir l'objectif": "Definir objetivo",
+    "Programme d'entraînement": "Programa de Treino",
+    "Phase": "Fase",
+    "BASE": "BASE",
+    "BUILD": "CONSTRUÇÃO",
+    "PEAK": "PICO",
+    "TAPER": "REDUÇÃO",
+    "EASY": "FÁCIL",
+    "STEADY": "CONSTANTE",
+    "THR": "LIMIAR",
+    "INT": "INTERVALOS",
+    "RP": "RITMO PROVA",
+    "Longue": "Longo",
+    "Strides": "Tiros",
+    "récup": "recuperação",
+    "min": "min",
+    "s": "s",
+    "dont": "sendo",
+    "Imprimer": "Imprimir",
+    "Enregistrer le programme": "Salvar programa",
+    "Programme enregistré": "Programa salvo",
+    "Semaines": "Semanas",
+    "semaines": "semanas",
+    "Temps cible": "Tempo objetivo",
+    
+    // Conversion Table
+    "Table de conversion": "Tabela de Conversão",
+    "Cliquez une ligne pour régler la vitesse": "Clique numa linha para definir a velocidade",
+    
+    // Program screen additional
+    "Durée programme": "Duração programa",
+    "Durée": "Duração",
+    
+    // Pace Speed Converter
+    "Convertisseur": "Conversor",
+    "km/km/h": "km/km/h",
+    "mi/mph": "mi/mph",
+    "Ajuster finement l'allure": "Ajustar ritmo finamente",
+    "Ajuster finement la vitesse": "Ajustar velocidade finamente",
+    
+    // Race Goal Calculator
+    "Objectif de course": "Objetivo de Corrida",
+    "Distance": "Distância",
+    "Temps objectif (hh:mm:ss)": "Tempo objetivo (hh:mm:ss)",
+    "Ajuster le temps objectif": "Ajustar tempo objetivo",
+    "VMA (km/h)": "VMA (km/h)",
+    "VMA (Vitesse Maximale Aérobie)": "VMA (Velocidade Máxima Aeróbica)",
+    "Intensité maximale que vous pouvez maintenir pendant 6-8 minutes.": "Intensidade máxima que pode manter por 6-8 minutos.",
+    "Test demi-Cooper :": "Teste meio-Cooper:",
+    "Courez le plus loin possible en 6 minutes, puis VMA = distance(m) ÷ 100": "Corra o mais longe possível em 6 minutos, então VMA = distância(m) ÷ 100",
+    "Exemple : 1200m en 6min → VMA = 12 km/h": "Exemplo: 1200m em 6min → VMA = 12 km/h",
+    "Cohérence vs VMA": "Coerência vs VMA",
+    "% de votre VMA — attendu": "% do seu VMA — esperado",
+    "Enregistrer l'objectif": "Salvar objetivo",
+    "Sous-estimé": "Subestimado",
+    "Ambitieux": "Ambicioso",
+    "Cohérent": "Coerente",
+    
+    // Splits Screen
+    "#": "#",
+    "Longueur": "Comprimento",
+    "Split": "Parcial",
+    "Cumul": "Acumulado",
+    
+    // Notifications
+    "Objectif sauvegardé": "Objetivo salvo",
+    "Objectif % ajouté à vos favoris": "Objetivo %s adicionado aos favoritos",
+    "Voir favoris": "Ver favoritos",
+    "Favori supprimé": "Favorito excluído",
+    "Objectif % retiré de vos favoris": "Objetivo %s removido dos favoritos",
+    "Objectif chargé": "Objetivo carregado",
+    "Objectif % et son programme sont maintenant actifs": "Objetivo %s e seu programa estão agora ativos",
+    "Voir programme": "Ver programa",
+    "Programme copié": "Programa copiado",
+    "Le programme a été copié dans le presse-papiers": "Programa copiado para a área de transferência",
+    "Programme partagé": "Programa compartilhado",
+    "Le lien de partage a été généré": "Link de compartilhamento gerado",
+    "Impression lancée": "Impressão iniciada",
+    "Le programme va s'ouvrir pour impression": "O programa abrirá para impressão",
+    "Erreur de chargement": "Erro de carregamento",
+    "Impossible de %. Veuillez réessayer.": "Não é possível %s. Tente novamente.",
+    "Erreur de sauvegarde": "Erro de salvamento",
+    "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "Não é possível salvar o objetivo. Verifique seus dados."
   }
 };
 
