@@ -31,14 +31,14 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
     if (!goal.program) return;
     
     try {
-      const programText = `Programme ${goal.distance} - ${goal.targetTime}\n\n` +
-        `Objectif: ${goal.distance} en ${goal.targetTime}\n` +
-        `Allure: ${goal.pace}/${goal.isMetric ? 'km' : 'mi'}\n` +
-        `Vitesse: ${goal.speed} ${goal.isMetric ? 'km/h' : 'mph'}\n` +
-        `VMA: ${goal.vmaKmh?.toFixed(1)} km/h\n\n` +
-        `Programme: ${goal.program.sessionsPerWeek} sessions/semaine sur ${goal.program.weeksBeforeRace} semaines\n\n` +
+    const programText = `${t("Programme")} ${goal.distance} - ${goal.targetTime}\n\n` +
+        `${t("Objectif")} : ${goal.distance} en ${goal.targetTime}\n` +
+        `${t("Allure")} : ${goal.pace}/${goal.isMetric ? 'km' : 'mi'}\n` +
+        `${t("Vitesse")} : ${goal.speed} ${goal.isMetric ? 'km/h' : 'mph'}\n` +
+        `${t("VMA")} : ${goal.vmaKmh?.toFixed(1)} km/h\n\n` +
+        `${t("Programme")} : ${goal.program.sessionsPerWeek} ${t("Sessions/sem.")} ${t("sur")} ${goal.program.weeksBeforeRace} ${t("semaines")}\n\n` +
         goal.program.weeks.map(week => 
-          `Semaine ${week.week} (${week.phase}) - ${week.volume}km\n` +
+          `${t("Semaine")} ${week.week} (${week.phase}) - ${week.volume}km\n` +
           week.sessions.map(session => `  • ${session.type}: ${session.description}`).join('\n')
         ).join('\n\n');
       
@@ -60,7 +60,7 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Programme ${goal.distance} - ${goal.targetTime}</title>
+          <title>${t("Programme")} ${goal.distance} - ${goal.targetTime}</title>
           <style>
             body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
             .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
@@ -74,23 +74,23 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
         </head>
         <body>
           <div class="header">
-            <h1>Programme d'Entraînement</h1>
-            <h2>${goal.distance} - Objectif: ${goal.targetTime}</h2>
+            <h1>${t("Programme d'entraînement")}</h1>
+            <h2>${goal.distance} - ${t("Objectif")} : ${goal.targetTime}</h2>
           </div>
           
           <div class="goal-info">
-            <div><strong>Allure:</strong> ${goal.pace}/${goal.isMetric ? 'km' : 'mi'}</div>
-            <div><strong>Vitesse:</strong> ${goal.speed} ${goal.isMetric ? 'km/h' : 'mph'}</div>
-            <div><strong>Distance:</strong> ${goal.distanceKm} km</div>
-            <div><strong>VMA:</strong> ${goal.vmaKmh?.toFixed(1)} km/h</div>
+            <div><strong>${t("Allure")} :</strong> ${goal.pace}/${goal.isMetric ? 'km' : 'mi'}</div>
+            <div><strong>${t("Vitesse")} :</strong> ${goal.speed} ${goal.isMetric ? 'km/h' : 'mph'}</div>
+            <div><strong>${t("Distance")} :</strong> ${goal.distanceKm} km</div>
+            <div><strong>${t("VMA")} :</strong> ${goal.vmaKmh?.toFixed(1)} km/h</div>
           </div>
 
-          <h3>Programme: ${goal.program.sessionsPerWeek} sessions/semaine sur ${goal.program.weeksBeforeRace} semaines</h3>
+          <h3>${t("Programme")} : ${goal.program.sessionsPerWeek} ${t("Sessions/sem.")} ${t("sur")} ${goal.program.weeksBeforeRace} ${t("semaines")}</h3>
           
           ${goal.program.weeks.map(week => `
             <div class="week">
               <div class="week-header">
-                Semaine ${week.week} - ${week.phase} (${week.volume}km)
+                ${t("Semaine")} ${week.week} - ${week.phase} (${week.volume}km)
               </div>
               ${week.sessions.map(session => `
                 <div class="session">
@@ -186,27 +186,27 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
                 
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-muted-foreground">Allure: </span>
+                    <span className="text-muted-foreground">{t("Allure")} : </span>
                     <span className="mono-numbers font-medium">{goal.pace}</span>
                     <span className="text-muted-foreground ml-1">
                       {goal.isMetric ? 'min/km' : 'min/mi'}
                     </span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Vitesse: </span>
+                    <span className="text-muted-foreground">{t("Vitesse")} : </span>
                     <span className="mono-numbers font-medium">{goal.speed}</span>
                     <span className="text-muted-foreground ml-1">
                       {goal.isMetric ? 'km/h' : 'mph'}
                     </span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Distance: </span>
+                    <span className="text-muted-foreground">{t("Distance")} : </span>
                     <span className="mono-numbers font-medium">{goal.distanceKm} km</span>
                     <span className="text-muted-foreground ml-1">(≈ {goal.distanceMiles} mi)</span>
                   </div>
                   {goal.vmaKmh && (
                     <div>
-                      <span className="text-muted-foreground">VMA: </span>
+                      <span className="text-muted-foreground">{t("VMA")} : </span>
                       <span className="mono-numbers font-medium">{goal.vmaKmh.toFixed(1)} km/h</span>
                     </div>
                   )}
@@ -214,16 +214,16 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
 
                 {goal.program && (
                   <div className="mt-3 p-3 bg-background/40 rounded-lg">
-                    <div className="text-sm font-medium mb-2">Programme d'entraînement</div>
+                    <div className="text-sm font-medium mb-2">{t("Programme d'entraînement")}</div>
                     <div className="text-xs text-muted-foreground">
-                      {goal.program.sessionsPerWeek} sessions/sem • {goal.program.weeksBeforeRace} semaines
+                      {goal.program.sessionsPerWeek} {t("Sessions/sem.")} • {goal.program.weeksBeforeRace} {t("semaines")}
                     </div>
                   </div>
                 )}
 
                 {goal.vmaCoherence && (
                   <div className="mt-3 text-xs text-muted-foreground">
-                    Cohérence vs VMA: {goal.vmaCoherence.pct}% — attendu {goal.vmaCoherence.expectedLow}-{goal.vmaCoherence.expectedHigh}% ({goal.vmaCoherence.status})
+                    {t("Cohérence vs VMA")} : {goal.vmaCoherence.pct}% — {t("attendu")} {goal.vmaCoherence.expectedLow}-{goal.vmaCoherence.expectedHigh}% ({t(goal.vmaCoherence.status)})
                   </div>
                 )}
               </div>
@@ -237,14 +237,14 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
                           variant="outline"
                           size="sm"
                           className="btn-glass p-2"
-                          title="Voir le programme détaillé"
+                          title={t("Voir le programme détaillé")}
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
                         <DialogHeader>
-                          <DialogTitle>Programme - {goal.distance} en {goal.targetTime}</DialogTitle>
+                          <DialogTitle>{t("Programme")} - {goal.distance} en {goal.targetTime}</DialogTitle>
                         </DialogHeader>
                         <div className="flex gap-2 mb-4">
                           <Button
@@ -254,7 +254,7 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
                             className="btn-glass"
                           >
                             <Copy className="h-4 w-4 mr-2" />
-                            Copier
+                            {t("Copier")}
                           </Button>
                           <Button
                             variant="outline"
@@ -263,7 +263,7 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
                             className="btn-glass"
                           >
                             <Printer className="h-4 w-4 mr-2" />
-                            Imprimer
+                            {t("Imprimer")}
                           </Button>
                         </div>
                         {renderProgramPreview(goal.program)}
@@ -275,7 +275,7 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
                       size="sm"
                       onClick={() => handleCopyProgram(goal)}
                       className="btn-glass p-2"
-                      title="Copier le programme"
+                      title={t("Copier le programme")}
                     >
                       <Copy className="h-4 w-4" />
                     </Button>
@@ -285,7 +285,7 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
                       size="sm"
                       onClick={() => handlePrintProgram(goal)}
                       className="btn-glass p-2"
-                      title="Imprimer le programme"
+                      title={t("Imprimer le programme")}
                     >
                       <Printer className="h-4 w-4" />
                     </Button>
@@ -298,7 +298,7 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
                     size="sm"
                     onClick={() => handleUse(goal)}
                     className="btn-glass p-2"
-                    title="Charger cet objectif"
+                    title={t("Charger cet objectif")}
                   >
                     <Play className="h-4 w-4" />
                   </Button>
@@ -307,7 +307,7 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
                     size="sm"
                     onClick={() => handleDelete(goal.id, goal.distance)}
                     className="btn-glass p-2 hover:text-destructive"
-                    title="Supprimer ce favori"
+                    title={t("Supprimer ce favori")}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

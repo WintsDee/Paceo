@@ -239,29 +239,31 @@ export const RaceGoalCalculator = ({
           <Collapsible defaultOpen={false}>
             <div className="glass-card p-4 rounded-lg">
               <CollapsibleTrigger className="flex w-full items-center gap-2 py-1.5 text-sm font-medium text-muted-foreground transition-all [&[data-state=open]>svg]:rotate-180">
-                <div className="flex items-center gap-2">
-                  <span>{t("VMA (km/h)")}</span>
-                   <TooltipProvider>
-                     <Tooltip>
-                       <TooltipTrigger asChild>
-                         <HelpCircle className="h-3 w-3 text-muted-foreground/60 hover:text-muted-foreground cursor-help" onClick={e => e.stopPropagation()} />
-                       </TooltipTrigger>
-                      <TooltipContent className="max-w-xs">
-                        <div className="space-y-2 text-sm">
-                          <p><strong>{t("VMA (Vitesse Maximale Aérobie)")}</strong></p>
-                          <p>{t("Intensité maximale que vous pouvez maintenir pendant 6-8 minutes.")}</p>
-                          <p><strong>{t("Test demi-Cooper :")}</strong> {t("Courez le plus loin possible en 6 minutes, puis VMA = distance(m) ÷ 100")}</p>
-                          <p>{t("Exemple : 1200m en 6min → VMA = 12 km/h")}</p>
-                        </div>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
+                <span>{t("VMA (km/h)")}</span>
                 <span className="ml-auto text-sm font-medium mono-numbers">{(vmaKmh > 0 ? vmaKmh : 12).toFixed(1)} km/h</span>
                 <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-300 ease-out" />
               </CollapsibleTrigger>
               <CollapsibleContent className="overflow-hidden data-[state=open]:animate-in data-[state=open]:slide-down-1 data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:slide-up-1 data-[state=closed]:fade-out-0 duration-300 ease-out">
                 <div className="space-y-4 pt-4 pb-2">
+                  {/* VMA Info with Help */}
+                  <div className="flex items-center gap-2 px-2">
+                    <span className="text-sm font-medium">{t("VMA (Vitesse Maximale Aérobie)")}</span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="h-4 w-4 text-muted-foreground/60 hover:text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <div className="space-y-2 text-sm">
+                            <p>{t("Intensité maximale que vous pouvez maintenir pendant 6-8 minutes.")}</p>
+                            <p><strong>{t("Test demi-Cooper :")}</strong> {t("Courez le plus loin possible en 6 minutes, puis VMA = distance(m) ÷ 100")}</p>
+                            <p>{t("Exemple : 1200m en 6min → VMA = 12 km/h")}</p>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  
                   {/* Curseur VMA */}
                   <div className="px-2">
                     <Slider min={8} max={25} step={0.1} value={[vmaKmh > 0 ? vmaKmh : 12]} className="touch-none select-none w-full" onValueChange={v => setVmaKmh(parseFloat((v[0] ?? 12).toFixed(1)))} />

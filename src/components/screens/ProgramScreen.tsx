@@ -10,7 +10,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { CalendarIcon, ChevronDown, Plus, Minus, Copy, Printer, Target } from "lucide-react";
 import { differenceInWeeks } from "date-fns";
-import { fr, enUS, es, de } from "date-fns/locale";
+import { fr, enUS, es, de, ptBR, ja, zhCN } from "date-fns/locale";
 import { useAppNotifications } from "@/hooks/useAppNotifications";
 interface ProgramScreenProps {
   isMetric: boolean;
@@ -97,6 +97,30 @@ const SESSION_EXPLANATIONS = {
     INT: "Hochintensive Intervalle zur Verbesserung der VO2max",
     RP: "Wettkampftempo - das exakte Tempo deines Wettkampfziels",
     Longue: "Langer Lauf zur Entwicklung von Ausdauer und Laufökonomie"
+  },
+  pt: {
+    EASY: "Ritmo fácil para recuperação e construção da base aeróbica",
+    STEADY: "Ritmo constante confortável, ligeiramente mais rápido que o ritmo fácil",
+    THR: "Ritmo limiar/tempo - intensidade moderada a alta, próximo ao limiar láctico",
+    INT: "Intervalos de alta intensidade para melhorar o VO2max",
+    RP: "Ritmo de prova - o ritmo exato do seu objetivo de competição",
+    Longue: "Corrida longa para desenvolver resistência e economia de corrida"
+  },
+  ja: {
+    EASY: "回復と有酸素ベース構築のためのイージーペース",
+    STEADY: "快適で持続可能なペース、イージーペースより少し速い",
+    THR: "閾値/テンポペース - 中程度から高強度、乳酸閾値付近",
+    INT: "VO2maxを向上させる高強度インターバル", 
+    RP: "レースペース - 競技目標の正確なペース",
+    Longue: "持久力とランニングエコノミーを向上させるロング走"
+  },
+  zh: {
+    EASY: "轻松配速，用于恢复和建立有氧基础",
+    STEADY: "舒适稳定配速，比轻松配速稍快",
+    THR: "门槛/节奏配速 - 中等到高强度，接近乳酸阈值",
+    INT: "高强度间歇训练以提高最大摄氧量",
+    RP: "比赛配速 - 你的竞赛目标的准确配速",
+    Longue: "长跑训练以发展耐力和跑步经济性"
   }
 } as const;
 
@@ -273,6 +297,12 @@ export const ProgramScreen = React.memo(({
         return es;
       case 'de':
         return de;
+      case 'pt':
+        return ptBR;
+      case 'ja':
+        return ja;
+      case 'zh':
+        return zhCN;
       default:
         return enUS;
     }

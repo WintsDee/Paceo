@@ -161,7 +161,16 @@ export const translations = {
     "Erreur de chargement": "Erreur de chargement",
     "Impossible de %. Veuillez réessayer.": "Impossible de %s. Veuillez réessayer.",
     "Erreur de sauvegarde": "Erreur de sauvegarde",
-    "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "Impossible de sauvegarder l'objectif. Vérifiez vos données."
+    "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "Impossible de sauvegarder l'objectif. Vérifiez vos données.",
+    
+    // Additional keys
+    "sur": "sur",
+    "attendu": "attendu",
+    "Voir le programme détaillé": "Voir le programme détaillé",
+    "Copier le programme": "Copier le programme",
+    "Imprimer le programme": "Imprimer le programme",
+    "Charger cet objectif": "Charger cet objectif",
+    "Supprimer ce favori": "Supprimer ce favori"
   },
   en: {
     // Navigation
@@ -326,8 +335,17 @@ export const translations = {
      "Erreur de chargement": "Loading error",
      "Impossible de %. Veuillez réessayer.": "Unable to %s. Please try again.",
      "Erreur de sauvegarde": "Save error",
-     "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "Unable to save goal. Check your data."
-  },
+     "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "Unable to save goal. Check your data.",
+     
+     // Additional keys
+     "sur": "over",
+     "attendu": "expected",
+     "Voir le programme détaillé": "View detailed program",
+     "Copier le programme": "Copy program",
+     "Imprimer le programme": "Print program",
+     "Charger cet objectif": "Load this goal",
+     "Supprimer ce favori": "Delete this favorite"
+   },
   es: {
     // Navigation
     "Allure & Vitesse": "Ritmo y Velocidad",
@@ -491,8 +509,17 @@ export const translations = {
      "Erreur de chargement": "Error de carga",
      "Impossible de %. Veuillez réessayer.": "No se puede %s. Inténtalo de nuevo.",
      "Erreur de sauvegarde": "Error de guardado",
-     "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "No se puede guardar el objetivo. Verifica tus datos."
-  },
+      "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "No se puede guardar el objetivo. Verifica tus datos.",
+      
+      // Additional keys
+      "sur": "durante",
+      "attendu": "esperado",
+      "Voir le programme détaillé": "Ver programa detallado",
+      "Copier le programme": "Copiar programa",
+      "Imprimer le programme": "Imprimir programa",
+      "Charger cet objectif": "Cargar este objetivo",
+      "Supprimer ce favori": "Eliminar este favorito"
+   },
   de: {
     // Navigation
     "Allure & Vitesse": "Tempo & Geschwindigkeit",
@@ -656,7 +683,189 @@ export const translations = {
      "Erreur de chargement": "Ladefehler",
      "Impossible de %. Veuillez réessayer.": "Kann %s nicht durchführen. Bitte versuche es erneut.",
      "Erreur de sauvegarde": "Speicherfehler",
-     "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "Ziel kann nicht gespeichert werden. Überprüfe deine Daten."
+      "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "Ziel kann nicht gespeichert werden. Überprüfe deine Daten.",
+      
+      // Additional Keys
+      "sur": "über",
+      "attendu": "erwartet",
+      "Voir le programme détaillé": "Detailliertes Programm anzeigen",
+      "Copier le programme": "Programm kopieren",
+      "Imprimer le programme": "Programm drucken",
+      "Charger cet objectif": "Dieses Ziel laden",
+      "Supprimer ce favori": "Diesen Favoriten löschen"
+   },
+  
+  // Portuguese
+  pt: {
+    // Navigation
+    "Allure & Vitesse": "Ritmo e Velocidade",
+    "Objectif": "Objetivo",
+    "Splits": "Parciais",
+    "Favoris": "Favoritos", 
+    "Programme": "Programa",
+    
+    // Calculator Screen
+    "Calculateur d'allure": "Calculadora de Ritmo",
+    "Convertissez entre allure et vitesse": "Converta entre ritmo e velocidade",
+    "Allure": "Ritmo",
+    "Vitesse": "Velocidade",
+    "min/km": "min/km",
+    "min/mi": "min/mi",
+    "km/h": "km/h",
+    "mph": "mph",
+    
+    // Goal Screen
+    "Réglez finement votre temps cible": "Ajuste fino do tempo objetivo",
+    "Temps": "Tempo",
+    "VMA": "VMA",
+    "Effort": "Esforço",
+    "Enregistrer": "Salvar",
+    
+    // Distances Screen
+    "Distances rapides": "Distâncias Rápidas",
+    "Basé sur votre allure actuelle": "Baseado no seu ritmo atual",
+    "Splits simples": "Parciais Simples",
+    "Calculez vos temps intermédiaires": "Calcule seus tempos parciais",
+    "Splits & Distances": "Parciais e Distâncias",
+    "Calculez vos temps et allures": "Calcule seus tempos e ritmos",
+    "Distances": "Distâncias",
+    
+    // Races
+    "Semi-marathon": "Meia Maratona",
+    "Marathon": "Maratona",
+    "Ultra": "Ultra",
+    "Trail": "Trail",
+    
+    // Settings
+    "Réglages": "Configurações",
+    "Produit par Aenean — Paceo": "Feito por Aenean — Paceo",
+    "Unités": "Unidades",
+    "Métrique (km/h)": "Métrico (km/h)",
+    "Impérial (mph)": "Imperial (mph)",
+    "Langue": "Idioma",
+    "Français": "Francês",
+    "English": "Inglês",
+    "Español": "Espanhol",
+    "Deutsch": "Alemão",
+    "Italiano": "Italiano",
+    "Português": "Português",
+    "Nederlands": "Holandês",
+    "Polski": "Polonês",
+    "Русский": "Russo",
+    "日本語": "Japonês",
+    "中文": "Chinês",
+    
+    // Favorites
+    "Aucun favori": "Nenhum favorito",
+    "Enregistrez vos objectifs de course depuis le calculateur pour les retrouver ici.": "Salve seus objetivos de corrida da calculadora para encontrá-los aqui.",
+    "Vos objectifs sauvegardés": "Seus objetivos salvos",
+    "Supprimer": "Excluir",
+    "Utiliser": "Usar",
+    
+    // Program Screen
+    "Plan d'entraînement automatique": "Plano de treinamento automático",
+    "Sessions/sem.": "Sessões/sem.",
+    "Avant objectif": "Antes do objetivo",
+    "Date": "Data",
+    "Objectif :": "Objetivo:",
+    "Allure cible": "Ritmo objetivo",
+    "Semaine": "Semana",
+    "Volume": "Volume",
+    "séances": "sessões",
+    "Détails": "Detalhes",
+    "Copier": "Copiar",
+    "Partager": "Compartilhar",
+    "Définis ton objectif pour générer ton programme.": "Defina seu objetivo para gerar seu programa.",
+    "Définir l'objectif": "Definir objetivo",
+    "Programme d'entraînement": "Programa de Treinamento",
+    "Phase": "Fase",
+    "BASE": "BASE",
+    "BUILD": "CONSTRUÇÃO",
+    "PEAK": "PICO",
+    "TAPER": "REDUÇÃO",
+    "EASY": "FÁCIL",
+    "STEADY": "CONSTANTE",
+    "THR": "LIMIAR",
+    "INT": "INTERVALOS",
+    "RP": "RITMO",
+    "Longue": "Longa",
+    "Strides": "Tiros",
+    "récup": "recuperação",
+    "min": "min",
+    "s": "s",
+    "dont": "dos quais",
+    "Imprimer": "Imprimir",
+    "Enregistrer le programme": "Salvar programa",
+    "Programme enregistré": "Programa salvo",
+    "Semaines": "Semanas",
+    "semaines": "semanas",
+    "Temps cible": "Tempo objetivo",
+    "Durée programme": "Duração programa",
+    "Durée": "Duração",
+    "Objectif de course": "Objetivo de Corrida",
+    
+    // Conversion Table
+    "Table de conversion": "Tabela de Conversão",
+    "Cliquez une ligne pour régler la vitesse": "Clique em uma linha para definir velocidade",
+    
+    // Pace Speed Converter
+    "Convertisseur": "Conversor",
+    "km/km/h": "km/km/h",
+    "mi/mph": "mi/mph",
+    "Ajuster finement l'allure": "Ajustar ritmo finamente",
+    "Ajuster finement la vitesse": "Ajustar velocidade finamente",
+    
+    // Race Goal Calculator
+    "Distance": "Distância",
+    "Temps objectif (hh:mm:ss)": "Tempo objetivo (hh:mm:ss)",
+    "Ajuster le temps objectif": "Ajustar tempo objetivo",
+    "VMA (km/h)": "VMA (km/h)",
+    "VMA (Vitesse Maximale Aérobie)": "VMA (Velocidade Máxima Aeróbica)",
+    "Intensité maximale que vous pouvez maintenir pendant 6-8 minutes.": "Intensidade máxima que você pode manter por 6-8 minutos.",
+    "Test demi-Cooper :": "Teste meio-Cooper:",
+    "Courez le plus loin possible en 6 minutes, puis VMA = distance(m) ÷ 100": "Corra o mais longe possível em 6 minutos, então VMA = distância(m) ÷ 100",
+    "Exemple : 1200m en 6min → VMA = 12 km/h": "Exemplo: 1200m em 6min → VMA = 12 km/h",
+    "Cohérence vs VMA": "Coerência vs VMA",
+    "% de votre VMA — attendu": "% da sua VMA — esperado",
+    "Enregistrer l'objectif": "Salvar objetivo",
+    "Sous-estimé": "Subestimado",
+    "Ambitieux": "Ambicioso",
+    "Cohérent": "Coerente",
+    
+    // Splits Screen
+    "#": "#",
+    "Longueur": "Comprimento",
+    "Split": "Parcial",
+    "Cumul": "Acumulado",
+    
+    // Notifications
+    "Objectif sauvegardé": "Objetivo salvo",
+    "Objectif % ajouté à vos favoris": "Objetivo %s adicionado aos favoritos",
+    "Voir favoris": "Ver favoritos",
+    "Favori supprimé": "Favorito excluído",
+    "Objectif % retiré de vos favoris": "Objetivo %s removido dos favoritos",
+    "Objectif chargé": "Objetivo carregado",
+    "Objectif % et son programme sont maintenant actifs": "Objetivo %s e seu programa estão agora ativos",
+    "Voir programme": "Ver programa",
+    "Programme copié": "Programa copiado",
+    "Le programme a été copié dans le presse-papiers": "Programa copiado para área de transferência",
+    "Programme partagé": "Programa compartilhado",
+    "Le lien de partage a été généré": "Link de compartilhamento gerado",
+    "Impression lancée": "Impressão iniciada",
+    "Le programme va s'ouvrir pour impression": "Programa será aberto para impressão",
+    "Erreur de chargement": "Erro de carregamento",
+    "Impossible de %. Veuillez réessayer.": "Não é possível %s. Tente novamente.",  
+    "Erreur de sauvegarde": "Erro de salvamento",
+    "Impossible de sauvegarder l'objectif. Vérifiez vos dados.": "Não é possível salvar objetivo. Verifique seus dados.",
+    
+    // Additional keys
+    "sur": "por",
+    "attendu": "esperado",
+    "Voir le programme détaillé": "Ver programa detalhado",
+    "Copier le programme": "Copiar programa",
+    "Imprimer le programme": "Imprimir programa", 
+    "Charger cet objectif": "Carregar este objetivo",
+    "Supprimer ce favori": "Excluir este favorito"
   },
   
   // Chinese (Simplified)
@@ -822,7 +1031,16 @@ export const translations = {
     "Erreur de chargement": "加载错误",
     "Impossible de %. Veuillez réessayer.": "无法%s。请重试。",
     "Erreur de sauvegarde": "保存错误",
-    "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "无法保存目标。请检查数据。"
+    "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "无法保存目标。请检查数据。",
+    
+    // Additional keys
+    "sur": "持续",
+    "attendu": "预期",
+    "Voir le programme détaillé": "查看详细计划",
+    "Copier le programme": "复制计划",
+    "Imprimer le programme": "打印计划",
+    "Charger cet objectif": "载入此目标",
+    "Supprimer ce favori": "删除此收藏"
   },
   
   // Japanese
@@ -988,175 +1206,18 @@ export const translations = {
     "Erreur de chargement": "読み込みエラー",
     "Impossible de %. Veuillez réessayer.": "%sできません。再試行してください。",
     "Erreur de sauvegarde": "保存エラー",
-    "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "目標を保存できません。データを確認してください。"
-  },
-  
-  // Portuguese
-  pt: {
-    // Navigation
-    "Allure & Vitesse": "Ritmo e Velocidade",
-    "Objectif": "Objetivo",
-    "Splits": "Parciais",
-    "Favoris": "Favoritos",
-    "Programme": "Programa",
+    "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "目標を保存できません。データを確認してください。",
     
-    // Calculator Screen
-    "Calculateur d'allure": "Calculadora de Ritmo",
-    "Convertissez entre allure et vitesse": "Converta entre ritmo e velocidade",
-    "Allure": "Ritmo",
-    "Vitesse": "Velocidade",
-    "min/km": "min/km",
-    "min/mi": "min/mi",
-    "km/h": "km/h",
-    "mph": "mph",
-    
-    // Goal Screen
-    "Réglez finement votre temps cible": "Ajuste fino do tempo objetivo",
-    "Temps": "Tempo",
-    "VMA": "VMA",
-    "Effort": "Esforço",
-    "Enregistrer": "Salvar",
-    
-    // Distances Screen
-    "Distances rapides": "Distâncias Rápidas",
-    "Basé sur votre allure actuelle": "Baseado no seu ritmo atual",
-    "Splits simples": "Parciais Simples",
-    "Calculez vos temps intermédiaires": "Calcule seus tempos parciais",
-    "Splits & Distances": "Parciais e Distâncias",
-    "Calculez vos temps et allures": "Calcule seus tempos e ritmos",
-    "Distances": "Distâncias",
-    
-    // Races
-    "Semi-marathon": "Meia Maratona",
-    "Marathon": "Maratona",
-    "Ultra": "Ultra",
-    "Trail": "Trail",
-    
-    // Settings
-    "Réglages": "Configurações",
-    "Produit par Aenean — Paceo": "Feito por Aenean — Paceo",
-    "Unités": "Unidades",
-    "Métrique (km/h)": "Métrico (km/h)",
-    "Impérial (mph)": "Imperial (mph)",
-    "Langue": "Idioma",
-    "Français": "Francês",
-    "English": "Inglês",
-    "Español": "Espanhol",
-    "Deutsch": "Alemão",
-    "Italiano": "Italiano",
-    "Português": "Português",
-    "Nederlands": "Holandês",
-    "Polski": "Polonês",
-    "Русский": "Russo",
-    "日本語": "Japonês",
-    "中文": "Chinês",
-    
-    // Favorites
-    "Aucun favori": "Nenhum favorito",
-    "Enregistrez vos objectifs de course depuis le calculateur pour les retrouver ici.": "Salve seus objetivos de corrida da calculadora para encontrá-los aqui.",
-    "Vos objectifs sauvegardés": "Seus objetivos salvos",
-    "Supprimer": "Excluir",
-    "Utiliser": "Usar",
-    
-    // Program Screen
-    "Plan d'entraînement automatique": "Plano de treino automático",
-    "Sessions/sem.": "Sessões/sem.",
-    "Avant objectif": "Antes do objetivo",
-    "Date": "Data",
-    "Objectif :": "Objetivo:",
-    "Allure cible": "Ritmo objetivo",
-    "Semaine": "Semana",
-    "Volume": "Volume",
-    "séances": "sessões",
-    "Détails": "Detalhes",
-    "Copier": "Copiar",
-    "Partager": "Compartilhar",
-    "Définis ton objectif pour générer ton programme.": "Defina seu objetivo para gerar seu programa.",
-    "Définir l'objectif": "Definir objetivo",
-    "Programme d'entraînement": "Programa de Treino",
-    "Phase": "Fase",
-    "BASE": "BASE",
-    "BUILD": "CONSTRUÇÃO",
-    "PEAK": "PICO",
-    "TAPER": "REDUÇÃO",
-    "EASY": "FÁCIL",
-    "STEADY": "CONSTANTE",
-    "THR": "LIMIAR",
-    "INT": "INTERVALOS",
-    "RP": "RITMO PROVA",
-    "Longue": "Longo",
-    "Strides": "Tiros",
-    "récup": "recuperação",
-    "min": "min",
-    "s": "s",
-    "dont": "sendo",
-    "Imprimer": "Imprimir",
-    "Enregistrer le programme": "Salvar programa",
-    "Programme enregistré": "Programa salvo",
-    "Semaines": "Semanas",
-    "semaines": "semanas",
-    "Temps cible": "Tempo objetivo",
-    
-    // Conversion Table
-    "Table de conversion": "Tabela de Conversão",
-    "Cliquez une ligne pour régler la vitesse": "Clique numa linha para definir a velocidade",
-    
-    // Program screen additional
-    "Durée programme": "Duração programa",
-    "Durée": "Duração",
-    
-    // Pace Speed Converter
-    "Convertisseur": "Conversor",
-    "km/km/h": "km/km/h",
-    "mi/mph": "mi/mph",
-    "Ajuster finement l'allure": "Ajustar ritmo finamente",
-    "Ajuster finement la vitesse": "Ajustar velocidade finamente",
-    
-    // Race Goal Calculator
-    "Objectif de course": "Objetivo de Corrida",
-    "Distance": "Distância",
-    "Temps objectif (hh:mm:ss)": "Tempo objetivo (hh:mm:ss)",
-    "Ajuster le temps objectif": "Ajustar tempo objetivo",
-    "VMA (km/h)": "VMA (km/h)",
-    "VMA (Vitesse Maximale Aérobie)": "VMA (Velocidade Máxima Aeróbica)",
-    "Intensité maximale que vous pouvez maintenir pendant 6-8 minutes.": "Intensidade máxima que pode manter por 6-8 minutos.",
-    "Test demi-Cooper :": "Teste meio-Cooper:",
-    "Courez le plus loin possible en 6 minutes, puis VMA = distance(m) ÷ 100": "Corra o mais longe possível em 6 minutos, então VMA = distância(m) ÷ 100",
-    "Exemple : 1200m en 6min → VMA = 12 km/h": "Exemplo: 1200m em 6min → VMA = 12 km/h",
-    "Cohérence vs VMA": "Coerência vs VMA",
-    "% de votre VMA — attendu": "% do seu VMA — esperado",
-    "Enregistrer l'objectif": "Salvar objetivo",
-    "Sous-estimé": "Subestimado",
-    "Ambitieux": "Ambicioso",
-    "Cohérent": "Coerente",
-    
-    // Splits Screen
-    "#": "#",
-    "Longueur": "Comprimento",
-    "Split": "Parcial",
-    "Cumul": "Acumulado",
-    
-    // Notifications
-    "Objectif sauvegardé": "Objetivo salvo",
-    "Objectif % ajouté à vos favoris": "Objetivo %s adicionado aos favoritos",
-    "Voir favoris": "Ver favoritos",
-    "Favori supprimé": "Favorito excluído",
-    "Objectif % retiré de vos favoris": "Objetivo %s removido dos favoritos",
-    "Objectif chargé": "Objetivo carregado",
-    "Objectif % et son programme sont maintenant actifs": "Objetivo %s e seu programa estão agora ativos",
-    "Voir programme": "Ver programa",
-    "Programme copié": "Programa copiado",
-    "Le programme a été copié dans le presse-papiers": "Programa copiado para a área de transferência",
-    "Programme partagé": "Programa compartilhado",
-    "Le lien de partage a été généré": "Link de compartilhamento gerado",
-    "Impression lancée": "Impressão iniciada",
-    "Le programme va s'ouvrir pour impression": "O programa abrirá para impressão",
-    "Erreur de chargement": "Erro de carregamento",
-    "Impossible de %. Veuillez réessayer.": "Não é possível %s. Tente novamente.",
-    "Erreur de sauvegarde": "Erro de salvamento",
-    "Impossible de sauvegarder l'objectif. Vérifiez vos données.": "Não é possível salvar o objetivo. Verifique seus dados."
+    // Additional keys
+    "sur": "継続",
+    "attendu": "予想",
+    "Voir le programme détaillé": "詳細プログラム表示",
+    "Copier le programme": "プログラムコピー", 
+    "Imprimer le programme": "プログラム印刷",
+    "Charger cet objectif": "この目標を読み込み",
+    "Supprimer ce favori": "このお気に入りを削除"
   }
-};
+} as const;
 
 export type Language = keyof typeof translations;
 export type TranslationKey = keyof typeof translations.fr;
