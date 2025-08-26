@@ -197,7 +197,40 @@ export const RaceGoalCalculator = ({
           <Label className="text-sm font-medium text-muted-foreground">
             {t("Temps objectif (hh:mm:ss)")}
           </Label>
-          <Input value={targetTime} onChange={e => handleTimeChange(e.target.value)} placeholder="00:45:00" className="glass-card border-0 text-lg mono-numbers text-center h-14 text-foreground focus:glow-effect transition-smooth" />
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-14 w-12 glass-card border-0 text-xl font-bold"
+              onClick={() => {
+                const currentH = timeStringToHours(targetTime);
+                const newH = Math.max(0.1, currentH - 1/60); // -1 minute
+                const newTime = hoursToHHMMSS(newH);
+                handleTimeChange(newTime);
+              }}
+            >
+              -
+            </Button>
+            <Input 
+              value={targetTime} 
+              onChange={e => handleTimeChange(e.target.value)} 
+              placeholder="00:45:00" 
+              className="glass-card border-0 text-lg mono-numbers text-center h-14 text-foreground focus:glow-effect transition-smooth flex-1" 
+            />
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-14 w-12 glass-card border-0 text-xl font-bold"
+              onClick={() => {
+                const currentH = timeStringToHours(targetTime);
+                const newH = currentH + 1/60; // +1 minute
+                const newTime = hoursToHHMMSS(newH);
+                handleTimeChange(newTime);
+              }}
+            >
+              +
+            </Button>
+          </div>
         </div>
 
         {/* Optional time slider */}
