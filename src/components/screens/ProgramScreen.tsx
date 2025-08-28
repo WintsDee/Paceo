@@ -838,16 +838,16 @@ export const ProgramScreen = React.memo(({
                         className="h-5 w-5"
                         aria-label={t("Marquer la semaine comme terminée")}
                       />
-                      <div className="font-semibold">
+                      <div className={`font-semibold ${weekProgress.done ? 'text-muted-foreground line-through' : ''}`}>
                         {t("Semaine")} {week.week}
                       </div>
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className={`text-xs ${weekProgress.done ? 'opacity-50' : ''}`}>
                         {t(week.phase)}
                       </Badge>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="text-sm text-muted-foreground">
-                        {weekProgress.sessions.filter(done => done).length}/{week.sessions.length} {t("séances")} {t("cochées")} • {Math.round((weekProgress.sessions.filter(done => done).length / week.sessions.length) * 100)}%
+                      <div className={`text-sm font-medium mono-numbers ${weekProgress.done ? 'text-muted-foreground' : 'text-foreground'}`}>
+                        {weekProgress.sessions.filter(done => done).length}/{week.sessions.length}
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <span>{week.volume}{isMetric ? 'km' : 'mi'}</span>
@@ -857,11 +857,11 @@ export const ProgramScreen = React.memo(({
                   </div>
                 </CollapsibleTrigger>
               
-                <CollapsibleContent className="space-y-3 pt-4">
+                <CollapsibleContent className="space-y-3 px-4 pb-4">
                   {week.sessions.map((session, sessionIndex) => {
                     const isSessionDone = weekProgress.sessions[sessionIndex] || false;
                     return (
-                      <div key={sessionIndex} className="glass-card p-3 rounded-lg">
+                      <div key={sessionIndex} className={`glass-card p-3 rounded-lg ${isSessionDone ? 'opacity-60 bg-muted/30' : ''}`}>
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-center gap-3 flex-1">
                             <Checkbox
@@ -872,12 +872,12 @@ export const ProgramScreen = React.memo(({
                               className="h-5 w-5 mt-1"
                               aria-label={t("Séance effectuée")}
                             />
-                            <div className="flex-1">
+                            <div className={`flex-1 ${isSessionDone ? 'text-muted-foreground' : ''}`}>
                               <div className="flex items-center gap-2 mb-2">
                                 <TooltipProvider>
                                   <Tooltip>
                                     <TooltipTrigger asChild>
-                                      <Badge variant="secondary" className={`${SESSION_COLORS[session.type]} text-xs font-medium cursor-help transition-colors`}>
+                                      <Badge variant="secondary" className={`${SESSION_COLORS[session.type]} text-xs font-medium cursor-help transition-colors ${isSessionDone ? 'opacity-60' : ''}`}>
                                         {t(session.type)}
                                       </Badge>
                                     </TooltipTrigger>
@@ -888,10 +888,10 @@ export const ProgramScreen = React.memo(({
                                     </TooltipContent>
                                   </Tooltip>
                                 </TooltipProvider>
-                                <span className="text-sm text-muted-foreground">{session.duration}</span>
+                                <span className={`text-sm font-medium ${isSessionDone ? 'text-muted-foreground' : 'text-foreground'}`}>{session.duration}</span>
                                 <span className="text-sm font-medium mono-numbers">{session.pace}</span>
                               </div>
-                              <div className="text-sm text-muted-foreground">{session.description}</div>
+                              <div className={`text-sm leading-relaxed ${isSessionDone ? 'text-muted-foreground' : 'text-muted-foreground'}`}>{session.description}</div>
                             </div>
                           </div>
                         </div>
