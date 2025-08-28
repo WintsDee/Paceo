@@ -258,21 +258,29 @@ const usePaceZones = (goalSpeed: number, distance: string, level: string, vma?: 
       };
     }
 
-    // Nouveau système basé VMA (2025) - spec exacte
-    const vmaPaces = calculateVMAPaces(vma);
+    // Nouveau système basé sur l'objectif de course (2025)
     const goalPace = paceFromSpeed(goalSpeed);
+    const goalPaceSeconds = parseFloat(goalPace.split(':')[0]) * 60 + parseFloat(goalPace.split(':')[1]);
+    
+    // Calcul des allures basées sur l'objectif de course, pas la VMA pure
+    // Les zones d'entraînement doivent être cohérentes avec l'objectif
+    const easyPaceSeconds = goalPaceSeconds + 60; // +1min/km par rapport à l'objectif
+    const steadyPaceSeconds = goalPaceSeconds + 30; // +30s/km par rapport à l'objectif  
+    const thrPaceSeconds = goalPaceSeconds - 5; // -5s/km par rapport à l'objectif
+    const intPaceSeconds = goalPaceSeconds - 15; // -15s/km par rapport à l'objectif
+    
+    const formatPaceFromSeconds = (seconds: number) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.round(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
 
-    // RP = Allure cible GP selon spec exacte
-    const rpPace = goalPace;
-
-    // Adapter les zones selon distance et l'objectif - spec exacte
-    const realismFactor = assessObjectiveRealism(goalSpeed, vma, distance);
     return {
-      EASY: `${Math.floor(vmaPaces.EASY)}:${Math.round(vmaPaces.EASY % 1 * 60).toString().padStart(2, '0')}`,
-      STEADY: `${Math.floor(vmaPaces.STEADY)}:${Math.round(vmaPaces.STEADY % 1 * 60).toString().padStart(2, '0')}`,
-      THR: `${Math.floor(vmaPaces.THR)}:${Math.round(vmaPaces.THR % 1 * 60).toString().padStart(2, '0')}`,
-      INT: `${Math.floor(vmaPaces.INT)}:${Math.round(vmaPaces.INT % 1 * 60).toString().padStart(2, '0')}`,
-      RP: rpPace // RP = Allure cible GP selon spécification exacte
+      EASY: formatPaceFromSeconds(easyPaceSeconds),
+      STEADY: formatPaceFromSeconds(steadyPaceSeconds), 
+      THR: formatPaceFromSeconds(thrPaceSeconds),
+      INT: formatPaceFromSeconds(intPaceSeconds),
+      RP: goalPace // Allure de l'objectif de course
     };
   }, [goalSpeed, distance, level, vma]);
 };
