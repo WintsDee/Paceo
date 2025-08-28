@@ -6,8 +6,12 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useProgramProgress } from "@/hooks/useProgramProgress";
+import { ProgramState } from "@/types/program";
 import { CalendarIcon, ChevronDown, Plus, Minus, Copy, Printer, Target } from "lucide-react";
 import { differenceInWeeks } from "date-fns";
 import { fr, enUS, es, de, ptBR, ja, zhCN } from "date-fns/locale";
@@ -315,6 +319,18 @@ export const ProgramScreen = React.memo(({
     }
     return weeksBeforeRace;
   }, [useRaceDate, raceDate, weeksBeforeRace]);
+
+  // Progress tracking
+  const programState: ProgramState = useMemo(() => ({
+    selectedDistanceId,
+    sessionsPerWeek,
+    effectiveWeeks,
+    speedValue,
+    isMetric,
+    vmaValue
+  }), [selectedDistanceId, sessionsPerWeek, effectiveWeeks, speedValue, isMetric, vmaValue]);
+
+  const { progress, toggleSession, toggleWeek, getWeekProgress, getOverallProgress } = useProgramProgress(programState);
 
   // Utilisation des hooks personnalisés
   const runnerLevel = useRunnerLevel(speedValue, selectedDistanceId);
@@ -674,7 +690,8 @@ export const ProgramScreen = React.memo(({
       program: {
         sessionsPerWeek,
         weeksBeforeRace: effectiveWeeks,
-        weeks: program
+        weeks: program,
+        progress
       }
     };
     onSaveGoal(currentGoal);
@@ -692,12 +709,34 @@ export const ProgramScreen = React.memo(({
         </div>
       </div>;
   }
+  // Calculate overall progress
+  const overallProgress = useMemo(() => 
+    getOverallProgress(effectiveWeeks, sessionsPerWeek), 
+    [getOverallProgress, effectiveWeeks, sessionsPerWeek]
+  );
+
   return <div className="space-y-6 pb-20 animate-fade-in-up">
       {/* Header */}
       <div className="relative text-center py-2">
         <h2 className="text-xl font-semibold">{t("Programme")}</h2>
         <p className="text-muted-foreground text-sm">{t("Plan d'entraînement automatique")}</p>
       </div>
+
+      {/* Progress Banner */}
+      <Card className="glass-card p-4">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium">{t("Progression")}</span>
+            <span className="text-sm text-muted-foreground">
+              {overallProgress.completedSessions}/{overallProgress.totalSessions} {t("séances")} {t("complétées")}
+            </span>
+          </div>
+          <Progress value={overallProgress.percentage} className="h-2" />
+          <div className="text-xs text-muted-foreground text-center">
+            {overallProgress.percentage}% {t("complétées")}
+          </div>
+        </div>
+      </Card>
 
       {/* Objectif de Course - moved before controls */}
       <Card className="glass-card p-4">
@@ -784,56 +823,83 @@ export const ProgramScreen = React.memo(({
 
       {/* Weekly Program */}
       <div className="space-y-3">
-        {program.map(week => <Collapsible key={week.week} open={expandedWeeks.has(week.week)} onOpenChange={() => toggleWeekExpansion(week.week)}>
-            <Card className="glass-card">
-              <CollapsibleTrigger className="w-full p-4 text-left">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="font-semibold">
-                      {t("Semaine")} {week.week}
+        {program.map((week, index) => {
+          const weekProgress = getWeekProgress(week.week);
+          return (
+            <Collapsible key={index} open={expandedWeeks.has(week.week)} onOpenChange={() => toggleWeekExpansion(week.week)}>
+              <Card className="glass-card">
+                <CollapsibleTrigger className="w-full p-4 text-left">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Checkbox
+                        checked={weekProgress.done}
+                        onCheckedChange={(checked) => {
+                          checked !== "indeterminate" && toggleWeek(week.week, week.sessions.length);
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="h-5 w-5"
+                        aria-label={t("Marquer la semaine comme terminée")}
+                      />
+                      <div className="font-semibold">
+                        {t("Semaine")} {week.week}
+                      </div>
+                      <Badge variant="outline" className="text-xs">
+                        {t(week.phase)}
+                      </Badge>
                     </div>
-                    <Badge variant="outline" className="text-xs">
-                      {t(week.phase)}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="text-sm text-muted-foreground">
-                      {week.sessions.length} {t("séances")}
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span>{week.volume}{isMetric ? 'km' : 'mi'}</span>
-                      <ChevronDown className="h-4 w-4 transition-transform duration-200" />
-                    </div>
-                  </div>
-                </div>
-              </CollapsibleTrigger>
-              
-              <CollapsibleContent className="space-y-3 pt-4">
-                {week.sessions.map((session, sessionIndex) => <div key={sessionIndex} className="glass-card p-3 rounded-lg">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Badge variant="secondary" className={`${SESSION_COLORS[session.type]} text-xs font-medium cursor-help transition-colors`}>
-                                  {t(session.type)}
-                                </Badge>
-                              </TooltipTrigger>
-                               <TooltipContent>
-                                 <p className="max-w-xs text-sm">
-                                   {SESSION_EXPLANATIONS[language as keyof typeof SESSION_EXPLANATIONS]?.[session.type] || SESSION_EXPLANATIONS.fr[session.type]}
-                                 </p>
-                               </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                          <span className="text-sm text-muted-foreground">{session.duration}</span>
-                          <span className="text-sm font-medium mono-numbers">{session.pace}</span>
-                        </div>
-                        <div className="text-sm text-muted-foreground">{session.description}</div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-sm text-muted-foreground">
+                        {weekProgress.sessions.filter(done => done).length}/{week.sessions.length} {t("séances")} {t("cochées")}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span>{week.volume}{isMetric ? 'km' : 'mi'}</span>
+                        <ChevronDown className="h-4 w-4 transition-transform duration-200" />
                       </div>
                     </div>
-                  </div>)}
+                  </div>
+                </CollapsibleTrigger>
+              
+                <CollapsibleContent className="space-y-3 pt-4">
+                  {week.sessions.map((session, sessionIndex) => {
+                    const isSessionDone = weekProgress.sessions[sessionIndex] || false;
+                    return (
+                      <div key={sessionIndex} className="glass-card p-3 rounded-lg">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-center gap-3 flex-1">
+                            <Checkbox
+                              checked={isSessionDone}
+                              onCheckedChange={(checked) => {
+                                checked !== "indeterminate" && toggleSession(week.week, sessionIndex);
+                              }}
+                              className="h-5 w-5 mt-1"
+                              aria-label={t("Séance effectuée")}
+                            />
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Badge variant="secondary" className={`${SESSION_COLORS[session.type]} text-xs font-medium cursor-help transition-colors`}>
+                                        {t(session.type)}
+                                      </Badge>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p className="max-w-xs text-sm">
+                                        {SESSION_EXPLANATIONS[language as keyof typeof SESSION_EXPLANATIONS]?.[session.type] || SESSION_EXPLANATIONS.fr[session.type]}
+                                      </p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                                <span className="text-sm text-muted-foreground">{session.duration}</span>
+                                <span className="text-sm font-medium mono-numbers">{session.pace}</span>
+                              </div>
+                              <div className="text-sm text-muted-foreground">{session.description}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 
                 <div className="flex gap-2 pt-2">
                   <Button variant="outline" size="sm" className="btn-glass" onClick={e => {
@@ -845,20 +911,22 @@ export const ProgramScreen = React.memo(({
                   </Button>
                 </div>
               </CollapsibleContent>
-            </Card>
-          </Collapsible>)}
+              </Card>
+            </Collapsible>
+          );
+        })}
       </div>
       
       {/* Save Program Button */}
       <Card className="glass-card p-4 mt-6">
         <Button onClick={saveProgramToFavorites} className="w-full btn-primary-glass h-12 text-base font-medium">
-          Enregistrer le programme
+          {t("Enregistrer le programme")}
         </Button>
         
         <div className="flex gap-3 mt-4">
           <Button variant="outline" onClick={printProgram} className="w-full btn-glass h-10">
             <Printer className="h-4 w-4 mr-2" />
-            Imprimer
+            {t("Imprimer")}
           </Button>
         </div>
       </Card>

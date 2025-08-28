@@ -48,8 +48,11 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
   };
 
   const stepSpeed = (delta: number) => {
-    const next = clamp(parseFloat((speedValue + delta).toFixed(2)), speedMin, speedMax);
-    onSpeedChange(next);
+    // Step by 1 second equivalent in speed units
+    const currentPaceSeconds = paceSecondsFromSpeed(speedValue);
+    const targetPaceSeconds = clamp(currentPaceSeconds + (delta > 0 ? 1 : -1), paceSecMin, paceSecMax);
+    const newSpeed = 3600 / targetPaceSeconds;
+    onSpeedChange(parseFloat(newSpeed.toFixed(2)));
   };
 
   return (
@@ -96,13 +99,13 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
             {t("Vitesse")} ({isMetric ? t('km/h') : t('mph')})
           </Label>
           <div className="glass-card rounded-lg p-4 flex items-center justify-between">
-            <Button onClick={() => stepSpeed(-0.1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0">
+            <Button onClick={() => stepSpeed(-1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0">
               <Minus className="h-4 w-4" />
             </Button>
             <div className="text-3xl font-semibold mono-numbers select-none">
               {speedValue.toFixed(2)}
             </div>
-            <Button onClick={() => stepSpeed(+0.1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0">
+            <Button onClick={() => stepSpeed(+1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0">
               <Plus className="h-4 w-4" />
             </Button>
           </div>

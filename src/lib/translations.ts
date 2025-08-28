@@ -170,7 +170,17 @@ export const translations = {
     "Copier le programme": "Copier le programme",
     "Imprimer le programme": "Imprimer le programme",
     "Charger cet objectif": "Charger cet objectif",
-    "Supprimer ce favori": "Supprimer ce favori"
+    "Supprimer ce favori": "Supprimer ce favori",
+    
+    // Progress tracking
+    "Progression": "Progression",
+    "Séance effectuée": "Séance effectuée",
+    "Semaine effectuée": "Semaine effectuée",
+    "Tout cocher": "Tout cocher",
+    "cochées": "cochées",
+    "complétées": "complétées",
+    "Marquer la semaine comme terminée": "Marquer la semaine comme terminée",
+    "Marquer toutes les séances": "Marquer toutes les séances"
   },
   en: {
     // Navigation
@@ -340,11 +350,21 @@ export const translations = {
      // Additional keys
      "sur": "over",
      "attendu": "expected",
-     "Voir le programme détaillé": "View detailed program",
-     "Copier le programme": "Copy program",
-     "Imprimer le programme": "Print program",
-     "Charger cet objectif": "Load this goal",
-     "Supprimer ce favori": "Delete this favorite"
+      "Voir le programme détaillé": "View detailed program",
+      "Copier le programme": "Copy program",
+      "Imprimer le programme": "Print program",
+      "Charger cet objectif": "Load this goal",
+      "Supprimer ce favori": "Delete this favorite",
+      
+      // Progress tracking
+      "Progression": "Progress",
+      "Séance effectuée": "Session completed",
+      "Semaine effectuée": "Week completed",
+      "Tout cocher": "Check all",
+      "cochées": "checked",
+      "complétées": "completed",
+      "Marquer la semaine comme terminée": "Mark week as completed",
+      "Marquer toutes les séances": "Mark all sessions"
    },
   es: {
     // Navigation
@@ -518,7 +538,17 @@ export const translations = {
       "Copier le programme": "Copiar programa",
       "Imprimer le programme": "Imprimir programa",
       "Charger cet objectif": "Cargar este objetivo",
-      "Supprimer ce favori": "Eliminar este favorito"
+      "Supprimer ce favori": "Eliminar este favorito",
+      
+      // Progress tracking
+      "Progression": "Progreso",
+      "Séance effectuée": "Sesión completada",
+      "Semaine effectuée": "Semana completada",
+      "Tout cocher": "Marcar todo",
+      "cochées": "marcadas",
+      "complétées": "completadas",
+      "Marquer la semaine comme terminée": "Marcar semana como terminada",
+      "Marquer toutes les séances": "Marcar todas las sesiones"
    },
   de: {
     // Navigation
@@ -692,7 +722,17 @@ export const translations = {
       "Copier le programme": "Programm kopieren",
       "Imprimer le programme": "Programm drucken",
       "Charger cet objectif": "Dieses Ziel laden",
-      "Supprimer ce favori": "Diesen Favoriten löschen"
+      "Supprimer ce favori": "Diesen Favoriten löschen",
+      
+      // Progress tracking
+      "Progression": "Fortschritt",
+      "Séance effectuée": "Einheit abgeschlossen",
+      "Semaine effectuée": "Woche abgeschlossen",
+      "Tout cocher": "Alle markieren",
+      "cochées": "markiert",
+      "complétées": "abgeschlossen",
+      "Marquer la semaine comme terminée": "Woche als abgeschlossen markieren",
+      "Marquer toutes les séances": "Alle Einheiten markieren"
    },
   
   // Portuguese
@@ -865,7 +905,17 @@ export const translations = {
     "Copier le programme": "Copiar programa",
     "Imprimer le programme": "Imprimir programa", 
     "Charger cet objectif": "Carregar este objetivo",
-    "Supprimer ce favori": "Excluir este favorito"
+    "Supprimer ce favori": "Excluir este favorito",
+    
+    // Progress tracking
+    "Progression": "Progresso",
+    "Séance effectuée": "Sessão concluída",
+    "Semaine effectuée": "Semana concluída",
+    "Tout cocher": "Marcar tudo",
+    "cochées": "marcadas",
+    "complétées": "concluídas",
+    "Marquer la semaine comme terminée": "Marcar semana como concluída",
+    "Marquer toutes les séances": "Marcar todas as sessões"
   },
   
   // Chinese (Simplified)
@@ -1040,7 +1090,17 @@ export const translations = {
     "Copier le programme": "复制计划",
     "Imprimer le programme": "打印计划",
     "Charger cet objectif": "载入此目标",
-    "Supprimer ce favori": "删除此收藏"
+    "Supprimer ce favori": "删除此收藏",
+    
+    // Progress tracking
+    "Progression": "进度",
+    "Séance effectuée": "训练完成",
+    "Semaine effectuée": "周完成",
+    "Tout cocher": "全选",
+    "cochées": "已选",
+    "complétées": "已完成",
+    "Marquer la semaine comme terminée": "标记周为完成",
+    "Marquer toutes les séances": "标记所有训练"
   },
   
   // Japanese
@@ -1215,7 +1275,17 @@ export const translations = {
     "Copier le programme": "プログラムコピー", 
     "Imprimer le programme": "プログラム印刷",
     "Charger cet objectif": "この目標を読み込み",
-    "Supprimer ce favori": "このお気に入りを削除"
+    "Supprimer ce favori": "このお気に入りを削除",
+    
+    // Progress tracking
+    "Progression": "進捗",
+    "Séance effectuée": "セッション完了",
+    "Semaine effectuée": "週完了",
+    "Tout cocher": "全てチェック",
+    "cochées": "チェック済み",
+    "complétées": "完了済み",
+    "Marquer la semaine comme terminée": "週を完了とマーク",
+    "Marquer toutes les séances": "全セッションをマーク"
   }
 } as const;
 

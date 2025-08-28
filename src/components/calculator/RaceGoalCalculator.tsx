@@ -40,6 +40,7 @@ export interface RaceGoal {
     sessionsPerWeek: number;
     weeksBeforeRace: number;
     weeks: any[];
+    progress?: import("@/types/program").ProgramProgress;
   };
 }
 const raceDistances = [{
@@ -204,7 +205,7 @@ export const RaceGoalCalculator = ({
               className="h-14 w-12 glass-card border-0 text-xl font-bold"
               onClick={() => {
                 const currentH = timeStringToHours(targetTime);
-                const newH = Math.max(0.1, currentH - 1/60); // -1 minute
+                const newH = Math.max(0.1, currentH - 1/3600); // -1 second
                 const newTime = hoursToHHMMSS(newH);
                 handleTimeChange(newTime);
               }}
@@ -223,7 +224,7 @@ export const RaceGoalCalculator = ({
               className="h-14 w-12 glass-card border-0 text-xl font-bold"
               onClick={() => {
                 const currentH = timeStringToHours(targetTime);
-                const newH = currentH + 1/60; // +1 minute
+                const newH = currentH + 1/3600; // +1 second
                 const newTime = hoursToHHMMSS(newH);
                 handleTimeChange(newTime);
               }}
