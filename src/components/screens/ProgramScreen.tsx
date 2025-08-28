@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -722,21 +723,71 @@ export const ProgramScreen = React.memo(({
         <p className="text-muted-foreground text-sm">{t("Plan d'entraînement automatique")}</p>
       </div>
 
-      {/* Progress Banner */}
+      {/* Settings */}
       <Card className="glass-card p-4">
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">{t("Progression")}</span>
-            <span className="text-sm text-muted-foreground">
-              {overallProgress.completedSessions}/{overallProgress.totalSessions} {t("séances")} {t("complétées")}
-            </span>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-muted-foreground">{t("Sessions/sem.")}</Label>
+            <div className="flex items-center gap-1">
+              <Button size="sm" variant="outline" className="h-8 w-8 p-0 glass-card border-0" onClick={() => setSessionsPerWeek(Math.max(2, sessionsPerWeek - 1))}>
+                <Minus className="h-3 w-3" />
+              </Button>
+              <div className="flex-1 text-center font-medium">{sessionsPerWeek}</div>
+              <Button size="sm" variant="outline" className="h-8 w-8 p-0 glass-card border-0" onClick={() => setSessionsPerWeek(Math.min(6, sessionsPerWeek + 1))}>
+                <Plus className="h-3 w-3" />
+              </Button>
+            </div>
           </div>
-          <Progress value={overallProgress.percentage} className="h-2" />
-          <div className="text-xs text-muted-foreground text-center">
-            {overallProgress.percentage}% {t("complétées")}
+          
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-muted-foreground">
+              {useRaceDate ? t("Date") : `${t("Avant objectif")} (${t("semaines")})`}
+            </Label>
+            {useRaceDate ? <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="glass-card border-0 w-full justify-start text-left font-normal">
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {raceDate ? raceDate.toLocaleDateString(language === 'fr' ? 'fr-FR' : language === 'en' ? 'en-US' : language === 'es' ? 'es-ES' : language === 'de' ? 'de-DE' : language === 'pt' ? 'pt-BR' : language === 'ja' ? 'ja-JP' : 'zh-CN') : <span>{t("Date")}</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={raceDate} onSelect={setRaceDate} locale={dateLocale} initialFocus />
+                </PopoverContent>
+              </Popover> : <div className="flex items-center gap-1">
+                <Button size="sm" variant="outline" className="h-8 w-8 p-0 glass-card border-0" onClick={() => setWeeksBeforeRace(Math.max(2, weeksBeforeRace - 1))}>
+                  <Minus className="h-3 w-3" />
+                </Button>
+                <div className="flex-1 text-center font-medium">{weeksBeforeRace}</div>
+                <Button size="sm" variant="outline" className="h-8 w-8 p-0 glass-card border-0" onClick={() => setWeeksBeforeRace(Math.min(16, weeksBeforeRace + 1))}>
+                  <Plus className="h-3 w-3" />
+                </Button>
+              </div>}
           </div>
         </div>
       </Card>
+
+      {/* Progress Banner - Collapsible */}
+      <div className="mb-6">
+        <Collapsible defaultOpen={false}>
+          <div className="glass-card p-4 rounded-lg">
+            <CollapsibleTrigger className="flex w-full items-center gap-2 py-1.5 text-sm font-medium text-muted-foreground transition-all [&[data-state=open]>svg]:rotate-180">
+              <span>{t("Progression")}</span>
+              <span className="ml-auto text-sm font-medium mono-numbers">
+                {overallProgress.completedSessions}/{overallProgress.totalSessions} {t("séances")} {t("complétées")}
+              </span>
+              <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-300 ease-out" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="overflow-hidden data-[state=open]:animate-in data-[state=open]:slide-down-1 data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:slide-up-1 data-[state=closed]:fade-out-0 duration-300 ease-out">
+              <div className="space-y-3 pt-4 pb-2">
+                <Progress value={overallProgress.percentage} className="h-2" />
+                <div className="text-xs text-muted-foreground text-center">
+                  {overallProgress.percentage}% {t("complétées")}
+                </div>
+              </div>
+            </CollapsibleContent>
+          </div>
+        </Collapsible>
+      </div>
 
       {/* Objectif de Course - moved before controls */}
       <Card className="glass-card p-4">
@@ -772,52 +823,6 @@ export const ProgramScreen = React.memo(({
               </div>
             </div>
           )}
-        </div>
-      </Card>
-
-      {/* Réglages - simplified controls */}
-      <Card className="glass-card p-4">
-        <div className="grid grid-cols-2 gap-3">
-          {/* Sessions per week */}
-          <div className="text-center">
-            <div className="text-sm font-medium text-foreground mb-2">{t("Sessions/sem.")}</div>
-            <div className="flex items-center justify-center gap-2">
-              <Button variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0" onClick={() => adjustSessions(-1)} disabled={sessionsPerWeek <= 2}>
-                <Minus className="h-4 w-4" />
-              </Button>
-              <span className="font-mono text-lg font-bold text-primary min-w-[2ch] text-center">
-                {sessionsPerWeek}
-              </span>
-              <Button variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0" onClick={() => adjustSessions(1)} disabled={sessionsPerWeek >= 6}>
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Weeks before race */}
-          <div className="text-center">
-            <div className="text-sm font-medium text-foreground mb-2">{t("Durée programme")}</div>
-            <div className="flex items-center justify-center gap-2">
-              {!useRaceDate ? (
-                <>
-                  <Button variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0" onClick={() => adjustWeeks(-1)} disabled={weeksBeforeRace <= 2}>
-                    <Minus className="h-4 w-4" />
-                  </Button>
-                  <span className="font-mono text-lg font-bold text-primary min-w-[2ch] text-center">
-                    {effectiveWeeks}
-                  </span>
-                  <Button variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0" onClick={() => adjustWeeks(1)} disabled={weeksBeforeRace >= 16}>
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </>
-              ) : (
-                <span className="font-mono text-lg font-bold text-primary">
-                  {effectiveWeeks}
-                </span>
-              )}
-            </div>
-            <div className="text-xs text-muted-foreground mt-1">{t("semaines")}</div>
-          </div>
         </div>
       </Card>
 

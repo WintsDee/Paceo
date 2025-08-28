@@ -49,8 +49,9 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
 
   const stepSpeed = (delta: number) => {
     // Step by 1 second equivalent in speed units
+    // + means faster speed (less seconds in pace), - means slower speed (more seconds in pace)
     const currentPaceSeconds = paceSecondsFromSpeed(speedValue);
-    const targetPaceSeconds = clamp(currentPaceSeconds + (delta > 0 ? 1 : -1), paceSecMin, paceSecMax);
+    const targetPaceSeconds = clamp(currentPaceSeconds - delta, paceSecMin, paceSecMax); // Inverse delta for speed
     const newSpeed = 3600 / targetPaceSeconds;
     onSpeedChange(parseFloat(newSpeed.toFixed(2)));
   };
