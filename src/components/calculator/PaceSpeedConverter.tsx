@@ -44,7 +44,7 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
   const stepPace = (deltaSec: number) => {
     const newPaceSec = clamp(paceSeconds + deltaSec, paceSecMin, paceSecMax);
     const newSpeed = 3600 / newPaceSec; // 60 minutes/hour * 60 sec/min / sec per unit
-    onSpeedChange(parseFloat(newSpeed.toFixed(2)));
+    onSpeedChange(newSpeed); // Remove toFixed to avoid rounding
   };
 
   const stepSpeed = (delta: number) => {
@@ -53,7 +53,7 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
     const currentPaceSeconds = paceSecondsFromSpeed(speedValue);
     const targetPaceSeconds = clamp(currentPaceSeconds - delta, paceSecMin, paceSecMax); // Inverse delta for speed
     const newSpeed = 3600 / targetPaceSeconds;
-    onSpeedChange(parseFloat(newSpeed.toFixed(2)));
+    onSpeedChange(newSpeed); // Remove toFixed to avoid rounding
   };
 
   return (
@@ -126,7 +126,7 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
             onValueChange={(v) => {
               const sec = clamp(v[0] ?? paceSeconds, paceSecMin, paceSecMax);
               const newSpeed = 3600 / sec;
-              onSpeedChange(parseFloat(newSpeed.toFixed(2)));
+              onSpeedChange(newSpeed); // Remove toFixed to avoid rounding
             }}
             className="cursor-pointer"
           />

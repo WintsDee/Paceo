@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Progress } from "@/components/ui/progress";
+
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useProgramProgress } from "@/hooks/useProgramProgress";
@@ -723,7 +723,44 @@ export const ProgramScreen = React.memo(({
         <p className="text-muted-foreground text-sm">{t("Plan d'entraînement automatique")}</p>
       </div>
 
-      {/* Settings */}
+      {/* 1. Objectif de Course - First */}
+      <Card className="glass-card p-4">
+        <div className="text-center space-y-3">
+          <h3 className="text-lg font-semibold text-foreground">Objectif de Course</h3>
+          
+          <div className="grid grid-cols-3 gap-2 text-sm">
+            <div className="text-center">
+              <div className="text-base font-bold text-foreground">{race.label}</div>
+              <div className="text-xs text-muted-foreground">Distance</div>
+            </div>
+            
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary mono-numbers">{goalTime}</div>
+              <div className="text-xs text-muted-foreground">Temps</div>
+            </div>
+            
+            <div className="text-center">
+              <div className="text-base font-bold text-foreground mono-numbers">{formatPace(goalPace, isMetric)}</div>
+              <div className="text-xs text-muted-foreground">Allure</div>
+            </div>
+          </div>
+          
+          {vmaValue && (
+            <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-border/50">
+              <div className="text-center">
+                <div className="text-sm font-medium text-muted-foreground mono-numbers">{vmaValue.toFixed(1)} km/h</div>
+                <div className="text-xs text-muted-foreground/70">VMA</div>
+              </div>
+              <div className="text-center">
+                <div className="text-sm font-medium text-muted-foreground mono-numbers">{speedValue.toFixed(1)} {isMetric ? 'km/h' : 'mph'}</div>
+                <div className="text-xs text-muted-foreground/70">Vitesse</div>
+              </div>
+            </div>
+          )}
+        </div>
+      </Card>
+
+      {/* 2. Paramétrage du Programme - Second */}
       <Card className="glass-card p-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
@@ -766,65 +803,21 @@ export const ProgramScreen = React.memo(({
         </div>
       </Card>
 
-      {/* Progress Banner - Collapsible */}
-      <div className="mb-6">
-        <Collapsible defaultOpen={false}>
-          <div className="glass-card p-4 rounded-lg">
-            <CollapsibleTrigger className="flex w-full items-center gap-2 py-1.5 text-sm font-medium text-muted-foreground transition-all [&[data-state=open]>svg]:rotate-180">
-              <span>{t("Progression")}</span>
-              <span className="ml-auto text-sm font-medium mono-numbers">
-                {overallProgress.completedSessions}/{overallProgress.totalSessions} {t("séances")} {t("complétées")}
-              </span>
-              <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-300 ease-out" />
-            </CollapsibleTrigger>
-            <CollapsibleContent className="overflow-hidden data-[state=open]:animate-in data-[state=open]:slide-down-1 data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:slide-up-1 data-[state=closed]:fade-out-0 duration-300 ease-out">
-              <div className="space-y-3 pt-4 pb-2">
-                <Progress value={overallProgress.percentage} className="h-2" />
-                <div className="text-xs text-muted-foreground text-center">
-                  {overallProgress.percentage}% {t("complétées")}
-                </div>
-              </div>
-            </CollapsibleContent>
-          </div>
-        </Collapsible>
-      </div>
-
-      {/* Objectif de Course - moved before controls */}
-      <Card className="glass-card p-4">
-        <div className="text-center space-y-3">
-          <h3 className="text-lg font-semibold text-foreground">Objectif de Course</h3>
-          
-          <div className="grid grid-cols-3 gap-2 text-sm">
-            <div className="text-center">
-              <div className="text-base font-bold text-foreground">{race.label}</div>
-              <div className="text-xs text-muted-foreground">Distance</div>
-            </div>
-            
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary mono-numbers">{goalTime}</div>
-              <div className="text-xs text-muted-foreground">Temps</div>
-            </div>
-            
-            <div className="text-center">
-              <div className="text-base font-bold text-foreground mono-numbers">{formatPace(goalPace, isMetric)}</div>
-              <div className="text-xs text-muted-foreground">Allure</div>
-            </div>
-          </div>
-          
-          {vmaValue && (
-            <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-border/50">
-              <div className="text-center">
-                <div className="text-sm font-medium text-muted-foreground mono-numbers">{vmaValue.toFixed(1)} km/h</div>
-                <div className="text-xs text-muted-foreground/70">VMA</div>
-              </div>
-              <div className="text-center">
-                <div className="text-sm font-medium text-muted-foreground mono-numbers">{speedValue.toFixed(1)} {isMetric ? 'km/h' : 'mph'}</div>
-                <div className="text-xs text-muted-foreground/70">Vitesse</div>
-              </div>
-            </div>
-          )}
+      {/* 3. Barre de Progression Minimaliste - Third */}
+      <div className="glass-card p-3 rounded-lg">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium text-muted-foreground">{t("Progression")}</span>
+          <span className="text-sm font-medium mono-numbers text-muted-foreground">
+            {overallProgress.completedSessions}/{overallProgress.totalSessions} • {overallProgress.percentage}%
+          </span>
         </div>
-      </Card>
+        <div className="w-full bg-muted rounded-full h-1.5">
+          <div 
+            className="bg-primary h-1.5 rounded-full transition-all duration-300" 
+            style={{ width: `${overallProgress.percentage}%` }}
+          />
+        </div>
+      </div>
 
       {/* Weekly Program */}
       <div className="space-y-3">
@@ -854,7 +847,7 @@ export const ProgramScreen = React.memo(({
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="text-sm text-muted-foreground">
-                        {weekProgress.sessions.filter(done => done).length}/{week.sessions.length} {t("séances")} {t("cochées")}
+                        {weekProgress.sessions.filter(done => done).length}/{week.sessions.length} {t("séances")} {t("cochées")} • {Math.round((weekProgress.sessions.filter(done => done).length / week.sessions.length) * 100)}%
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <span>{week.volume}{isMetric ? 'km' : 'mi'}</span>
