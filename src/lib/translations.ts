@@ -69,6 +69,7 @@ export const translations = {
     "Plan d'entraînement automatique": "Plan d'entraînement automatique",
     "Sessions/sem.": "Sessions/sem.",
     "Avant objectif": "Avant objectif",
+    "sem.": "sem.",
     "Date": "Date",
     "Objectif :": "Objectif :",
     "Allure cible": "Allure cible",

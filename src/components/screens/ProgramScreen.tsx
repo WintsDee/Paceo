@@ -179,9 +179,10 @@ const assessObjectiveRealism = (goalSpeed: number, vma: number, distance: string
   const goalPercent = goalSpeed / vma * 100;
 
   // Exigence réaliste selon objectif - spec exacte
-  // Si allure cible > 80 % VMA → volume/intensité réduits pour éviter la blessure
+  // Plus l'objectif est ambitieux (% VMA élevé), plus on réduit le volume pour éviter la blessure
+  // Si allure cible > 80 % VMA → objectif très ambitieux, volume réduit
   if (goalPercent > 80) return 0.6; // max 1 séance intense/semaine
-  // Si allure cible < 75 % VMA → intensité progressive et volume complet
+  // Si allure cible < 75 % VMA → objectif réaliste, volume complet
   if (goalPercent < 75) return 1.0;
   return 0.85; // Entre 75-80% VMA
 };
@@ -778,7 +779,7 @@ export const ProgramScreen = React.memo(({
           
           <div className="space-y-2">
             <Label className="text-sm font-medium text-muted-foreground">
-              {useRaceDate ? t("Date") : `${t("Avant objectif")} (${t("semaines")})`}
+              {useRaceDate ? t("Date") : `${t("Avant objectif")} (${t("sem.")})`}
             </Label>
             {useRaceDate ? <Popover>
                 <PopoverTrigger asChild>
