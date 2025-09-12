@@ -615,7 +615,7 @@ export const ProgramScreen = React.memo(({
     setWeeksBeforeRace(newValue);
   }, [weeksBeforeRace, setWeeksBeforeRace]);
   const copyWeekToClipboard = useCallback(async (week: WeekProgram) => {
-    const weekText = `${t("Semaine")} ${week.week} - ${t(week.phase)}\n${t("Volume")}: ${week.volume}${isMetric ? 'km' : 'mi'}\n\n${week.sessions.map((session, index) => `${index + 1}. ${t(session.type)} - ${session.duration}\n${session.description}`).join('\n\n')}`;
+    const weekText = `${t("Semaine")} ${week.week} - ${t(week.phase)}\n\n${week.sessions.map((session, index) => `${index + 1}. ${t(session.type)} - ${session.duration}\n${session.description}`).join('\n\n')}`;
     try {
       await navigator.clipboard.writeText(weekText);
       notifications.programCopied();
@@ -657,7 +657,7 @@ export const ProgramScreen = React.memo(({
           </div>
           ${program.map(week => `
             <div class="week">
-              <h2>${t("Semaine")} ${week.week} - ${t(week.phase)} (${week.volume}${isMetric ? 'km' : 'mi'})</h2>
+              <h2>${t("Semaine")} ${week.week} - ${t(week.phase)}</h2>
               ${week.sessions.map((session, index) => `
                 <div class="session">
                   <strong>${index + 1}. ${t(session.type)}</strong> - ${session.duration}<br>

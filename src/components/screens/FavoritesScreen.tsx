@@ -38,7 +38,7 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
         `${t("VMA")} : ${goal.vmaKmh?.toFixed(1)} km/h\n\n` +
         `${t("Programme")} : ${goal.program.sessionsPerWeek} ${t("Sessions/sem.")} ${t("sur")} ${goal.program.weeksBeforeRace} ${t("semaines")}\n\n` +
         goal.program.weeks.map(week => 
-          `${t("Semaine")} ${week.week} (${week.phase}) - ${week.volume}km\n` +
+          `${t("Semaine")} ${week.week} (${week.phase})\n` +
           week.sessions.map(session => `  • ${session.type}: ${session.description}`).join('\n')
         ).join('\n\n');
       
@@ -90,7 +90,7 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
           ${goal.program.weeks.map(week => `
             <div class="week">
               <div class="week-header">
-                ${t("Semaine")} ${week.week} - ${week.phase} (${week.volume}km)
+                ${t("Semaine")} ${week.week} - ${week.phase}
               </div>
               ${week.sessions.map(session => `
                 <div class="session">
