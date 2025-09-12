@@ -200,9 +200,9 @@ export const RaceGoalCalculator = ({
           </Label>
           <div className="flex items-center gap-2">
             <Button
-              variant="outline"
+              variant="ghost"
               size="icon"
-              className="h-14 w-12 glass-card border-0 text-xl font-bold"
+              className="h-14 w-12 bg-muted/50 hover:bg-muted rounded-full text-xl font-bold"
               onClick={() => {
                 const currentH = timeStringToHours(targetTime);
                 const newH = Math.max(0.1, currentH - 1/3600); // -1 second
@@ -219,9 +219,9 @@ export const RaceGoalCalculator = ({
               className="glass-card border-0 text-lg mono-numbers text-center h-14 text-foreground focus:glow-effect transition-smooth flex-1" 
             />
             <Button
-              variant="outline"
+              variant="ghost"
               size="icon"
-              className="h-14 w-12 glass-card border-0 text-xl font-bold"
+              className="h-14 w-12 bg-muted/50 hover:bg-muted rounded-full text-xl font-bold"
               onClick={() => {
                 const currentH = timeStringToHours(targetTime);
                 const newH = currentH + 1/3600; // +1 second

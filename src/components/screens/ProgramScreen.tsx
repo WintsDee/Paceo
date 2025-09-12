@@ -775,11 +775,11 @@ export const ProgramScreen = React.memo(({
           <div className="space-y-2">
             <Label className="text-sm font-medium text-muted-foreground">{t("Sessions/sem.")}</Label>
             <div className="flex items-center gap-1">
-              <Button size="sm" variant="outline" className="h-8 w-8 p-0 glass-card border-0" onClick={() => setSessionsPerWeek(Math.max(2, sessionsPerWeek - 1))}>
+              <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-muted/50 hover:bg-muted rounded-full" onClick={() => setSessionsPerWeek(Math.max(2, sessionsPerWeek - 1))}>
                 <Minus className="h-3 w-3" />
               </Button>
               <div className="flex-1 text-center font-medium">{sessionsPerWeek}</div>
-              <Button size="sm" variant="outline" className="h-8 w-8 p-0 glass-card border-0" onClick={() => setSessionsPerWeek(Math.min(6, sessionsPerWeek + 1))}>
+              <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-muted/50 hover:bg-muted rounded-full" onClick={() => setSessionsPerWeek(Math.min(6, sessionsPerWeek + 1))}>
                 <Plus className="h-3 w-3" />
               </Button>
             </div>
@@ -800,11 +800,11 @@ export const ProgramScreen = React.memo(({
                   <Calendar mode="single" selected={raceDate} onSelect={setRaceDate} locale={dateLocale} initialFocus />
                 </PopoverContent>
               </Popover> : <div className="flex items-center gap-1">
-                <Button size="sm" variant="outline" className="h-8 w-8 p-0 glass-card border-0" onClick={() => setWeeksBeforeRace(Math.max(2, weeksBeforeRace - 1))}>
+                <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-muted/50 hover:bg-muted rounded-full" onClick={() => setWeeksBeforeRace(Math.max(2, weeksBeforeRace - 1))}>
                   <Minus className="h-3 w-3" />
                 </Button>
                 <div className="flex-1 text-center font-medium">{weeksBeforeRace}</div>
-                <Button size="sm" variant="outline" className="h-8 w-8 p-0 glass-card border-0" onClick={() => setWeeksBeforeRace(Math.min(16, weeksBeforeRace + 1))}>
+                <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-muted/50 hover:bg-muted rounded-full" onClick={() => setWeeksBeforeRace(Math.min(16, weeksBeforeRace + 1))}>
                   <Plus className="h-3 w-3" />
                 </Button>
               </div>}
