@@ -135,7 +135,6 @@ export const FavoritesScreen = ({ favorites, onDeleteFavorite, onUseFavorite }: 
                 <span className="font-medium">Semaine {week.week}</span>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-xs">{week.phase}</Badge>
-                  <span className="text-sm text-muted-foreground">{week.volume}km</span>
                 </div>
               </div>
               <div className="space-y-1">

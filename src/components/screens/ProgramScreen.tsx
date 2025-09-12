@@ -859,7 +859,6 @@ export const ProgramScreen = React.memo(({
                         {weekProgress.sessions.filter(done => done).length}/{week.sessions.length}
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span>{week.volume}{isMetric ? 'km' : 'mi'}</span>
                         <ChevronDown className="h-4 w-4 transition-transform duration-200" />
                       </div>
                     </div>
