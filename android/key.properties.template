@@ -1,0 +1,7 @@
+# Configuration du keystore de production
+# Copiez ce fichier vers key.properties et remplissez vos informations
+
+storePassword=votre_mot_de_passe_keystore
+keyPassword=votre_mot_de_passe_key
+keyAlias=paceo-key
+storeFile=../paceo-release-key.jks

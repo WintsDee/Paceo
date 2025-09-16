@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Minus, Plus } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useHapticContext } from "@/contexts/HapticContext";
 
 export interface PaceSpeedConverterProps {
   isMetric: boolean;
@@ -33,6 +34,7 @@ function paceSecondsFromSpeed(speed: number) {
 
 export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpeedChange }: PaceSpeedConverterProps) => {
   const { t } = useLanguage();
+  const { hapticFeedback } = useHapticContext();
   const paceString = useMemo(() => formatPaceFromSpeed(speedValue), [speedValue]);
   const paceSeconds = useMemo(() => paceSecondsFromSpeed(speedValue), [speedValue]);
 
@@ -45,6 +47,7 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
     const newPaceSec = clamp(paceSeconds + deltaSec, paceSecMin, paceSecMax);
     const newSpeed = 3600 / newPaceSec; // 60 minutes/hour * 60 sec/min / sec per unit
     onSpeedChange(newSpeed); // Remove toFixed to avoid rounding
+    hapticFeedback.paceChanged();
   };
 
   const stepSpeed = (delta: number) => {
@@ -54,6 +57,7 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
     const targetPaceSeconds = clamp(currentPaceSeconds - delta, paceSecMin, paceSecMax); // Inverse delta for speed
     const newSpeed = 3600 / targetPaceSeconds;
     onSpeedChange(newSpeed); // Remove toFixed to avoid rounding
+    hapticFeedback.paceChanged();
   };
 
   return (
@@ -66,7 +70,10 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
           </span>
           <Switch
             checked={!isMetric}
-            onCheckedChange={onToggleUnits}
+            onCheckedChange={(checked) => {
+              onToggleUnits();
+              hapticFeedback.toggle();
+            }}
             className="data-[state=checked]:bg-primary"
           />
           <span className={`text-sm ${!isMetric ? 'text-foreground' : 'text-muted-foreground'}`}>
@@ -82,13 +89,21 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
             {t("Allure")} ({isMetric ? t('min/km') : t('min/mi')})
           </Label>
           <div className="glass-card rounded-lg p-4 flex items-center justify-between">
-            <Button onClick={() => stepPace(-1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0">
+            <Button 
+              onClick={() => stepPace(-1)} 
+              variant="ghost" 
+              className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0"
+            >
               <Minus className="h-4 w-4" />
             </Button>
             <div className="text-3xl font-semibold mono-numbers select-none">
               {paceString}
             </div>
-            <Button onClick={() => stepPace(+1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0">
+            <Button 
+              onClick={() => stepPace(+1)} 
+              variant="ghost" 
+              className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0"
+            >
               <Plus className="h-4 w-4" />
             </Button>
           </div>
@@ -100,13 +115,21 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
             {t("Vitesse")} ({isMetric ? t('km/h') : t('mph')})
           </Label>
           <div className="glass-card rounded-lg p-4 flex items-center justify-between">
-            <Button onClick={() => stepSpeed(-1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0">
+            <Button 
+              onClick={() => stepSpeed(-1)} 
+              variant="ghost" 
+              className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0"
+            >
               <Minus className="h-4 w-4" />
             </Button>
             <div className="text-3xl font-semibold mono-numbers select-none">
               {speedValue.toFixed(2)}
             </div>
-            <Button onClick={() => stepSpeed(+1)} variant="ghost" className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0">
+            <Button 
+              onClick={() => stepSpeed(+1)} 
+              variant="ghost" 
+              className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0"
+            >
               <Plus className="h-4 w-4" />
             </Button>
           </div>
@@ -127,6 +150,7 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
               const sec = clamp(v[0] ?? paceSeconds, paceSecMin, paceSecMax);
               const newSpeed = 3600 / sec;
               onSpeedChange(newSpeed); // Remove toFixed to avoid rounding
+              hapticFeedback.paceChanged();
             }}
             className="cursor-pointer"
           />
@@ -139,7 +163,10 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
             max={speedMax}
             step={0.01}
             value={[clamp(speedValue, speedMin, speedMax)]}
-            onValueChange={(v) => onSpeedChange(clamp(v[0] ?? speedValue, speedMin, speedMax))}
+            onValueChange={(v) => {
+              onSpeedChange(clamp(v[0] ?? speedValue, speedMin, speedMax));
+              hapticFeedback.paceChanged();
+            }}
             className="cursor-pointer"
           />
         </div>

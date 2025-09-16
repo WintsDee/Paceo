@@ -1,0 +1,60 @@
+/* Styles spécifiques aux plateformes mobiles */
+
+.mobile-platform {
+  /* Empêcher le scroll élastique sur iOS */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
+}
+
+.mobile-platform body {
+  /* Empêcher le zoom sur les inputs */
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.mobile-platform input,
+.mobile-platform textarea,
+.mobile-platform select {
+  /* Permettre la sélection de texte dans les inputs */
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Améliorer l'expérience tactile */
+.mobile-platform button,
+.mobile-platform [role="button"] {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+}
+
+/* Masquer la barre d'adresse sur mobile */
+.mobile-platform .app-container {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+/* Améliorer les performances de scroll */
+.mobile-platform * {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* Styles pour les écrans tactiles */
+@media (hover: none) and (pointer: coarse) {
+  .mobile-platform .hover\:bg-accent:hover {
+    background-color: transparent;
+  }
+  
+  .mobile-platform .hover\:text-accent-foreground:hover {
+    color: inherit;
+  }
+}

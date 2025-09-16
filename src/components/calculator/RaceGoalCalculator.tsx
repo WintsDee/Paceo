@@ -11,6 +11,7 @@ import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/component
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ChevronDown, HelpCircle } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useHapticContext } from "@/contexts/HapticContext";
 export interface RaceGoalCalculatorProps {
   isMetric: boolean;
   speedValue: number; // global speed in current units (km/h or mph)
@@ -86,6 +87,7 @@ export const RaceGoalCalculator = ({
   showTimeSlider
 }: RaceGoalCalculatorProps) => {
   const { t } = useLanguage();
+  const { hapticFeedback } = useHapticContext();
   const [selectedDistance, setSelectedDistance] = useLocalStorage<string>("pace-calc-goal-distance", "10k");
   const [targetTime, setTargetTime] = useState("00:45:00");
   const { notifications } = useAppNotifications();
@@ -116,6 +118,7 @@ export const RaceGoalCalculator = ({
       const speed = distanceUnits / hours; // in current units
       lastUpdate.current = "time";
       onSpeedChange(parseFloat(speed.toFixed(2)));
+      hapticFeedback.timeChanged();
     }
   };
   const pace = paceFromSpeed(speedValue);
@@ -178,6 +181,7 @@ export const RaceGoalCalculator = ({
     };
     onSaveGoal(goal);
     notifications.favoriteAdded(`${race.label} en ${targetTime}`);
+    hapticFeedback.programSaved();
   };
   return <Card className="glass-card p-6 animate-fade-in-up">
       <h2 className="text-xl font-semibold mb-6">{t("Objectif de course")}</h2>
@@ -187,7 +191,10 @@ export const RaceGoalCalculator = ({
         <div className="space-y-3">
           <Label className="text-sm font-medium text-muted-foreground">{t("Distance")}</Label>
           <div className="flex gap-2">
-            {raceDistances.map(r => <Button key={r.id} variant={selectedDistance === r.id ? "default" : "outline"} onClick={() => setSelectedDistance(r.id)} className={selectedDistance === r.id ? "btn-primary-glass flex-1" : "btn-glass flex-1"}>
+            {raceDistances.map(r => <Button key={r.id} variant={selectedDistance === r.id ? "default" : "outline"} onClick={() => {
+              setSelectedDistance(r.id);
+              hapticFeedback.distanceChanged();
+            }} className={selectedDistance === r.id ? "btn-primary-glass flex-1" : "btn-glass flex-1"}>
                 {r.label}
               </Button>)}
           </div>
@@ -249,6 +256,7 @@ export const RaceGoalCalculator = ({
             const spd = distanceUnits / h;
             lastUpdate.current = "time";
             onSpeedChange(parseFloat(spd.toFixed(2)));
+            hapticFeedback.timeChanged();
           }} />;
         })()}
             
