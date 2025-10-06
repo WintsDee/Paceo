@@ -34,6 +34,18 @@
   min-height: 44px;
   min-width: 44px;
   touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Empêcher la sélection de texte sur les contrôles */
+.mobile-platform .mono-numbers,
+.mobile-platform button *,
+.mobile-platform [role="button"] * {
+  -webkit-user-select: none;
+  user-select: none;
+  pointer-events: none;
 }
 
 /* Masquer la barre d'adresse sur mobile */

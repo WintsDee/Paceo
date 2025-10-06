@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { ChevronDown, HelpCircle } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useHapticContext } from "@/contexts/HapticContext";
+import { useButtonHold } from "@/hooks/useButtonHold";
 export interface RaceGoalCalculatorProps {
   isMetric: boolean;
   speedValue: number; // global speed in current units (km/h or mph)
@@ -118,9 +119,26 @@ export const RaceGoalCalculator = ({
       const speed = distanceUnits / hours; // in current units
       lastUpdate.current = "time";
       onSpeedChange(parseFloat(speed.toFixed(2)));
-      hapticFeedback.timeChanged();
+      hapticFeedback.timeDecreased();
     }
   };
+
+  const decreaseTime = () => {
+    const currentH = timeStringToHours(targetTime);
+    const newH = Math.max(0.1, currentH - 1/3600); // -1 second
+    const newTime = hoursToHHMMSS(newH);
+    handleTimeChange(newTime);
+  };
+
+  const increaseTime = () => {
+    const currentH = timeStringToHours(targetTime);
+    const newH = currentH + 1/3600; // +1 second
+    const newTime = hoursToHHMMSS(newH);
+    handleTimeChange(newTime);
+  };
+
+  const timeDecreaseHold = useButtonHold({ onAction: decreaseTime });
+  const timeIncreaseHold = useButtonHold({ onAction: increaseTime });
   const pace = paceFromSpeed(speedValue);
   const speedDisplay = speedValue.toFixed(2);
   const handleSaveGoal = () => {
@@ -207,15 +225,10 @@ export const RaceGoalCalculator = ({
           </Label>
           <div className="flex items-center gap-2">
             <Button
+              {...timeDecreaseHold}
               variant="ghost"
               size="icon"
-              className="h-14 w-12 bg-muted/50 hover:bg-muted rounded-full text-xl font-bold"
-              onClick={() => {
-                const currentH = timeStringToHours(targetTime);
-                const newH = Math.max(0.1, currentH - 1/3600); // -1 second
-                const newTime = hoursToHHMMSS(newH);
-                handleTimeChange(newTime);
-              }}
+              className="h-14 w-12 bg-muted/50 hover:bg-muted rounded-full text-xl font-bold select-none touch-none"
             >
               -
             </Button>
@@ -226,15 +239,10 @@ export const RaceGoalCalculator = ({
               className="glass-card border-0 text-lg mono-numbers text-center h-14 text-foreground focus:glow-effect transition-smooth flex-1" 
             />
             <Button
+              {...timeIncreaseHold}
               variant="ghost"
               size="icon"
-              className="h-14 w-12 bg-muted/50 hover:bg-muted rounded-full text-xl font-bold"
-              onClick={() => {
-                const currentH = timeStringToHours(targetTime);
-                const newH = currentH + 1/3600; // +1 second
-                const newTime = hoursToHHMMSS(newH);
-                handleTimeChange(newTime);
-              }}
+              className="h-14 w-12 bg-muted/50 hover:bg-muted rounded-full text-xl font-bold select-none touch-none"
             >
               +
             </Button>
@@ -256,7 +264,7 @@ export const RaceGoalCalculator = ({
             const spd = distanceUnits / h;
             lastUpdate.current = "time";
             onSpeedChange(parseFloat(spd.toFixed(2)));
-            hapticFeedback.timeChanged();
+            hapticFeedback.timeDecreased();
           }} />;
         })()}
             

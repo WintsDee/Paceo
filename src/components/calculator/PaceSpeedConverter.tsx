@@ -7,6 +7,7 @@ import { Slider } from "@/components/ui/slider";
 import { Minus, Plus } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useHapticContext } from "@/contexts/HapticContext";
+import { useButtonHold } from "@/hooks/useButtonHold";
 
 export interface PaceSpeedConverterProps {
   isMetric: boolean;
@@ -46,19 +47,22 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
   const stepPace = (deltaSec: number) => {
     const newPaceSec = clamp(paceSeconds + deltaSec, paceSecMin, paceSecMax);
     const newSpeed = 3600 / newPaceSec; // 60 minutes/hour * 60 sec/min / sec per unit
-    onSpeedChange(newSpeed); // Remove toFixed to avoid rounding
+    onSpeedChange(newSpeed);
     hapticFeedback.paceChanged();
   };
 
   const stepSpeed = (delta: number) => {
-    // Step by 1 second equivalent in speed units
-    // + means faster speed (less seconds in pace), - means slower speed (more seconds in pace)
     const currentPaceSeconds = paceSecondsFromSpeed(speedValue);
-    const targetPaceSeconds = clamp(currentPaceSeconds - delta, paceSecMin, paceSecMax); // Inverse delta for speed
+    const targetPaceSeconds = clamp(currentPaceSeconds - delta, paceSecMin, paceSecMax);
     const newSpeed = 3600 / targetPaceSeconds;
-    onSpeedChange(newSpeed); // Remove toFixed to avoid rounding
+    onSpeedChange(newSpeed);
     hapticFeedback.paceChanged();
   };
+
+  const paceDecreaseHold = useButtonHold({ onAction: () => stepPace(-1) });
+  const paceIncreaseHold = useButtonHold({ onAction: () => stepPace(+1) });
+  const speedDecreaseHold = useButtonHold({ onAction: () => stepSpeed(-1) });
+  const speedIncreaseHold = useButtonHold({ onAction: () => stepSpeed(+1) });
 
   return (
     <Card className="glass-card p-6 animate-fade-in-up">
@@ -90,9 +94,9 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
           </Label>
           <div className="glass-card rounded-lg p-4 flex items-center justify-between">
             <Button 
-              onClick={() => stepPace(-1)} 
+              {...paceDecreaseHold}
               variant="ghost" 
-              className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0"
+              className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0 select-none touch-none"
             >
               <Minus className="h-4 w-4" />
             </Button>
@@ -100,9 +104,9 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
               {paceString}
             </div>
             <Button 
-              onClick={() => stepPace(+1)} 
+              {...paceIncreaseHold}
               variant="ghost" 
-              className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0"
+              className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0 select-none touch-none"
             >
               <Plus className="h-4 w-4" />
             </Button>
@@ -116,9 +120,9 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
           </Label>
           <div className="glass-card rounded-lg p-4 flex items-center justify-between">
             <Button 
-              onClick={() => stepSpeed(-1)} 
+              {...speedDecreaseHold}
               variant="ghost" 
-              className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0"
+              className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0 select-none touch-none"
             >
               <Minus className="h-4 w-4" />
             </Button>
@@ -126,9 +130,9 @@ export const PaceSpeedConverter = ({ isMetric, onToggleUnits, speedValue, onSpee
               {speedValue.toFixed(2)}
             </div>
             <Button 
-              onClick={() => stepSpeed(+1)} 
+              {...speedIncreaseHold}
               variant="ghost" 
-              className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0"
+              className="bg-muted/50 hover:bg-muted h-8 w-8 rounded-full p-0 select-none touch-none"
             >
               <Plus className="h-4 w-4" />
             </Button>

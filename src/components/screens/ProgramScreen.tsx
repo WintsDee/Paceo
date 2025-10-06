@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useProgramProgress } from "@/hooks/useProgramProgress";
+import { useButtonHold } from "@/hooks/useButtonHold";
 import { ProgramState } from "@/types/program";
 import { CalendarIcon, ChevronDown, Plus, Minus, Copy, Printer, Target } from "lucide-react";
 import { differenceInWeeks } from "date-fns";
@@ -610,10 +611,17 @@ export const ProgramScreen = React.memo(({
     const newValue = Math.max(2, Math.min(6, sessionsPerWeek + delta));
     setSessionsPerWeek(newValue);
   }, [sessionsPerWeek, setSessionsPerWeek]);
+  
   const adjustWeeks = useCallback((delta: number) => {
     const newValue = Math.max(2, Math.min(16, weeksBeforeRace + delta));
     setWeeksBeforeRace(newValue);
   }, [weeksBeforeRace, setWeeksBeforeRace]);
+
+  // Hold-to-repeat handlers
+  const sessionsDecreaseHold = useButtonHold({ onAction: () => adjustSessions(-1) });
+  const sessionsIncreaseHold = useButtonHold({ onAction: () => adjustSessions(1) });
+  const weeksDecreaseHold = useButtonHold({ onAction: () => adjustWeeks(-1) });
+  const weeksIncreaseHold = useButtonHold({ onAction: () => adjustWeeks(1) });
   const copyWeekToClipboard = useCallback(async (week: WeekProgram) => {
     const weekText = `${t("Semaine")} ${week.week} - ${t(week.phase)}\n\n${week.sessions.map((session, index) => `${index + 1}. ${t(session.type)} - ${session.duration}\n${session.description}`).join('\n\n')}`;
     try {
@@ -775,11 +783,21 @@ export const ProgramScreen = React.memo(({
           <div className="space-y-2">
             <Label className="text-sm font-medium text-muted-foreground">{t("Sessions/sem.")}</Label>
             <div className="flex items-center gap-1">
-              <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-muted/50 hover:bg-muted rounded-full" onClick={() => setSessionsPerWeek(Math.max(2, sessionsPerWeek - 1))}>
+              <Button 
+                {...sessionsDecreaseHold}
+                size="sm" 
+                variant="ghost" 
+                className="h-8 w-8 p-0 bg-muted/50 hover:bg-muted rounded-full select-none touch-none"
+              >
                 <Minus className="h-3 w-3" />
               </Button>
               <div className="flex-1 text-center font-medium">{sessionsPerWeek}</div>
-              <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-muted/50 hover:bg-muted rounded-full" onClick={() => setSessionsPerWeek(Math.min(6, sessionsPerWeek + 1))}>
+              <Button 
+                {...sessionsIncreaseHold}
+                size="sm" 
+                variant="ghost" 
+                className="h-8 w-8 p-0 bg-muted/50 hover:bg-muted rounded-full select-none touch-none"
+              >
                 <Plus className="h-3 w-3" />
               </Button>
             </div>
@@ -800,11 +818,21 @@ export const ProgramScreen = React.memo(({
                   <Calendar mode="single" selected={raceDate} onSelect={setRaceDate} locale={dateLocale} initialFocus />
                 </PopoverContent>
               </Popover> : <div className="flex items-center gap-1">
-                <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-muted/50 hover:bg-muted rounded-full" onClick={() => setWeeksBeforeRace(Math.max(2, weeksBeforeRace - 1))}>
+                <Button 
+                  {...weeksDecreaseHold}
+                  size="sm" 
+                  variant="ghost" 
+                  className="h-8 w-8 p-0 bg-muted/50 hover:bg-muted rounded-full select-none touch-none"
+                >
                   <Minus className="h-3 w-3" />
                 </Button>
                 <div className="flex-1 text-center font-medium">{weeksBeforeRace}</div>
-                <Button size="sm" variant="ghost" className="h-8 w-8 p-0 bg-muted/50 hover:bg-muted rounded-full" onClick={() => setWeeksBeforeRace(Math.min(16, weeksBeforeRace + 1))}>
+                <Button 
+                  {...weeksIncreaseHold}
+                  size="sm" 
+                  variant="ghost" 
+                  className="h-8 w-8 p-0 bg-muted/50 hover:bg-muted rounded-full select-none touch-none"
+                >
                   <Plus className="h-3 w-3" />
                 </Button>
               </div>}

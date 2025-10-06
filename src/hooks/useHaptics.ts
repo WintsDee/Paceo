@@ -60,7 +60,7 @@ export const useHaptics = () => {
           await Haptics.selectionStart();
           break;
         case 'notification':
-          await Haptics.notification({ type: 'success' });
+          await Haptics.notification();
           break;
         default:
           await Haptics.impact({ style: ImpactStyle.Medium });
