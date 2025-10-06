@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 
 interface UseButtonHoldOptions {
   onAction: () => void;
@@ -8,12 +8,18 @@ interface UseButtonHoldOptions {
 
 export const useButtonHold = ({ 
   onAction, 
-  initialDelay = 500,  // Délai avant le début de la répétition
-  repeatDelay = 100     // Délai entre chaque répétition
+  initialDelay = 400,  // Délai avant le début de la répétition
+  repeatDelay = 80     // Délai entre chaque répétition
 }: UseButtonHoldOptions) => {
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<number | null>(null);
+  const timeoutRef = useRef<number | null>(null);
   const isHoldingRef = useRef(false);
+  const actionRef = useRef(onAction);
+
+  // Garder la référence à jour
+  useEffect(() => {
+    actionRef.current = onAction;
+  }, [onAction]);
 
   const clear = useCallback(() => {
     if (intervalRef.current) {
@@ -29,35 +35,52 @@ export const useButtonHold = ({
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     // Action immédiate au premier clic
-    onAction();
+    actionRef.current();
     isHoldingRef.current = true;
 
     // Attendre un peu avant de commencer la répétition
-    timeoutRef.current = setTimeout(() => {
+    timeoutRef.current = window.setTimeout(() => {
       if (isHoldingRef.current) {
         // Commencer la répétition
-        intervalRef.current = setInterval(() => {
+        intervalRef.current = window.setInterval(() => {
           if (isHoldingRef.current) {
-            onAction();
+            actionRef.current();
           }
         }, repeatDelay);
       }
     }, initialDelay);
-  }, [onAction, initialDelay, repeatDelay]);
+  }, [initialDelay, repeatDelay]);
 
-  const onPointerUp = useCallback(() => {
+  const onPointerUp = useCallback((e: React.PointerEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     clear();
   }, [clear]);
 
-  const onPointerLeave = useCallback(() => {
+  const onPointerLeave = useCallback((e: React.PointerEvent) => {
+    e.preventDefault();
     clear();
+  }, [clear]);
+
+  const onPointerCancel = useCallback((e: React.PointerEvent) => {
+    e.preventDefault();
+    clear();
+  }, [clear]);
+
+  // Nettoyer au démontage
+  useEffect(() => {
+    return () => {
+      clear();
+    };
   }, [clear]);
 
   return {
     onPointerDown,
     onPointerUp,
-    onPointerLeave
+    onPointerLeave,
+    onPointerCancel
   };
 };
